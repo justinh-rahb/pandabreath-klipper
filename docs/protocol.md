@@ -1,4 +1,4 @@
-# BIQU Panda Breath — WebSocket Protocol Documentation
+# WebSocket Protocol
 
 > **Status:** Reverse-engineered. Derived from firmware binary strings, full flash dump (v0.0.0) embedded JavaScript source, schematic analysis, and live testing by community members.
 > No official API documentation exists. BTT has not published firmware source.
@@ -41,6 +41,16 @@ All messages are JSON. The top-level key is a **root** that identifies the subsy
 
 The device sends fields individually or in small groups — not necessarily a full state dump in one message.
 
+The helper function extracted from the v0.0.0 embedded JavaScript:
+
+```js
+function ws_send_data(root, members) {
+    let json = {};
+    json[root] = members;
+    ws_send_json(json);
+}
+```
+
 ---
 
 ## Roots
@@ -63,7 +73,8 @@ The primary control and telemetry root.
 | `factory_reset` | int | `1` = factory reset (clears NVS, WiFi, binding) |
 | `language` | string | UI language: `"en"` or `"zh"` |
 
-> **Note on target temperature:** The field for setting the general heating target temperature has not been confirmed via live testing. Candidates from firmware strings: `set_temp`, `temp`, `custom_temp`. Use `filament_temp` for drying mode. For always-on mode, the device heats toward its internally stored target.
+!!! note "Target temperature write field"
+    The field for setting a general heating target temperature has not been confirmed via live testing. Candidates from firmware strings: `set_temp`, `temp`, `custom_temp`. Use `filament_temp` for drying mode. For always-on mode (`work_mode: 2`), the device heats toward its internally stored target.
 
 #### Read-only fields (device → client)
 
@@ -105,6 +116,9 @@ The primary control and telemetry root.
 
 // Reboot
 { "settings": { "reset": 1 } }
+
+// Factory reset
+{ "settings": { "factory_reset": 1 } }
 ```
 
 #### Example device push
@@ -143,7 +157,8 @@ The primary control and telemetry root.
 | `{ "ap": { "on": 0 } }` | Disable hotspot |
 | `{ "ap": { "ssid": "...", "password": "...", "ip": "..." } }` | Configure hotspot SSID, password, and IP |
 
-> Modifying AP settings while connected via AP will disconnect you.
+!!! warning
+    Modifying AP settings while connected via AP will disconnect you.
 
 ---
 
@@ -155,7 +170,22 @@ The primary control and telemetry root.
 | `{ "printer": { "name": "...", "sn": "...", "access_code": "...", "ip": "..." } }` | Bind to a Bambu printer |
 | `{ "printer": { "disconnect": 1 } }` | Disconnect from bound printer |
 
-> **Klipper note:** This subsystem is irrelevant for Klipper printers. The device connects to Bambu printers via MQTT over TLS and reads `bed_temper`, `nozzle_temper`, `gcode_state` etc. to drive Auto mode. This won't work with Klipper — use `work_mode: 2` (Always On) instead.
+!!! note "Klipper note"
+    This subsystem is irrelevant for Klipper printers. The device connects to Bambu printers via MQTT over TLS and reads `bed_temper`, `nozzle_temper`, `gcode_state` etc. to drive Auto mode. This won't work with Klipper — use `work_mode: 2` (Always On) instead.
+
+When connected to a Bambu printer, the device subscribes to `device/<sn>/report` via MQTT over TLS and pushes these fields to WebSocket clients:
+
+| Field | Description |
+|---|---|
+| `gcode_state` | Current print state (idle/printing/paused/failed/etc.) |
+| `nozzle_temper` | Nozzle temperature |
+| `bed_temper` | Bed current temperature |
+| `bed_target_temper` | Bed target temperature |
+| `ams_status` | AMS filament system status |
+| `print_error` | Error code |
+| `mc_remaining_time` | Remaining print time (minutes) |
+| `mc_remaining` | Remaining percentage |
+| `chamber_light` | Chamber light on/off |
 
 ---
 
@@ -163,9 +193,41 @@ The primary control and telemetry root.
 
 | `work_mode` | Name | Behaviour |
 |---|---|---|
-| `1` | Auto | Heater turns on when printer bed temperature crosses `hotbedtemp` threshold. Requires Bambu MQTT binding to work as designed. |
-| `2` | Always On | Heater runs continuously while `work_on` is true. Target temperature controlled internally. **Use this mode for Klipper.** |
+| `1` | Auto | Heater turns on when printer bed temperature crosses `hotbedtemp` threshold. Requires Bambu MQTT binding. **Not usable with Klipper.** |
+| `2` | Always On | Heater runs continuously while `work_on` is true. Target temperature controlled internally. **Use this for Klipper.** |
 | `3` | Filament Drying | Runs at `filament_temp` for `filament_timer` hours. Countdown tracked via `remaining_seconds`. Hard timeout at 12 hours. |
+
+### Filament drying logic (from embedded JS)
+
+```js
+// Set filament type preset temperature
+ws_send_data('settings', { filament_temp: PLA_TEMP })   // PLA preset
+ws_send_data('settings', { filament_temp: PETG_TEMP })  // PETG preset
+
+// Set custom timer (value in hours; device converts to seconds internally)
+ws_send_data('settings', { filament_timer: 6 })
+
+// Start / stop drying cycle
+ws_send_data('settings', { isrunning: 1 })   // start
+ws_send_data('settings', { isrunning: 0 })   // stop
+
+// Default drying time: 12 hours (hard timeout)
+```
+
+---
+
+## OTA Update Protocol
+
+OTA is done via HTTP POST (not WebSocket). Endpoint: `/ota`
+
+| Type | Description |
+|---|---|
+| `ota_fw` | Application firmware (max 0x480000 bytes) |
+| `ota_img` | UI image assets |
+| `ota_gif` | Animation assets |
+| `ota_get_img` | Fetch image from URL |
+
+After successful OTA, device requests restart via `ESP_REQ_DELAY_RESTART`.
 
 ---
 
@@ -207,14 +269,18 @@ Client                          Device
 
 Settings are saved to ESP32 NVS flash under the `panda_breath` namespace. The following are persisted across reboots:
 
-- `wifi_info` — WiFi SSID, password, hostname, AP config
-- `bambu_mqtt_info` — Bound printer name, serial, access code, IP
-- `ui_info` — Language and UI settings
-- `panda_breath` namespace — `settings_temp`, `settings_hotbed_temp`, `work_on`, `current_mode`, `custom_temp`, `custom_timer`
+| Key | Contents |
+|---|---|
+| `wifi_info` | WiFi SSID, password, hostname, AP config |
+| `bambu_mqtt_info` | Bound printer name, serial, access code, IP |
+| `ui_info` | Language and UI settings |
+| `panda_breath` namespace | `settings_temp`, `settings_hotbed_temp`, `work_on`, `current_mode`, `custom_temp`, `custom_timer` |
+
+Save triggers observed in firmware: `NVS_REQ_SAVE_WIFI`, `NVS_REQ_SAVE_PANDA_BREATH`, `NVS_REQ_FACTORY_RESET`
 
 ---
 
-## Hardware Summary (for context)
+## Hardware Summary
 
 | Component | Detail |
 |---|---|
@@ -222,17 +288,8 @@ Settings are saved to ESP32 NVS flash under the `panda_breath` namespace. The fo
 | Heater control | Solid-state relay (on/off; firmware duty-cycles for regulation) |
 | Fan control | TRIAC phase-angle (speed managed internally) |
 | Chamber sensor | NTC 100K thermistor → `warehouse_temper` / `cal_warehouse_temp` |
-| PTC sensor | NTC 100K thermistor (thermal protection only, not for user targeting) |
+| PTC sensor | NTC 100K thermistor (thermal protection only) |
 | USB | CH340K UART bridge for flashing |
-| Flashing | `esptool.py --chip esp32c3 --port /dev/ttyUSB0 --baud 460800 write-flash 0x0 <image.bin>` |
-
----
-
-## Known Issues (v1.0.1 / v1.0.2)
-
-- Thermal/timing regressions introduced in v1.0.1 — self-calibration code present in v1.0.1 was removed or rewritten in v1.0.2 without clear improvement
-- Some fields (target temperature write, auto mode trigger) may behave unreliably on v1.0.1+
-- v0.0.0 (Aug 2025) is the only community-confirmed stable firmware
 
 ---
 

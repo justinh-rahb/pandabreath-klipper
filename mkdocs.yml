@@ -1,0 +1,65 @@
+site_name: pandabreath-klipper
+site_description: Klipper extras module for the BIQU Panda Breath smart chamber heater and air filter
+site_url: https://justinh-rahb.github.io/pandabreath-klipper/
+repo_url: https://github.com/justinh-rahb/pandabreath-klipper
+repo_name: justinh-rahb/pandabreath-klipper
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+    - toc.follow
+
+nav:
+  - Home: index.md
+  - Protocol: protocol.md
+  - Hardware: hardware.md
+  - Firmware: firmware.md
+  - Klipper Integration:
+      - Overview: klipper/index.md
+      - Install on U1: klipper/install.md
+      - printer.cfg Reference: klipper/printer-cfg.md
+  - Research:
+      - Methodology: research/methodology.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - toc:
+      permalink: true
+
+plugins:
+  - search
