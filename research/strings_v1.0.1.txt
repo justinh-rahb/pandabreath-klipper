@@ -1,0 +1,7363 @@
+panda_breath
+18:11:15
+Dec 10 2025
+v5.1.4-dirty
+pthread
+[0;31mE (%lu) %s: Failed to allocate task args!
+[0;31mE (%lu) %s: Failed to allocate pthread data!
+[0;31mE (%lu) %s: Failed to create task!
+false && "Failed to lock threads list!"
+//IDF/components/pthread/pthread.c
+false && "Failed to release mutex!"
+false && "Failed to unlock mutex!"
+pthread_mutex_unlock
+pthread_mutex_destroy
+tls != NULL
+//IDF/components/pthread/pthread_local_storage.c
+pthread_cleanup_thread_specific_data_callback
+cpu_start
+[0;32mI (%lu) %s: Unicore app
+[0;32mI (%lu) %s: Pro cpu up.
+[0;31mE (%lu) %s: Memprot feature locked after the system reset! Potential safety corruption, rebooting.
+[0;31mE (%lu) %s: Failed to set Memprot feature (0x%08X: %s), rebooting.
+[0;33mW (%lu) %s: 32 kHz XTAL not found, switching to internal 150 kHz oscillator
+rtc_clk_xtal_freq_get() == RTC_XTAL_FREQ_40M
+//IDF/components/esp_system/port/soc/esp32c3/clk.c
+esp_clk_init
+'Guru Meditation Error: Core 
+ panic'ed (
+Setting breakpoint at 0x
+ and returning...
+ELF file SHA256: 
+Rebooting...
+vfs_err == ESP_OK && "Failed to register vfs console"
+//IDF/components/esp_system/startup.c
+/dev/console/
+err == ESP_OK && "Failed to init pthread module!"
+flash_ret == ESP_OK
+[0;31mE (%lu) %s: init function %p has failed (0x%x), aborting
+(constraint ignored)
+[0;32mI (%lu) %s: Pro cpu start user code
+[0;32mI (%lu) %s: cpu freq: %d Hz
+[0;32mI (%lu) %s: Application information:
+[0;32mI (%lu) %s: Project name:     %s
+[0;32mI (%lu) %s: App version:      %s
+[0;32mI (%lu) %s: Compile time:     %s %s
+[0;32mI (%lu) %s: ELF file SHA256:  %s...
+[0;32mI (%lu) %s: ESP-IDF:          %s
+[0;32mI (%lu) %s: Min chip rev:     v%d.%d
+[0;32mI (%lu) %s: Max chip rev:     v%d.%d %s
+[0;32mI (%lu) %s: Chip rev:         v%d.%d
+do_core_init
+BUnknown
+IRAM0_SRAM
+DRAM0_SRAM
+IRAM0_RTCFAST
+IRAM0_ANY
+EXTMEM_CORE0_ACS_CACHE_INT_ST_REG = 0x
+EXTMEM_CACHE_ILG_INT_ST_REG = 0x
+Stack memory:
+  - no details available -
+  memory type: 
+  faulting address: 
+N/A (error 
+  world: 
+  operation type: 
+  byte-enables: 
+Core 
+ register dump:
+: 0x
+Unknown reason
+Cache error
+Memory protection fault
+Exception was unhandled.
+Instruction address misaligned
+Instruction access fault
+Illegal instruction
+Breakpoint
+Load address misaligned
+Load access fault
+Store address misaligned
+Store access fault
+Environment call from U-mode
+Environment call from S-mode
+Environment call from M-mode
+Instruction page fault
+Load page fault
+Store page fault
+MMU entry fault
+preload configurations fault
+sync configurations fault
+dbus tried to write cache
+dbus authentication failed
+access to cache while dbus or cache is disabled
+ibus authentication failed
+ibus tried to write cache
+access to cache while ibus or cache is disabled
+Interrupt wdt timeout on CPU0
+MEPC    
+RA      
+SP      
+GP      
+TP      
+T0      
+T1      
+T2      
+S0/FP   
+S1      
+A0      
+A1      
+A2      
+A3      
+A4      
+A5      
+A6      
+A7      
+S2      
+S3      
+S4      
+S5      
+S6      
+S7      
+S8      
+S9      
+S10     
+S11     
+T3      
+T4      
+T5      
+T6      
+MSTATUS 
+MTVEC   
+MCAUSE  
+MTVAL   
+MHARTID 
+<i == 0 || s_log_cache[(i - 1) / 2].generation < s_log_cache[i].generation
+//IDF/components/log/log.c
+get_cached_log_level
+esp_log_level_set
+esp_ptr_in_diram_dram((void *)dstart)
+//IDF/components/heap/heap_caps.c
+esp_ptr_in_diram_dram((void *)dend)
+(dstart & 3) == 0
+(dend & 3) == 0
+heap != NULL && "free() target pointer is outside heap areas"
+heap != NULL && "realloc() pointer is outside heap areas"
+old_size > 0
+heap_caps_calloc
+heap_caps_realloc
+heap_caps_free
+heap_caps_realloc_base
+heap_caps_realloc_default
+heap_caps_malloc_default
+dram_alloc_to_iram_addr
+heap_caps_malloc
+heap_size <= HEAP_SIZE_MAX
+//IDF/components/heap/heap_caps_init.c
+heap_init
+[0;32mI (%lu) %s: Initializing. RAM available for dynamic allocation:
+heap_idx <= num_heaps
+[0;32mI (%lu) %s: At %08X len %08X (%d KiB): %s
+heap_idx == num_heaps
+SLIST_EMPTY(&registered_heaps)
+heaps_array != NULL
+heap_caps_init
+register_heap
+CORRUPT HEAP: multi_heap.c:%d detected at 0x%08x
+start_ptr
+//IDF/components/heap/multi_heap.c
+heap != NULL
+multi_heap_realloc_impl
+multi_heap_register_impl
+sizeof(unsigned int) * CHAR_BIT >= control->sl_index_count && "CHAR_BIT less than sl_index_count"
+//IDF/components/heap/tlsf/tlsf.c
+ALIGN_SIZE == control->small_block_size / control->sl_index_count
+free
+%p %s size: %x (%p)
+!block_is_last(block)
+//IDF/components/heap/tlsf/tlsf_block_functions.h
+tlsf_add_pool: Memory must be aligned by %u bytes.
+tlsf_add_pool: Memory size must be between %u and %u bytes.
+current && "free list cannot have a null entry"
+block && "cannot insert a null entry into the free list"
+block_to_ptr(block) == align_ptr(block_to_ptr(block), ALIGN_SIZE) && "block not aligned properly"
+block_is_free(block) && "block should be free"
+!block_is_free(block_next(block)) && "next block should not be free"
+block_size(block_next(block)) == 0 && "next block size should be zero"
+prev && "prev_free field can not be null"
+next && "next_free field can not be null"
+tlsf_create: Memory must be aligned to %u bytes.
+sl_map && "internal error - second level bitmap is null"
+block_size(block) >= size
+size && "size must be non-zero"
+block_is_free(block) && "block must be free"
+block_to_ptr(remaining) == align_ptr(block_to_ptr(remaining), ALIGN_SIZE) && "remaining block not aligned properly"
+block_size(block) == remain_size + size + block_header_overhead
+block_size(remaining) >= block_size_min && "block split with invalid size"
+!block_is_free(block) && "block already marked as free"
+prev && "prev physical block can't be null"
+block_is_free(prev) && "prev block is not free though marked as such"
+!block_is_last(prev) && "previous block can't be last"
+next && "next physical block can't be null"
+!block_is_free(block) && "block must be used"
+block_trim_used
+tlsf_realloc
+block_merge_next
+block_absorb
+block_merge_prev
+tlsf_free
+block_split
+block_trim_free
+block_prepare_used
+search_suitable_block
+block_locate_free
+control_construct
+remove_free_block
+insert_free_block
+block_next
+reserved[i].start <= reserved[i].end
+//IDF/components/heap/port/memory_layout_utils.c
+reserved[i + 1].start > reserved[i].start
+memory_layout
+[0;31mE (%lu) %s: SOC_RESERVE_MEMORY_REGION region range 0x%08x - 0x%08x overlaps with 0x%08x - 0x%08x
+s_prepare_reserved_regions
+DRAM
+DRAM/RETENTION
+DRAM/RETENTION/STACK
+D/IRAM
+DIRAM/RETENTION
+DIRAM/RETENTION/STACK
+RTCRAM
+svd != NULL
+//IDF/components/esp_hw_support/intr_alloc.c
+!((vd->flags & VECDESC_FL_SHARED) && (vd->flags & VECDESC_FL_NONSHARED))
+intr_num >= 0 && intr_num < SOC_CPU_INTR_NUM
+//IDF/components/esp_hw_support/include/esp_cpu.h
+esp_intr_disable
+intr_free_for_current_cpu
+esp_cpu_intr_set_priority
+esp_cpu_intr_edge_ack
+esp_cpu_intr_set_handler
+is_vect_desc_usable
+find_desc_for_source
+periph < PERIPH_MODULE_MAX
+//IDF/components/esp_hw_support/periph_ctrl.c
+periph_module_reset
+periph_module_disable
+periph_module_enable
+gpio_num <= GPIO_NUM_5 && "gpio larger than 5 does not support deep sleep wake-up function"
+/IDF/components/hal/esp32c3/include/hal/gpio_ll.h
+sleep
+[0;32mI (%lu) %s: Configure to isolate all GPIO pins in sleep state
+Enable
+Disable
+[0;32mI (%lu) %s: %s automatic switching of GPIO sleep configuration
+gpio_ll_deepsleep_wakeup_disable
+gpio_ll_deepsleep_wakeup_is_enabled
+[0;31mE (%lu) %s: REGI2C_SARADC is already disabled
+REGI2C
+calib_version == 1
+//IDF/components/esp_hw_support/port/esp32c3/rtc_init.c
+chip_version >= 3
+rtc_init
+[0;33mW (%lu) %s: o_code calibration fail
+get_rtc_dbias_by_efuse
+get_dig_dbias_by_efuse
+set_ocode_by_efuse
+slowclk_cycles
+//IDF/components/esp_hw_support/port/esp32c3/rtc_time.c
+period
+rtc_time_us_to_slowclk
+rtc_clk_cal
+sar_periph_ctrl
+[0;31mE (%lu) %s: %s called, but s_saradc_power_on_cnt == 0
+[0;31mE (%lu) %s: %s called, but s_pwdet_power_on_cnt == 0
+s_sar_adc_power_release
+sar_periph_ctrl_pwdet_power_release
+READ
+WRITE
+EXEC
+PMS_WORLD_NONE
+PMS_WORLD_0
+PMS_WORLD_1
+PMS_WORLD_2
+PMS_WORLD_ALL
+PMS_WORLD_INVALID
+pxQueueSetContainer
+//IDF/components/freertos/FreeRTOS-Kernel/queue.c
+pxQueueSetContainer->uxMessagesWaiting < pxQueueSetContainer->uxLength
+cTxLock != ( ( int8_t ) 127 )
+pxQueue
+uxQueueLength > ( UBaseType_t ) 0
+pxStaticQueue != ((void *)0)
+!( ( pucQueueStorage != ((void *)0) ) && ( uxItemSize == 0 ) )
+!( ( pucQueueStorage == ((void *)0) ) && ( uxItemSize != 0 ) )
+xSize == sizeof( Queue_t )
+( uxItemSize == 0 ) || ( uxQueueLength == ( xQueueSizeInBytes / uxItemSize ) )
+( sizeof( Queue_t ) + xQueueSizeInBytes ) > xQueueSizeInBytes
+uxMaxCount != 0
+uxInitialCount <= uxMaxCount
+!( ( pvItemToQueue == ((void *)0) ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) )
+!( ( xCopyPosition == ( ( BaseType_t ) 2 ) ) && ( pxQueue->uxLength != 1 ) )
+!( ( xTaskGetSchedulerState() == ( ( BaseType_t ) 0 ) ) && ( xTicksToWait != 0 ) )
+pxQueue->pcHead != ((void *)0) || pxQueue->u.xSemaphore.xMutexHolder == ((void *)0) || pxQueue->u.xSemaphore.xMutexHolder == xTaskGetCurrentTaskHandle()
+pxMutex
+pxQueue->uxItemSize == 0
+!( ( pxQueue->pcHead == ((void *)0) ) && ( pxQueue->u.xSemaphore.xMutexHolder != ((void *)0) ) )
+( pxQueue )
+!( ( ( pvBuffer ) == ((void *)0) ) && ( ( pxQueue )->uxItemSize != ( UBaseType_t ) 0U ) )
+!( ( pvBuffer == ((void *)0) ) && ( pxQueue->uxItemSize != ( UBaseType_t ) 0U ) )
+cRxLock != ( ( int8_t ) 127 )
+xQueue
+vQueueDelete
+uxQueueMessagesWaiting
+xQueueReceiveFromISR
+xQueueSemaphoreTake
+xQueueReceive
+xQueueGiveFromISR
+xQueueGenericSendFromISR
+prvNotifyQueueSetContainer
+xQueueGenericSend
+xQueueCreateCountingSemaphore
+xQueueTakeMutexRecursive
+xQueueGiveMutexRecursive
+xQueueGenericCreate
+xQueueGenericCreateStatic
+xQueueGenericReset
+pxTCB
+//IDF/components/freertos/FreeRTOS-Kernel/tasks.c
+pxTCB->ucStaticallyAllocated == ( ( uint8_t ) 2 )
+xPortcheckValidStackMem(puxStackBuffer)
+xPortCheckValidTCBMem(pxTaskBuffer)
+( ( xCoreID >= 0 ) && ( xCoreID < 1 ) ) || ( xCoreID == ( 0x7FFFFFFF ) )
+xSize == sizeof( TCB_t )
+IDLE
+uxSchedulerSuspended[ xPortGetCoreID() ] == ( UBaseType_t ) 0U
+cpuid < 1
+( xIdleTaskHandle[ cpuid ] != ((void *)0) )
+( ( ( ( pxDelayedTaskList )->uxNumberOfItems == ( UBaseType_t ) 0 ) ? ( ( BaseType_t ) 1 ) : ( ( BaseType_t ) 0 ) ) )
+( ( uxSchedulerSuspended[ 0 ] != ( UBaseType_t ) 0U ) )
+pxPreviousWakeTime
+( xTimeIncrement > 0U )
+!( ( uxSchedulerSuspended[ 0 ] != ( UBaseType_t ) 0U ) )
+( ( &( pxReadyTasksLists[ uxTopPriority ] ) )->uxNumberOfItems ) > 0
+pxEventList
+uxSchedulerSuspended[ 0 ] != ( UBaseType_t ) 0U
+pxUnblockedTCB
+uxSchedulerSuspended[ xPendingListCore ] != ( UBaseType_t ) 0U
+pxTimeOut
+pxTicksToWait
+pxTCB == pxCurrentTCB[ xPortGetCoreID() ]
+pxTCB->uxMutexesHeld
+pxTCB != pxCurrentTCB[ xPortGetCoreID() ]
+uxIndexToWait < 1
+uxIndexToNotify < 1
+xTaskToNotify
+pxTCB->ulNotifiedValue[ uxIndexToNotify ] == ~0UL
+( ( &( pxTCB->xEventListItem ) )->pxContainer ) == ((void *)0)
+xReturn != ( -1 )
+vTaskGenericNotifyGiveFromISR
+ulTaskGenericNotifyTake
+vTaskPriorityDisinheritAfterTimeout
+xTaskPriorityDisinherit
+xTaskCheckForTimeOut
+vTaskRemoveFromUnorderedEventList
+xTaskRemoveFromEventList
+vTaskPlaceOnUnorderedEventList
+vTaskPlaceOnEventList
+vTaskSwitchContext
+xTaskIncrementTick
+xTaskGetIdleTaskHandleForCPU
+pcTaskGetName
+xTaskResumeAll
+vTaskStartScheduler
+vTaskSuspend
+vTaskDelay
+prvDeleteTCB
+prvDeleteTLS
+vTaskDelete
+xTaskCreateStaticPinnedToCore
+" should not return, Aborting now!
+(uxStackPointer & ( 0x000f )) == 0
+//IDF/components/freertos/FreeRTOS-Kernel/portable/riscv/port.c
+***ERROR*** A stack overflow in task 
+ has been detected.
+pxPortInitialiseStack
+main_task
+[0;32mI (%lu) %s: Started on CPU%d
+esp_task_wdt_init(&twdt_config)
+/IDF/components/freertos/app_startup.c
+[0;32mI (%lu) %s: Calling app_main()
+[0;32mI (%lu) %s: Returned from app_main()
+main
+res == pdTRUE
+//IDF/components/freertos/app_startup.c
+app_start
+[0;32mI (%lu) %s: Starting scheduler on CPU0
+main_task
+esp_startup_start_app
+pxTCBBufferTemp != NULL
+//IDF/components/freertos/port_common.c
+pxStackBufferTemp != NULL
+vApplicationGetIdleTaskMemory
+esp_intr_alloc(ETS_SYSTIMER_TARGET0_EDGE_INTR_SOURCE + cpuid, ESP_INTR_FLAG_IRAM | level, SysTickIsrHandler, &systimer_hal, NULL)
+/IDF/components/freertos/FreeRTOS-Kernel/portable/port_systick.c
+vPortSetupTimer
+lock != NULL && "Uninitialized lock used"
+//IDF/components/newlib/locks.c
+h != ((void *)0)
+xQueueGetMutexHolder( ( h ) ) == ((void *)0)
+handle == (SemaphoreHandle_t) &s_common_mutex
+handle == (SemaphoreHandle_t) &s_common_recursive_mutex
+esp_newlib_locks_init
+check_lock_nonzero
+lock_release_generic
+lock_acquire_generic
+_lock_close
+void wait_for_guard_obj(guard_t*)
+//IDF/components/cxx/cxx_guards.cpp
+int __cxa_guard_acquire(__cxxabiv1::__guard*)
+void __cxa_guard_release(__cxxabiv1::__guard*)
+g->pending && "tried to release a guard which wasn't acquired"
+void __cxa_guard_abort(__cxxabiv1::__guard*)
+!g->ready && "tried to abort a guard which is ready"
+g->pending && "tried to release a guard which is not acquired"
+ERROR
+ESP_FAIL
+ESP_OK
+ESP_ERR_NO_MEM
+ESP_ERR_INVALID_ARG
+ESP_ERR_INVALID_STATE
+ESP_ERR_INVALID_SIZE
+ESP_ERR_NOT_FOUND
+ESP_ERR_NOT_SUPPORTED
+ESP_ERR_TIMEOUT
+ESP_ERR_INVALID_RESPONSE
+ESP_ERR_INVALID_CRC
+ESP_ERR_INVALID_VERSION
+ESP_ERR_INVALID_MAC
+ESP_ERR_NOT_FINISHED
+ESP_ERR_ROC_IN_PROGRESS
+ESP_ERR_NVS_BASE
+ESP_ERR_NVS_NOT_INITIALIZED
+ESP_ERR_NVS_NOT_FOUND
+ESP_ERR_NVS_TYPE_MISMATCH
+ESP_ERR_NVS_READ_ONLY
+ESP_ERR_NVS_NOT_ENOUGH_SPACE
+ESP_ERR_NVS_INVALID_NAME
+ESP_ERR_NVS_INVALID_HANDLE
+ESP_ERR_NVS_REMOVE_FAILED
+ESP_ERR_NVS_KEY_TOO_LONG
+ESP_ERR_NVS_PAGE_FULL
+ESP_ERR_NVS_INVALID_STATE
+ESP_ERR_NVS_INVALID_LENGTH
+ESP_ERR_NVS_NO_FREE_PAGES
+ESP_ERR_NVS_VALUE_TOO_LONG
+ESP_ERR_NVS_PART_NOT_FOUND
+ESP_ERR_NVS_NEW_VERSION_FOUND
+ESP_ERR_NVS_XTS_ENCR_FAILED
+ESP_ERR_NVS_XTS_DECR_FAILED
+ESP_ERR_NVS_XTS_CFG_FAILED
+ESP_ERR_NVS_XTS_CFG_NOT_FOUND
+ESP_ERR_NVS_ENCR_NOT_SUPPORTED
+ESP_ERR_NVS_KEYS_NOT_INITIALIZED
+ESP_ERR_NVS_CORRUPT_KEY_PART
+ESP_ERR_NVS_CONTENT_DIFFERS
+ESP_ERR_NVS_WRONG_ENCRYPTION
+ESP_ERR_OTA_BASE
+ESP_ERR_OTA_PARTITION_CONFLICT
+ESP_ERR_OTA_SELECT_INFO_INVALID
+ESP_ERR_OTA_VALIDATE_FAILED
+ESP_ERR_OTA_SMALL_SEC_VER
+ESP_ERR_OTA_ROLLBACK_FAILED
+ESP_ERR_OTA_ROLLBACK_INVALID_STATE
+ESP_ERR_EFUSE
+ESP_OK_EFUSE_CNT
+ESP_ERR_EFUSE_CNT_IS_FULL
+ESP_ERR_EFUSE_REPEATED_PROG
+ESP_ERR_CODING
+ESP_ERR_NOT_ENOUGH_UNUSED_KEY_BLOCKS
+ESP_ERR_DAMAGED_READING
+ESP_ERR_IMAGE_BASE
+ESP_ERR_IMAGE_FLASH_FAIL
+ESP_ERR_IMAGE_INVALID
+ESP_ERR_WIFI_BASE
+ESP_ERR_WIFI_NOT_INIT
+ESP_ERR_WIFI_NOT_STARTED
+ESP_ERR_WIFI_NOT_STOPPED
+ESP_ERR_WIFI_IF
+ESP_ERR_WIFI_MODE
+ESP_ERR_WIFI_STATE
+ESP_ERR_WIFI_CONN
+ESP_ERR_WIFI_NVS
+ESP_ERR_WIFI_MAC
+ESP_ERR_WIFI_SSID
+ESP_ERR_WIFI_PASSWORD
+ESP_ERR_WIFI_TIMEOUT
+ESP_ERR_WIFI_WAKE_FAIL
+ESP_ERR_WIFI_WOULD_BLOCK
+ESP_ERR_WIFI_NOT_CONNECT
+ESP_ERR_WIFI_POST
+ESP_ERR_WIFI_INIT_STATE
+ESP_ERR_WIFI_STOP_STATE
+ESP_ERR_WIFI_NOT_ASSOC
+ESP_ERR_WIFI_TX_DISALLOW
+ESP_ERR_WIFI_TWT_FULL
+ESP_ERR_WIFI_TWT_SETUP_TIMEOUT
+ESP_ERR_WIFI_TWT_SETUP_TXFAIL
+ESP_ERR_WIFI_TWT_SETUP_REJECT
+ESP_ERR_WIFI_DISCARD
+ESP_ERR_WIFI_REGISTRAR
+ESP_ERR_WIFI_WPS_TYPE
+ESP_ERR_WIFI_WPS_SM
+ESP_ERR_ESPNOW_BASE
+ESP_ERR_ESPNOW_NOT_INIT
+ESP_ERR_ESPNOW_ARG
+ESP_ERR_ESPNOW_NO_MEM
+ESP_ERR_ESPNOW_FULL
+ESP_ERR_ESPNOW_NOT_FOUND
+ESP_ERR_ESPNOW_INTERNAL
+ESP_ERR_ESPNOW_EXIST
+ESP_ERR_ESPNOW_IF
+ESP_ERR_DPP_FAILURE
+ESP_ERR_DPP_TX_FAILURE
+ESP_ERR_DPP_INVALID_ATTR
+ESP_ERR_DPP_AUTH_TIMEOUT
+ESP_ERR_MESH_BASE
+ESP_ERR_MESH_WIFI_NOT_START
+ESP_ERR_MESH_NOT_INIT
+ESP_ERR_MESH_NOT_CONFIG
+ESP_ERR_MESH_NOT_START
+ESP_ERR_MESH_NOT_SUPPORT
+ESP_ERR_MESH_NOT_ALLOWED
+ESP_ERR_MESH_NO_MEMORY
+ESP_ERR_MESH_ARGUMENT
+ESP_ERR_MESH_EXCEED_MTU
+ESP_ERR_MESH_TIMEOUT
+ESP_ERR_MESH_DISCONNECTED
+ESP_ERR_MESH_QUEUE_FAIL
+ESP_ERR_MESH_QUEUE_FULL
+ESP_ERR_MESH_NO_PARENT_FOUND
+ESP_ERR_MESH_NO_ROUTE_FOUND
+ESP_ERR_MESH_OPTION_NULL
+ESP_ERR_MESH_OPTION_UNKNOWN
+ESP_ERR_MESH_XON_NO_WINDOW
+ESP_ERR_MESH_INTERFACE
+ESP_ERR_MESH_DISCARD_DUPLICATE
+ESP_ERR_MESH_DISCARD
+ESP_ERR_MESH_VOTING
+ESP_ERR_MESH_XMIT
+ESP_ERR_MESH_QUEUE_READ
+ESP_ERR_MESH_PS
+ESP_ERR_MESH_RECV_RELEASE
+ESP_ERR_ESP_NETIF_BASE
+ESP_ERR_ESP_NETIF_INVALID_PARAMS
+ESP_ERR_ESP_NETIF_IF_NOT_READY
+ESP_ERR_ESP_NETIF_DHCPC_START_FAILED
+ESP_ERR_ESP_NETIF_DHCP_ALREADY_STARTED
+ESP_ERR_ESP_NETIF_DHCP_ALREADY_STOPPED
+ESP_ERR_ESP_NETIF_NO_MEM
+ESP_ERR_ESP_NETIF_DHCP_NOT_STOPPED
+ESP_ERR_ESP_NETIF_DRIVER_ATTACH_FAILED
+ESP_ERR_ESP_NETIF_INIT_FAILED
+ESP_ERR_ESP_NETIF_DNS_NOT_CONFIGURED
+ESP_ERR_ESP_NETIF_MLD6_FAILED
+ESP_ERR_ESP_NETIF_IP6_ADDR_FAILED
+ESP_ERR_ESP_NETIF_DHCPS_START_FAILED
+ESP_ERR_FLASH_BASE
+ESP_ERR_FLASH_OP_FAIL
+ESP_ERR_FLASH_OP_TIMEOUT
+ESP_ERR_FLASH_NOT_INITIALISED
+ESP_ERR_FLASH_UNSUPPORTED_HOST
+ESP_ERR_FLASH_UNSUPPORTED_CHIP
+ESP_ERR_FLASH_PROTECTED
+ESP_ERR_HTTP_BASE
+ESP_ERR_HTTP_MAX_REDIRECT
+ESP_ERR_HTTP_CONNECT
+ESP_ERR_HTTP_WRITE_DATA
+ESP_ERR_HTTP_FETCH_HEADER
+ESP_ERR_HTTP_INVALID_TRANSPORT
+ESP_ERR_HTTP_CONNECTING
+ESP_ERR_HTTP_EAGAIN
+ESP_ERR_HTTP_CONNECTION_CLOSED
+ESP_ERR_ESP_TLS_BASE
+ESP_ERR_ESP_TLS_CANNOT_RESOLVE_HOSTNAME
+ESP_ERR_ESP_TLS_CANNOT_CREATE_SOCKET
+ESP_ERR_ESP_TLS_UNSUPPORTED_PROTOCOL_FAMILY
+ESP_ERR_ESP_TLS_FAILED_CONNECT_TO_HOST
+ESP_ERR_ESP_TLS_SOCKET_SETOPT_FAILED
+ESP_ERR_ESP_TLS_CONNECTION_TIMEOUT
+ESP_ERR_ESP_TLS_SE_FAILED
+ESP_ERR_ESP_TLS_TCP_CLOSED_FIN
+ESP_ERR_MBEDTLS_CERT_PARTLY_OK
+ESP_ERR_MBEDTLS_CTR_DRBG_SEED_FAILED
+ESP_ERR_MBEDTLS_SSL_SET_HOSTNAME_FAILED
+ESP_ERR_MBEDTLS_SSL_CONFIG_DEFAULTS_FAILED
+ESP_ERR_MBEDTLS_SSL_CONF_ALPN_PROTOCOLS_FAILED
+ESP_ERR_MBEDTLS_X509_CRT_PARSE_FAILED
+ESP_ERR_MBEDTLS_SSL_CONF_OWN_CERT_FAILED
+ESP_ERR_MBEDTLS_SSL_SETUP_FAILED
+ESP_ERR_MBEDTLS_SSL_WRITE_FAILED
+ESP_ERR_MBEDTLS_PK_PARSE_KEY_FAILED
+ESP_ERR_MBEDTLS_SSL_HANDSHAKE_FAILED
+ESP_ERR_MBEDTLS_SSL_CONF_PSK_FAILED
+ESP_ERR_MBEDTLS_SSL_TICKET_SETUP_FAILED
+ESP_ERR_WOLFSSL_SSL_SET_HOSTNAME_FAILED
+ESP_ERR_WOLFSSL_SSL_CONF_ALPN_PROTOCOLS_FAILED
+ESP_ERR_WOLFSSL_CERT_VERIFY_SETUP_FAILED
+ESP_ERR_WOLFSSL_KEY_VERIFY_SETUP_FAILED
+ESP_ERR_WOLFSSL_SSL_HANDSHAKE_FAILED
+ESP_ERR_WOLFSSL_CTX_SETUP_FAILED
+ESP_ERR_WOLFSSL_SSL_SETUP_FAILED
+ESP_ERR_WOLFSSL_SSL_WRITE_FAILED
+ESP_ERR_HTTPS_OTA_BASE
+ESP_ERR_HTTPS_OTA_IN_PROGRESS
+ESP_ERR_PING_BASE
+ESP_ERR_PING_INVALID_PARAMS
+ESP_ERR_PING_NO_MEM
+ESP_ERR_HTTPD_BASE
+ESP_ERR_HTTPD_HANDLERS_FULL
+ESP_ERR_HTTPD_HANDLER_EXISTS
+ESP_ERR_HTTPD_INVALID_REQ
+ESP_ERR_HTTPD_RESULT_TRUNC
+ESP_ERR_HTTPD_RESP_HDR
+ESP_ERR_HTTPD_RESP_SEND
+ESP_ERR_HTTPD_ALLOC_MEM
+ESP_ERR_HTTPD_TASK
+ESP_ERR_HW_CRYPTO_BASE
+ESP_ERR_HW_CRYPTO_DS_HMAC_FAIL
+ESP_ERR_HW_CRYPTO_DS_INVALID_KEY
+ESP_ERR_HW_CRYPTO_DS_INVALID_DIGEST
+ESP_ERR_HW_CRYPTO_DS_INVALID_PADDING
+ESP_ERR_MEMPROT_BASE
+ESP_ERR_MEMPROT_MEMORY_TYPE_INVALID
+ESP_ERR_MEMPROT_SPLIT_ADDR_INVALID
+ESP_ERR_MEMPROT_SPLIT_ADDR_OUT_OF_RANGE
+ESP_ERR_MEMPROT_SPLIT_ADDR_UNALIGNED
+ESP_ERR_MEMPROT_UNIMGMT_BLOCK_INVALID
+ESP_ERR_MEMPROT_WORLD_INVALID
+ESP_ERR_MEMPROT_AREA_INVALID
+ESP_ERR_MEMPROT_CPUID_INVALID
+<last
+//IDF/components/esp_timer/src/esp_timer.c
+esp_timer
+[0;31mE (%lu) %s: Task is already initialized
+[0;31mE (%lu) %s: Not enough memory to create timer task
+[0;31mE (%lu) %s: ISR init failed
+timer_insert
+system_time
+[0;33mW (%lu) %s: Register shutdown handler failed, err = 0x%x
+alarm_id < sizeof(timestamp_id) / sizeof(timestamp_id[0])
+//IDF/components/esp_timer/src/esp_timer_impl_systimer.c
+esp_timer_systimer
+[0;31mE (%lu) %s: timer ISR is already initialized
+[0;31mE (%lu) %s: esp_intr_alloc failed (0x%x)
+[0;31mE (%lu) %s: Can not enable ISR (0x%0x)
+esp_timer_impl_set_alarm_id
+strncmp(src_path, vfs->path_prefix, vfs->path_prefix_len) == 0
+//IDF/components/vfs/vfs.c
+translate_path
+/dev/uart
+/dev/secondary
+/dev/console
+Bs_ctx.peek_char == NONE
+//IDF/components/vfs/vfs_usb_serial_jtag.c
+usb_serial_jtag_return_char
+fd >=0 && fd < 3
+//IDF/components/vfs/vfs_uart.c
+s_ctx[fd]->peek_char == NONE
+fd >= 0 && fd < 3
+uart_write
+uart_return_char
+uart_read
+uart_close
+uart_fstat
+uart_fcntl
+uart_fsync
+?wifi
+bambu_mqtt
+bambu_udp
+dns_server
+temp_task
+ptc_task
+button_task
+302 Temporary Redirect
+Location
+Redirect to the captive portal
+/ota
+/generate_204
+chat
+board
+_tcp
+_http
+WIFI_AP_DEF
+%d.%d.%d.%d
+Panda_Breath_%02X%02X%02X%02X%02X%02X
+987654321
+192.168.254.1
+PandaBreath
+<text/html
+gzip
+Content-Encoding
+scan
+password
+printer
+access_code
+disconnect
+settings
+language
+factory_reset
+work_on
+work_mode
+set_temp
+filtertemp
+hotbedtemp
+filament_temp
+filament_timer
+filament_drying_mode
+isrunning
+list
+auth_err_reason
+custom_temp
+custom_timer
+remaining_seconds
+warehouse_temper
+ptc_sensor_status
+warehouse_sensor_status
+ptc_heater_status
+V1.0.1
+fw_version
+set_hostname
+set_ap
+set_hotspot_ip
+ota_fw
+ota_img
+ota_get_img
+ota_gif
+ota_unknown
+?OTA-Type
+close
+Connection
+200 OK
+app_temp
+%s: 
+Curve Fitting
+calibration scheme version is %s
+Calibration Success
+eFuse not burnt, skip software calibration
+Invalid arg or no memory
+adc_oneshot_read(adc_handle, WAREHOUSE_ADC_CHAN, &adc_raw)
+./main/app_temp.c
+adc_cali_raw_to_voltage(warehouse_adc_cali_chan_handle, adc_raw, &vol_raw)
+WAREHOUSE_TEMP: %d
+adc_oneshot_read(adc_handle, PTC_ADC_CHAN, &adc_raw)
+adc_cali_raw_to_voltage(ptc_adc_cali_chan_handle, adc_raw, &vol_raw)
+PTC_TEMP: %d
+adc_oneshot_new_unit(&init_config, &adc_handle)
+adc_oneshot_config_channel(adc_handle, WAREHOUSE_ADC_CHAN, &config)
+adc_oneshot_config_channel(adc_handle, PTC_ADC_CHAN, &config)
+cal_ptc_temp
+cal_warehouse_temp
+adc_init
+FCff=C3
+4Cff,C
+BffzBffpB
+TBffLBffDB
+<B335Bff.B
+'B33!B33
+YA33SA
+LAffFA
+9A333Aff.A
+(A33#Aff
+y@33s@
+l@fff@
+Y@33S@
+app_ptc
+PTC heating stopped, reset detect status
+PTC heating start detect, start temp: %d
+, start time: %lldms
+ptc heating detect finished, start temp: %d
+, current temp: %d
+, rise: %d
+warehouse heating detect finished, start temp: %d
+, current temp: %d
+, rise: %d
+ntc sensor installation error
+ntc sensor installation normal
+!!! PTC heating abnormal: temp rise too low (%d
+ < %d
+) !!!
+PTC heating normal: temp rise %d
+Sensor abnormal, reset PTC heating detect
+app_nvs
+sign
+ntc_bit
+wifi_info
+bambu_mqtt_info
+ui_info
+panda_breath
+Location:
+USN:
+DevName.bambu.com:
+print
+command
+push_status
+gcode_state
+PREPARE
+PAUSE
+RUNNING
+FINISH
+mc_remaining_time
+{"pushing": {"sequence_id": "0", "command": "pushall"}}
+Panda_Breath__%02X%02X%02X%02X%02X%02X
+device/%s/report
+device/%s/request
+bblp
+nozzle_temper
+bed_temper
+bed_target_temper
+ams_status
+print_error
+mc_percent
+layer_num
+stg_cur
+mc_remaining
+chamber_light
+false
+true
+null
+button
+[0;31mE (%lu) %s: %s(%d): button_init_loop: p_btn is NULL
+[0;31mE (%lu) %s: %s(%d): button_init_irq: p_btn is NULL
+button_irq
+[0;31mE (%lu) %s: %s(%d): esp_timer_create err: %d
+[0;31mE (%lu) %s: %s(%d): esp_timer_start_periodic err: %d
+[0;31mE (%lu) %s: %s(%d): button_init err: %d
+[0;31mE (%lu) %s: %s(%d): ll_node_append failed
+button_init_irq
+zip_index.html
+5;a45
+j[n(
+J}6V
+o\Y_+^:{
+.4/W
+S'NU
+zv+S
+xfyK
+JW.-
+V6;7
++R^=v
+y5U[9i
+yQ:{
+H5.]9
+V[\*
+gVsRvc^
+nVM`
+];3'
+[{j]
+)kjUI
+FUn)
+|>--H
+jJgf+
+9)WMuM
+tS[S
+& 0G
+c$EW
+J[bF
+|l1LY7
+9ijBE3M
+&t9w
+9HRw
+<sR*<9%
+Z6{`
+IK!t
+-SGi
+'p8@
+[Y`m
+T0g 
+@K9;F
+9Kr~U
+)2!$,' v
+}x+`
+TJc
+#K7hS
+gajXX
+5eH
+!P6o
+0GY1
+B%/:I
+el%#
+:'7
+sFn~
+BKZ%[Z
+7QL#)
+u{]O
+I1 3P
+-KJa
+H9B_
+U43#
+m5qH
+yIg#
+5oy
+})Vx
+!)"v
+`AD"Z
+6[dc
+Nk'`re
+Z_N3f
+|\*&
+kb>Y
+r3&
+L&)=
+e]tk
+X!9/s
+(TgE
+7`|G#w
+9gcx^B
+1I3s
+c!E4
++epD
+&ls9
+xnUH
+\$3J;&
+ck>1{
+(6e4
+a*D~f
+ X;b=
+Rm"m
+E48n7,
+KlG!X
+gKUP9e
+C8A}
+{-[J
+M`Kp
+}0kC
+BX'ee
+[Ixx
+yQE|
+=)Rj(
+wB-w
+Irwx?z0#w
+G3N78
+q=B4
+!ydZ
+oV-J&
+`DLD
+ZEoXn
+Pym=
+{ncB
+=lhK
+koY4
+NVS'S
+k_H5
+%CY5j|
+PH|#
+_^=<
+8a&E
+~^Y4
+zET-
+l{)w
+yI3z
+# qp
+&CJ>jA
+|q"z
+bdPv
+I~2?
++5"<D
+a;\P}
+*IS[1u`
+"=1uu
+BPOl
+b=Zb
+U*d>
+hV'pJ
+swj'p"p
+9%z(
+y?lA
+Vkr"
+=~g(
+t&f0
+!km]
+9E0!
+BG11
+JHYa
+Z,,iL
+"WWi
+6b7hK
+O-.a
+UqZo
+IVB8
+/JgM
+[TKv
+p8k.
++;?y
+0G[jj
+x_lxl
+*hUwK
+mB_0
+h.|q
+lbOI"4
+doRM*
+pXfg
+JM5]
+rAzx
+uS^U
+P4O8
+lhVS
+V65w
+@x2N;
+CP r
+{vgw%
+SOg7W
+F:i=
+>ChD
+ky)*
+srKy
+bY,[
+N*+J)@Ci
+M4Ac]
+ xqT
+T<:r
+80<5
+PFl^
+{LoE!z
+[@U{xQ
+Z~y9
+Z{8\B
+wv&b
+a<BJ
+\8.gU
+&FOG7Q
+}u=}W
+!JR=
+J+k=
+#Qo)
+;4B}
+||$]
+T+=u
+ol\ev
+!!;k
+k np}(
+4tbX6
+X|g`
+l7?Ud
++2'8
+}$?m
+tQ^Q
+( n?
+[`LR
+^~Ii
+IATf
+MdS{
+8LZq
+z9j?
+Y>0Q
+$A(
+ 6H1c
+!+ln
+(+&cd{
+lL)
+[nu(
+WPDCl
+.7q/K
+t+:*
+&)E7
+)&{%
+Ka9g
+g@M+
+oXNlZL/
+)];k
+t`@9
+r$`Oj
+HYU&
+xJyL
+?I-D
+uM#K
+qJ)s1
++UsY
+-dQ
+umMJ
+w@zr
+?3c\=9M'O
+zq"a\
+t~I$5
+k*>e@
+pEl'
+fb,{Q
+I*.?
+MHKdS
+p66z
+IrJ
+N*[!R
+lN9+
+44;9t&,
+gy!7
+k&O$
+4}Lo%
+Yxst
+hH!W+R
+)B;qrs
+LE"b9
+pLu"
+TIt`
+*8{q0
+H%V.reJ
+,Y6jN
+hXL/
+ItTjl
+]h,E
+(rE
+F"5E
+u DRKE
+Hl&+
+Z&gs
+r9Ml
+1YMN
+HLl
+r(n?L
+',cx+
+st4:z
+kJq&a
+jRP-+
+,=U)c%Sq
+rc!5
+0_T!
+FN,~
+=%J-w
+cl*V
+{LXY
+*!Zq
+(fzc
+i$<s/
+2|>t
+^$<T
+2(yTD@O
+fgXg
+5\>(
+;hvVBO
+jHj.
+%E1?y
+[rQA
+gUOzR
+*uAq
+8cGSwC
+6(jm
+bw<yJ
+zW,Gw
+Bz]B
+^@w6
+#.YOqfaB
+d*>]9
+tK!-T
+dW?m
+pb#lx
+BAXq
+X7@E
+!"Kx
+i5>|
+R7loh
+7;n7
+8t;*b
+`~ler
+r$+y-t
+\M|Fy7
+s:`t
+tE)_
+U[b
+Rto`
+'NF||
+;8#A
+>u9:
+.0wF
+m@]:\
+Qgo>:
+t0kq
+Nf7F~4p
+8:B)z?
+lTJ${m#
+A:?.
+K{w_
+_U.<
+Mjc-
+;ht{
+b(WY
+EIyI6t
+B0^Dr
+r);'G
++OY.O
+I{Y{
+~A^0u01
+jwK][
+!}.z
+6{\E
+L^2y/
+pE*z
+zstu1;|
+>6Z%
+.8t5O
+u`fN
+G'T=
+U:WT&
+Kmil
+pl=7r`
+yjDYK
+yu}XqY
+c[ewK
+u`9N
+}rMP
+]v)m
+S k.
+*Is1
+X%_T
+ m[?
+3^7F
+IAq=%E
+~%]S
+kx@K
+s2;Z
+{=PZ
+ksL<
+W{60
+b6wW
+gX3~
+xyq>V
+|;{|\
+y|,S
+A!8<a
+AWLl%3
+pG(@
+nWob
+]}%oO
+O[%T
+w-R(o
+B5.]
+3<vv
+V|w}WX
+_]\w0^
+O1W 
+_5<u
+8(2~
+z%t/
+l2Zt
+U8;MhsM
+-(RIQ
+gB,W
+ZJH/|Q-
+]fE\yj
+mX(
+lkf1
+4[Ly
+8^wJ
+nSz"k
+*\T
+c He
+'*?{0
+v3l$
+4\%lJ
+1W}p
+2mhy\
+v`<MD
+D*BR
+BSZlO
+Memory exhausted
+mqtt_client
+[0;31mE (%lu) %s: %s(%d): %s
+[0;31mE (%lu) %s: Invalid configuration
+mqtts
+[0;33mW (%lu) %s: SSL related configs set, but the URI scheme specifies a non-SSL scheme, scheme = %s
+[0;33mW (%lu) %s: SSL related configs set, but the transport protocol is a non-SSL scheme, transport = %d
+[0;33mW (%lu) %s: Transport config set, but overridden by scheme from URI: transport = %d, uri scheme = %s
+[0;31mE (%lu) %s: Error in running event_loop %d
+MQTT_EVENTS
+mqtt
+[0;31mE (%lu) %s: Not support this mqtt scheme %s
+[0;31mE (%lu) %s: No scheme found
+Failed with non ESP_OK err code
+[0;31mE (%lu) %s: PSK authentication configured but not enabled in menuconfig: Please enable ESP_TLS_PSK_VERIFICATION option
+[0;31mE (%lu) %s: Secure element not enabled for esp-tls in menuconfig
+[0;31mE (%lu) %s: Digital Signature not enabled for esp-tls in menuconfig
+[0;31mE (%lu) %s: %s: transport_read() error: errno=%d
+[0;31mE (%lu) %s: Writing failed: errno=%d
+[0;31mE (%lu) %s: Writing didn't complete in specified timeout: errno=%d
+[0;31mE (%lu) %s: %s: received a message with an invalid header=0x%x
+[0;31mE (%lu) %s: %s: message is too big, insufficient buffer size
+[0;31mE (%lu) %s: Connect message cannot be created
+[0;31mE (%lu) %s: %s: mqtt_message_receive() returned %d
+[0;31mE (%lu) %s: Invalid MSG_TYPE response: %d, read_len: %d
+[0;33mW (%lu) %s: Connection refused, bad protocol
+[0;33mW (%lu) %s: Connection refused, server unavailable
+[0;33mW (%lu) %s: Connection refused, bad username or password
+[0;33mW (%lu) %s: Connection refused, not authorized
+[0;33mW (%lu) %s: Connection refused, Unknow reason
+[0;31mE (%lu) %s: Disconnect message cannot be created
+[0;31mE (%lu) %s: Error sending disconnect message
+[0;31mE (%lu) %s: Failed to acquire suback data
+[0;31mE (%lu) %s: %s: mqtt_get_publish_topic() failed
+[0;31mE (%lu) %s: %s: mqtt_get_publish_data() failed
+[0;31mE (%lu) %s: Failed to deliver suback message id=%d
+[0;31mE (%lu) %s: Failed to deliver publish message id=%d
+[0;31mE (%lu) %s: Publish response message PUBACK or PUBREC cannot be created
+[0;31mE (%lu) %s: Error write qos msg repsonse, qos = %d
+[0;31mE (%lu) %s: Publish response message PUBREL cannot be created
+[0;31mE (%lu) %s: Publish response message PUBCOMP cannot be created
+[0;31mE (%lu) %s: Error to resend data 
+[0;31mE (%lu) %s: Failed to remove queued qos0 message from the outbox
+[0;31mE (%lu) %s: Ping message cannot be created
+[0;31mE (%lu) %s: Error sending ping
+[0;31mE (%lu) %s: No PING_RESP, disconnected
+[0;31mE (%lu) %s: Can't send ping, disconnected
+[0;31mE (%lu) %s: Failed to create transport list
+[0;31mE (%lu) %s: There are no transports valid, stop mqtt client, config scheme = %s
+[0;31mE (%lu) %s: Error transport connect
+[0;31mE (%lu) %s: MQTT connect failed
+[0;31mE (%lu) %s: MQTT client error, client is in an unrecoverable state.
+[0;31mE (%lu) %s: Poll read error: %d, aborting connection
+[0;31mE (%lu) %s: Publish message cannot be created
+[0;31mE (%lu) %s: Error parse uri = %s
+%.*s
+/?%.*s
+%.*s?%.*s
+[0;31mE (%lu) %s: Client was not initialized
+[0;31mE (%lu) %s: Clean Session flag must be true if client has a null id
+[0;31mE (%lu) %s: Please first enable MQTT_PROTOCOL_5 feature in menuconfig
+[0;31mE (%lu) %s: Client has started
+mqtt_task
+[0;31mE (%lu) %s: Error create mqtt task
+[0;31mE (%lu) %s: Client cannot be stopped from MQTT task
+[0;33mW (%lu) %s: Client asked to stop, but was not started
+[0;31mE (%lu) %s: Client has not connected
+[0;31mE (%lu) %s: Subscribe message cannot be created
+[0;31mE (%lu) %s: Error to send subscribe message, first topic: %s, qos: %d
+[0;33mW (%lu) %s: Publish: Losing qos0 data when client not connected
+deliver_publish
+mqtt_process_receive
+esp_mqtt_handle_transport_read_error
+mqtt_message_receive
+esp_mqtt_connect
+esp_mqtt_set_ssl_transport_properties
+esp_mqtt_client_create_transport
+esp_mqtt_client_set_uri
+create_client_data
+esp_mqtt_client_init
+create_string
+esp_mqtt_set_config
+MQIsdp
+MQTT
+outbox
+outbox_enqueue
+outbox_init
+platform
+ESP32_%02x%02X%02X
+platform_create_id_string
+u%04x
+%1.15g
+%1.17g
+WIFI_STA_DEF
+ETH_DEF
+mdns
+[0;31mE (%lu) %s: Cannot allocate memory (line: %d, free heap: %lu bytes)
+local
+_services
+_dns-sd
+_udp
+arpa
+in-addr
+_sub
+%s-2
+mdns_timer
+count <= NETIF_IPV6_MAX_NUMS
+/./managed_components/espressif__mdns/mdns.c
+[0;31mE (%lu) %s: %s(%d): Cannot add more services, please increase CONFIG_MDNS_MAX_SERVICES (%d)
+[0;31mE (%lu) %s: %s(%d): Service already exists
+[0;31mE (%lu) %s: %s(%d): Cannot create service: Out of memory
+mdns_service_add_for_host
+_mdns_service_task
+_mdns_append_answer
+/./managed_components/espressif__mdns/mdns_networking_lwip.c
+mdns_networking
+_udp_join_group
+rv_int_num != 0 && rv_int_num < RV_INT_COUNT && "Invalid CPU interrupt number"
+//IDF/components/riscv/interrupt.c
+intr_num != 0
+intr_matrix_route
+assert_valid_rv_int_num
+(bit_start_in_reg + bit_count_used_in_reg) <= 32
+//IDF/components/efuse/src/esp_efuse_utility.c
+blk >= 0 && blk < EFUSE_BLK_MAX
+num_reg <= (range_read_addr_blocks[blk].end - range_read_addr_blocks[blk].start) / sizeof(uint32_t)
+efuse
+[0;31mE (%lu) %s: Range of data does not match the coding scheme
+bits_counter <= req_size
+esp_efuse_utility_read_reg
+esp_efuse_utility_process
+[0;31mE (%lu) %s: Error in EFUSE_RD_REPEAT_DATA%d_REG of BLOCK0 (error_reg=0x%08x, data_reg=0x%08x). Need to reboot
+GPIO number error
+gpio
+GPIO output gpio_num error
+GPIO interrupt type error
+GPIO pull mode error
+[0;31mE (%lu) %s: Unknown pull up/down mode,gpio_num=%u,pull=%u
+[0;31mE (%lu) %s: GPIO_PIN mask error 
+io_reg != (intptr_t)NULL
+//IDF/components/driver/gpio/gpio.c
+[0;32mI (%lu) %s: GPIO[%lu]| InputEn: %d| OutputEn: %d| OpenDrain: %d| Pullup: %d| Pulldown: %d| Intr:%d 
+GPIO isr service is not installed, call gpio_install_isr_service() first
+GPIO ISR null
+GPIO isr service already installed
+gpio_sleep_sel_dis
+gpio_sleep_sel_en
+gpio_sleep_pullup_dis
+gpio_sleep_pulldown_dis
+gpio_sleep_pullup_en
+gpio_sleep_pulldown_en
+gpio_sleep_set_pull_mode
+gpio_sleep_output_disable
+gpio_sleep_output_enable
+gpio_sleep_input_disable
+gpio_sleep_input_enable
+gpio_sleep_set_direction
+gpio_isr_register
+gpio_isr_handler_add
+gpio_install_isr_service
+gpio_config
+gpio_od_disable
+gpio_od_enable
+gpio_output_disable
+gpio_output_enable
+gpio_input_disable
+gpio_input_enable
+gpio_set_level
+gpio_intr_disable
+gpio_intr_enable
+gpio_set_intr_type
+gpio_pulldown_dis
+gpio_pulldown_en
+gpio_pullup_dis
+gpio_pullup_en
+uart
+[0;31mE (%lu) %s: %s(%d): uart_num error
+[0;31mE (%lu) %s: %s(%d): data bit error
+[0;31mE (%lu) %s: %s(%d): stop bit error
+[0;31mE (%lu) %s: %s(%d): Invalid src_clk
+[0;31mE (%lu) %s: %s(%d): uart driver error
+!(is_rs485_mode && disabled && uart_hal_get_intraw_mask(&(uart_context[uart_num].hal)) & UART_INTR_TX_DONE)
+//IDF/components/driver/uart/uart.c
+[0;31mE (%lu) %s: rx_buffered_len error
+uart_flush_input
+uart_get_buffered_data_len
+uart_reenable_intr_mask
+uart_wait_tx_done
+uart_wait_tx_done
+uart_get_baudrate
+uart_set_baudrate
+uart_get_parity
+uart_set_parity
+uart_get_stop_bits
+uart_set_stop_bits
+uart_get_word_length
+uart_set_word_length
+bootloader_mmap
+[0;31mE (%lu) %s: tried to bootloader_mmap twice
+[0;31mE (%lu) %s: spi_flash_mmap failed: 0x%x
+mosi_len <= 32
+//IDF/components/bootloader_support/bootloader_flash/src/bootloader_flash.c
+miso_len <= 32
+miso_byte_num <= 4
+bootloader_flash_execute_command_common
+partition
+[0;31mE (%lu) %s: No MD5 found in partition table
+[0;31mE (%lu) %s: Partition table MD5 mismatch
+[0;31mE (%lu) %s: load_partitions returned 0x%x
+SLIST_EMPTY(&s_partition_list)
+//IDF/components/esp_partition/partition.c
+iterator != NULL
+partition != NULL
+esp_partition_verify
+esp_partition_get
+esp_partition_next
+//IDF/components/esp_partition/partition_target.c
+esp_partition_mmap
+esp_partition_erase_range
+esp_partition_write_raw
+esp_partition_read_raw
+esp_partition_write
+esp_partition_read
+esp_ota_ops
+[0;31mE (%lu) %s: invalid partition table, no app partitions
+[0;31mE (%lu) %s: not found otadata
+[0;31mE (%lu) %s: mmap otadata filed. Err=0x%8x
+phys_offs != SPI_FLASH_CACHE2PHYS_FAIL
+//IDF/components/app_update/esp_ota_ops.c
+it != NULL
+[0;31mE (%lu) %s: write data is invalid
+[0;31mE (%lu) %s: OTA image has invalid magic byte (expected 0xE9, saw 0x%02x)
+[0;31mE (%lu) %s: not found the handle
+ota_app_count < 16 && "must erase the partition before writing to it"
+start_from != NULL
+esp_ota_get_next_update_partition
+esp_ota_get_running_partition
+esp_ota_get_app_partition_count
+(mmu_ll_vaddr_to_laddr((uint32_t)&_instruction_reserved_end) - mmu_ll_vaddr_to_laddr((uint32_t)&_instruction_reserved_start)) == irom_len_to_reserve
+//IDF/components/esp_mm/esp_mmu_map.c
+/IDF/components/hal/esp32c3/include/hal/cache_ll.h
+(mmu_ll_vaddr_to_laddr((uint32_t)&_rodata_reserved_end) - mmu_ll_vaddr_to_laddr((uint32_t)&_rodata_reserved_start)) == drom_len_to_reserve
+(mask & (CACHE_BUS_IBUS1 | CACHE_BUS_IBUS2| CACHE_BUS_DBUS1 | CACHE_BUS_DBUS2)) == 0
+mmap
+hw_mem_regions[i].region_size % CONFIG_MMU_PAGE_SIZE == 0
+available_region_idx == region_num
+[0;31mE (%lu) %s: %s(%d): null pointer
+[0;31mE (%lu) %s: %s(%d): invalid caps
+[0;31mE (%lu) %s: no such vaddr range
+[0;31mE (%lu) %s: %s(%d): PSRAM is not supported
+[0;31mE (%lu) %s: %s(%d): paddr must be rounded up to the nearest multiple of CONFIG_MMU_PAGE_SIZE
+[0;31mE (%lu) %s: %s(%d): no mem
+[0;33mW (%lu) %s: paddr block is mapped already, vaddr_start: %p, size: 0x%x
+[0;31mE (%lu) %s: paddr block is overlapped with an already mapped paddr block
+found
+[0;31mE (%lu) %s: %s(%d): munmap target pointer is outside external memory regions
+[0;31mE (%lu) %s: %s(%d): munmap target pointer isn't mapped yet
+[0;31mE (%lu) %s: %s(%d): not a valid external virtual address
+[0;31mE (%lu) %s: %s(%d): vaddr isn't mapped
+esp_mmu_vaddr_to_paddr
+esp_mmu_unmap
+cache_ll_l1_enable_bus
+esp_mmu_map
+esp_mmu_map
+esp_mmu_map_get_max_consecutive_free_block_size
+s_reserve_drom_region
+cache_ll_l1_get_bus
+s_reserve_irom_region
+esp_mmu_map_init
+new_array_id < block_nums
+//IDF/components/spi_flash/flash_mmap.c
+0 && "invalid handle, or handle already unmapped"
+spi_flash_munmap
+io <= ESP_MSPI_IO_WP
+//IDF/components/spi_flash/flash_ops.c
+esp_mspi_get_io
+[0;32mI (%lu) %s: detected chip: %s
+[0;31mE (%lu) %s: failed to get chip size
+[0;33mW (%lu) %s: Detected flash size > 16 MB, but access beyond 16 MB is not supported for this flash model yet.
+[0;32mI (%lu) %s: flash io: %s
+len_remain < len
+//IDF/components/spi_flash/esp_flash_api.c
+[0;31mE (%lu) %s: esp_flash_get_size failed, flash error code: %d
+len_remain < length
+[0;33mW (%lu) %s: get_chip_caps function pointer hasn't been initialized
+[0;31mE (%lu) %s: chip %s doesn't support reading unique id
+esp_flash_write
+esp_flash_erase_region
+slowrd
+fastrd
+dout
+qout
+not used
+not used
+not used
+not used
+not used
+not used
+not used
+not used
+not used
+not used
+opi_str
+opi_dtr
+[0;31mE (%lu) %s: Detected size(%dk) smaller than the size in the binary image header(%dk). Probe failed.
+[0;33mW (%lu) %s: Detected size(%dk) larger than the size in the binary image header(%dk). Using the size in the binary image header.
+spi_flash
+chip_status == 0
+//IDF/components/spi_flash/spi_flash_os_func_app.c
+spi_flash_os_check_yield
+core_id<portNUM_PROCESSORS
+//IDF/components/esp_system/crosscore_int.c
+/IDF/components/esp_system/crosscore_int.c
+esp_crosscore_int_send
+esp_crosscore_int_init
+cores_fail == BIT(0)
+//IDF/components/esp_system/task_wdt/task_wdt.c
+ret == pdTRUE
+task_wdt
+[0;31mE (%lu) %s: Aborting.
+[0;31mE (%lu) %s: Print CPU %d (current core) registers
+[0;31mE (%lu) %s: %s(%d): task watchdog was never initialized
+[0;31mE (%lu) %s: %s(%d): task is already subscribed
+[0;31mE (%lu) %s: %s(%d): user is already subscribed
+[0;31mE (%lu) %s: %s(%d): task not found
+[0;31mE (%lu) %s: %s(%d): user not found
+[0;31mE (%lu) %s: %s(%d): TWDT was never initialized
+idle_task_handle
+esp_task_wdt_add(idle_task_handle)
+/IDF/components/esp_system/task_wdt/task_wdt.c
+esp_register_freertos_idle_hook_for_cpu(idle_hook_cb, core_num)
+[0;31mE (%lu) %s: %s(%d): Invalid arguments
+[0;31mE (%lu) %s: %s(%d): TWDT already initialized
+[0;31mE (%lu) %s: %s(%d): insufficient memory
+ (CPU 0)
+ (CPU 1)
+ (CPU 0/1)
+Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:
+[0;31mE (%lu) %s: %s
+[0;31mE (%lu) %s:  - %s%s
+[0;31mE (%lu) %s: CPU %d: %s
+cpus_fail != 0
+esp_task_wdt_reset
+add_entry
+esp_task_wdt_add
+subscribe_idle
+task_wdt_timeout_handling
+task_wdt_isr
+esp_task_wdt_init
+core_id == 0 && "target SoC only has a single core"
+gpio_ll_intr_enable_on_core
+flash_hal
+[0;31mE (%lu) %s: Target frequency %dMHz higher than supported.
+[0;33mW (%lu) %s: Flash clock frequency round down to %d
+`buf != NULL
+//IDF/components/esp_hw_support/hw_random.c
+esp_fill_random
+system_api
+[0;31mE (%lu) %s: %d mac type is incorrect (not found)
+[0;31mE (%lu) %s: unsupported mac type
+(size_bits % 8) == 0
+//IDF/components/esp_hw_support/mac_addr.c
+[0;31mE (%lu) %s: eFuse MAC_CUSTOM is empty
+[0;31mE (%lu) %s: MAC address (type %d) is not set in mac table
+[0;31mE (%lu) %s: mac address param is NULL
+[0;31mE (%lu) %s: EFUSE MAC can not be set using this API
+[0;31mE (%lu) %s: Base MAC must be a unicast MAC
+[0;31mE (%lu) %s: Error reading BASE MAC address
+[0;31mE (%lu) %s: MAC address generation error
+get_efuse_factory_mac
+get_efuse_mac_custom
+temperature_sensor
+[0;31mE (%lu) %s: %s called, but s_temperature_sensor_power_cnt == 0
+temperature_sensor_power_release
+4@esp_clk_tree
+[0;31mE (%lu) %s: %s(%d): unknown clk src
+[0;31mE (%lu) %s: %s(%d): unknown precision
+[0;31mE (%lu) %s: %s(%d): freq shouldn't be 0, calibration failed
+esp_clk_tree_src_get_freq_hz
+source_approx_freq
+//IDF/components/esp_hw_support/port/esp_clk_tree_common.c
+esp_clk_tree_lp_fast_get_freq_hz
+clk_tree_rtc_slow_calibration
+adc_share_hw_ctrl
+[0;31mE (%lu) %s: %s(%d): adc2 lock release without acquiring
+[0;31mE (%lu) %s: %s(%d): adc1 lock release without acquiring
+[0;31mE (%lu) %s: %s called, but `s_adc_digi_ctrlr_cnt == 0`
+adc_apb_periph_free
+adc_lock_release
+pxEventGroupBuffer
+//IDF/components/freertos/FreeRTOS-Kernel/event_groups.c
+xSize == sizeof( EventGroup_t )
+xEventGroup
+( uxBitsToWaitFor & 0xff000000UL ) == 0
+uxBitsToWaitFor != 0
+( uxBitsToClear & 0xff000000UL ) == 0
+( uxBitsToSet & 0xff000000UL ) == 0
+pxTasksWaitingForBits->xListEnd.pxNext != ( const ListItem_t * ) &( pxTasksWaitingForBits->xListEnd )
+vEventGroupDelete
+xEventGroupSetBits
+xEventGroupClearBits
+xEventGroupWaitBits
+sys_evt
+[0;33mW (%lu) %s: handler already registered, overwriting
+[0;31mE (%lu) %s: alloc for new id node failed
+[0;31mE (%lu) %s: alloc mem for new base node failed
+[0;31mE (%lu) %s: event_loop_args was NULL
+[0;31mE (%lu) %s: event_loop was NULL
+[0;31mE (%lu) %s: alloc for event loop failed
+[0;31mE (%lu) %s: create event loop queue failed
+[0;31mE (%lu) %s: create event loop mutex failed
+[0;31mE (%lu) %s: create task for loop failed
+event_loop
+//IDF/components/esp_event/esp_event.c
+[0;31mE (%lu) %s: suspended task for loop %p
+event_handler
+[0;31mE (%lu) %s: registering to any event base with specific id unsupported
+[0;31mE (%lu) %s: alloc for new loop node failed
+handler_ctx
+[0;31mE (%lu) %s: unregistering to any event base with specific id unsupported
+esp_event_post_to
+esp_event_handler_unregister_with_internal
+esp_event_handler_register_with_internal
+esp_event_loop_delete
+esp_event_loop_run
+Bsock->fd_used > 0
+/IDF/components/lwip/lwip/src/api/sockets.c
+sock != NULL
+sock->fd_used != 0
+Unknown socket option
+sockets[i].select_waiting == 0
+select_cb->prev == NULL
+select_cb->prev != NULL
+fromaddr != NULL
+from != NULL
+fromlen != NULL
+nready >= 0
+socket gone at the end of select
+sock->select_waiting > 0
+no socket given
+this should be checked internally
+invalid copylen, len would underflow
+invalid copylen
+unknown event
+arg != NULL
+Unhandled netconn type in SO_BINDTODEVICE
+Invalid netif index
+newconn != NULL
+invalid socket index
+sock->lastdata == NULL
+lwip_recvfrom
+lwip_setsockopt_impl
+lwip_setsockopt_callback
+lwip_sockopt_to_ipopt
+lwip_getsockopt_callback
+lwip_select_dec_sockets_used
+lwip_selscan
+lwip_unlink_select_cb
+sock_inc_used_locked
+lwip_select
+event_callback
+lwip_recvfrom_udp_raw
+lwip_sock_make_addr
+lwip_recv_tcp
+lwip_close
+done_socket
+free_socket_locked
+alloc_socket
+sock_inc_used
+lwip_accept
+tcpip_thread: invalid message
+/IDF/components/lwip/lwip/src/api/tcpip.c
+Invalid mbox
+semaphore not initialized
+failed to create tcpip_thread mbox
+tcpip_thread_handle_msg
+tcpip_thread
+tcpip_init
+tcpip_api_call
+tcpip_send_msg_wait_sem
+tcpip_try_callback
+tcpip_callback
+tcpip_inpkt
+malloc() must return aligned memory
+/IDF/components/lwip/lwip/src/core/mem.c
+rmem != NULL
+rmem == MEM_ALIGN(rmem)
+mem_free
+mem_malloc
+memp_malloc: memp properly aligned
+/IDF/components/lwip/lwip/src/core/memp.c
+memp_free: mem properly aligned
+do_memp_free_pool
+do_memp_malloc_pool
+netif_loopif_init: invalid netif
+/IDF/components/lwip/lwip/src/core/netif.c
+invalid pointer
+netif_issue_reports: invalid netif
+netif_poll: invalid netif
+bogus pbuf: len != tot_len but next == NULL!
+netif->loop_cnt_current underflow
+should not be null since first != last!
+netif_loop_output: invalid netif
+netif_loop_output: invalid pbuf
+if first != NULL, last must also be != NULL
+netif_get_ip6_addr_match: invalid netif
+netif_get_ip6_addr_match: invalid ip6addr
+callback must be != NULL
+fn must be != NULL
+last != NULL
+netif must be != NULL
+netif already added
+too many netifs, max. supported number is 255
+netif != NULL
+invalid index
+netif_ip6_addr_set: invalid netif
+netif_ip6_addr_set: invalid addr6
+netif_invoke_ext_callback
+netif_remove_ext_callback
+netif_add_ext_callback
+netif_get_ip6_addr_match
+netif_ip6_addr_set_state
+netif_ip6_addr_set_parts
+netif_ip6_addr_set
+netif_poll
+netif_loop_output
+netif_do_set_gw
+netif_do_set_netmask
+netif_issue_reports
+netif_do_set_ipaddr
+netif_add
+netif_loopif_init
+/IDF/components/lwip/lwip/src/core/pbuf.c
+invalid pbuf_type
+pbuf_free: p->ref > 0
+pc->custom_free_function != NULL
+invalid pbuf type
+pbuf_alloc: pbuf q->payload properly aligned
+PBUF_POOL_BUFSIZE must be bigger than MEM_ALIGNMENT
+pbuf_alloc: pbuf->payload properly aligned
+pbuf_alloc: erroneous type
+pbuf_realloc: p != NULL
+pbuf_realloc: q != NULL
+mem_trim returned q == NULL
+pbuf ref overflow
+p->tot_len == p->len (of last pbuf in chain)
+offset_to <= p_to->len
+offset_from <= p_from->len
+pbuf_take: invalid pbuf
+did not copy all data
+check pbuf_skip result
+pbuf_copy failed
+pbuf_clone
+pbuf_take_at
+pbuf_take
+pbuf_copy_partial_pbuf
+pbuf_cat
+pbuf_ref
+pbuf_free
+pbuf_remove_header
+pbuf_add_header_impl
+pbuf_realloc
+pbuf_alloc_reference
+pbuf_alloc
+raw pcb recv callback altered pbuf payload pointer without eating packet
+/IDF/components/lwip/lwip/src/core/raw.c
+Can't restore header we just removed!
+Checksum must fit into first pbuf
+raw_sendto_if_src
+raw_input
+tcp_remove_listener: invalid listener
+/IDF/components/lwip/lwip/src/core/tcp.c
+pcb != NULL
+pcb->state == LISTEN
+tcp_free_listen: !LISTEN
+tcp_free: LISTEN
+accepts_pending != 0
+pcb->state == LISTEN (called for wrong pcb?)
+tcp_update_rcv_ann_wnd: invalid pcb
+new_rcv_ann_wnd <= 0xffff
+don't call tcp_recved for listen-pcbs
+tcp_seg_copy: invalid seg
+invalid socket state for recv callback
+invalid socket state for sent callback
+invalid socket state for err callback
+invalid socket state for poll
+tcp_next_iss: invalid pcb
+tcp_eff_send_mss_netif: invalid dst_ip
+tcp_pcb_remove: invalid pcb
+tcp_pcb_remove: invalid pcblist
+unsent segments leaking
+unacked segments leaking
+ooseq segments leaking
+don't call tcp_abort/tcp_abandon for listen-pcbs
+tcp_accept_null: invalid pcb
+tcp_netif_ip_addr_changed_pcblist: invalid old_addr
+invalid state
+tcp_close_shutdown: invalid pcb
+pcb->flags & TF_RXCLOSED
+tcp_slowtmr: active pcb->state != CLOSED
+tcp_slowtmr: active pcb->state != LISTEN
+tcp_slowtmr: active pcb->state != TIME-WAIT
+tcp_slowtimr: persist ticking with in-flight data
+tcp_slowtimr: persist ticking with empty send buffer
+tcp_slowtmr: middle tcp != tcp_active_pcbs
+tcp_slowtmr: first pcb == tcp_active_pcbs
+tcp_slowtmr: TIME-WAIT pcb->state == TIME-WAIT
+tcp_slowtmr: middle tcp != tcp_tw_pcbs
+tcp_slowtmr: first pcb == tcp_tw_pcbs
+tcp_netif_ip_addr_changed_pcblist
+tcp_eff_send_mss_netif
+tcp_next_iss
+tcp_pcb_remove
+tcp_poll
+tcp_err
+tcp_sent
+tcp_recv
+tcp_kill_state
+tcp_seg_copy
+tcp_slowtmr
+tcp_recved
+tcp_update_rcv_ann_wnd
+tcp_accept_null
+tcp_listen_with_backlog_and_err
+tcp_abandon
+tcp_close_shutdown_fin
+tcp_free_listen
+tcp_remove_listener
+tcp_listen_closed
+tcp_close_shutdown
+tcp_backlog_accepted
+tcp_backlog_delayed
+tcp_free
+tcp_parseopt: invalid pcb
+/IDF/components/lwip/lwip/src/core/tcp_in.c
+tcp_input_delayed_close: invalid pcb
+tcp_timewait_input: invalid pcb
+tcp_listen_input: invalid pcb
+tcp_oos_insert_segment: invalid cseg
+pcb->snd_queuelen >= pbuf_clen(next->p)
+tcp_receive: valid queue length
+tcp_receive: invalid pcb
+tcp_receive: wrong state
+unacked
+unsent
+inseg.p != NULL
+insane offset!
+pbuf too short!
+tcp_receive: segment not trimmed correctly to rcv_wnd
+tcp_receive: segment not trimmed correctly to ooseq queue
+tcp_receive: tcplen > rcv_wnd
+tcp_receive: ooseq tcplen > rcv_wnd
+tcp_process: invalid pcb
+tcp_input: pcb->state != CLOSED
+pcb->snd_queuelen > 0
+no segment to free
+pcb->listener->accept != NULL
+tcp_input: invalid pbuf
+p->next != NULL
+p->len == 0
+p->tot_len == p->next->tot_len
+tcp_input: active pcb->state != CLOSED
+tcp_input: active pcb->state != TIME-WAIT
+tcp_input: active pcb->state != LISTEN
+tcp_input: pcb->next != pcb (before cache)
+tcp_input: pcb->next != pcb (after cache)
+tcp_input: TIME-WAIT pcb->state == TIME-WAIT
+pcb->refused_data == NULL
+tcp_input_delayed_close
+tcp_oos_insert_segment
+tcp_free_acked_segments
+tcp_receive
+tcp_process
+tcp_parseopt
+tcp_listen_input
+tcp_timewait_input
+tcp_input
+tcp_write_checks: invalid pcb
+/IDF/components/lwip/lwip/src/core/tcp_out.c
+tcp_write: pbufs on queue => at least one queue non-empty
+tcp_write: no pbufs on queue => both queues empty
+tcp_output_segment_busy: invalid seg
+tcp_output_fill_options: invalid pbuf
+options not filled
+tcp_pbuf_prealloc: invalid oversize
+tcp_pbuf_prealloc: invalid pcb
+need unchained pbuf
+tcp_create_segment: invalid pcb
+tcp_create_segment: invalid pbuf
+p->tot_len >= optlen
+check that first pbuf can hold struct tcp_hdr
+tcp_output_alloc_header: invalid pcb
+tcp_output_segment: invalid seg
+tcp_output_segment: invalid pcb
+tcp_output_segment: invalid netif
+tcp_output_control_segment: invalid pbuf
+mss_local is too small
+inconsistent oversize vs. space
+inconsistent oversize vs. len
+unsent_oversize mismatch (pcb->unsent is NULL)
+tcp_write: check that first pbuf can hold the complete seglen
+prev_seg != NULL
+tcp_write: valid queue length
+tcp_split_unsent_seg: invalid pcb
+Can't split segment into length 0
+split <= mss
+useg->len > 0
+tcp_enqueue_flags: need either TCP_SYN or TCP_FIN in flags (programmer violates API)
+tcp_enqueue_flags: invalid pcb
+tcp_enqueue_flags: check that first pbuf can hold optlen
+seg->tcphdr not aligned
+tcp_enqueue_flags: invalid segment length
+tcp_enqueue_flags: invalid queue length
+tcp_send_fin: invalid pcb
+tcp_rexmit_rto_prepare: invalid pcb
+tcp_rexmit: invalid pcb
+tcp_rexmit_fast: invalid pcb
+tcp_rst: invalid local_ip
+tcp_rst: invalid remote_ip
+tcp_send_empty_ack: invalid pcb
+tcp_output: invalid pcb
+don't call tcp_output for listen-pcbs
+RST not expected here!
+tcp_rexmit_rto_commit: invalid pcb
+tcp_rexmit_rto: invalid pcb
+tcp_keepalive: invalid pcb
+tcp_zero_window_probe: invalid pcb
+tcp_zero_window_probe
+tcp_keepalive
+tcp_output_alloc_header
+tcp_send_empty_ack
+tcp_output_control_segment
+tcp_output_fill_options
+tcp_output_alloc_header_common
+tcp_rst
+tcp_rexmit_fast
+tcp_rexmit
+tcp_rexmit_rto
+tcp_rexmit_rto_commit
+tcp_rexmit_rto_prepare
+tcp_output_segment_busy
+tcp_output_segment
+tcp_output
+tcp_enqueue_flags
+tcp_send_fin
+tcp_split_unsent_seg
+tcp_create_segment
+tcp_pbuf_prealloc
+tcp_write_checks
+tcp_write
+sys_timeout: timeout != NULL, pool MEMP_SYS_TIMEOUT is empty
+/IDF/components/lwip/lwip/src/core/timeouts.c
+Timeout time too long, max is LWIP_UINT32_MAX/4 msecs
+invalid sleeptime
+sys_timeouts_sleeptime
+sys_timeout
+sys_timeout_abs
+Budp_input_local_match: invalid pcb
+/IDF/components/lwip/lwip/src/core/udp.c
+udp_input_local_match: invalid netif
+udp_input: invalid pbuf
+udp_input: invalid netif
+pbuf_remove_header failed
+check that first pbuf can hold struct udp_hdr
+udp_sendto_if_src
+udp_input_local_match
+udp_input
+dhcp_option_short: options_out_len + 2 <= DHCP_OPTIONS_LEN
+/IDF/components/lwip/lwip/src/core/ipv4/dhcp.c
+dhcp_option: options_out_len + 2 + option_len <= DHCP_OPTIONS_LEN
+dhcp_option_byte: options_out_len < DHCP_OPTIONS_LEN
+dhcp_option_long: options_out_len + 4 <= DHCP_OPTIONS_LEN
+dhcp_create_msg: check that first pbuf can hold struct dhcp_msg
+DHCP: hostname is too long!
+dhcp_pcb_refcount(): refcount error
+dhcp_inc_pcb_refcount(): memory leak
+check decode_idx
+invalid server address type
+dhcp != NULL
+netif already has a struct dhcp set
+invalid dhcp->state
+dhcp_network_changed
+dhcp_parse_reply
+dhcp_recv
+dhcp_inc_pcb_refcount
+dhcp_dec_pcb_refcount
+dhcp_cleanup
+dhcp_set_struct
+dhcp_option_long
+dhcp_option_hostname
+dhcp_option_byte
+dhcp_option
+dhcp_option_short
+dhcp_create_msg
+q != NULL
+/IDF/components/lwip/lwip/src/core/ipv4/etharp.c
+r->p != NULL
+arp_table[i].q == NULL
+i < ARP_TABLE_SIZE
+arp_table[i].state == ETHARP_STATE_EMPTY
+netif->hwaddr_len == ETH_HWADDR_LEN
+check that first pbuf can hold struct etharp_hdr
+netif->hwaddr_len must be the same as ETH_HWADDR_LEN for etharp!
+ipaddr != NULL
+eth_ret != NULL
+arp_table[arp_idx].state >= ETHARP_STATE_STABLE
+type overflow
+arp_table[i].state == PENDING or STABLE
+no packet queues allowed!
+etharp_query
+etharp_output_to_arp_index
+etharp_output
+etharp_raw
+etharp_update_arp_entry
+etharp_find_entry
+free_etharp_q
+check that first pbuf can hold icmp message
+/IDF/components/lwip/lwip/src/core/ipv4/icmp.c
+icmp_input: moving r->payload to icmp header failed
+icmp_input: restoring original p->payload failed
+icmp_send_response
+icmp_input
+igmp_send: check that first pbuf can hold struct igmp_msg
+/IDF/components/lwip/lwip/src/core/ipv4/igmp.c
+igmp_lookup_group: first group must be allsystems
+igmp_lookup_group: all except first group must not be allsystems
+igmp_send
+igmp_lookup_group
+p->ref == 1
+/IDF/components/lwip/lwip/src/core/ipv4/ip4.c
+check that first pbuf can hold struct ip_hdr
+ip4_output_if_opt_src
+unhandled
+/IDF/components/lwip/lwip/src/core/ipv4/ip4_addr.c
+ip4addr_aton
+this needs a pbuf in one piece!
+/IDF/components/lwip/lwip/src/core/ipv4/ip4_frag.c
+ip4_frag
+check that first pbuf can hold icmp6 header
+/IDF/components/lwip/lwip/src/core/ipv6/icmp6.c
+icmpv6 packet not a direct response
+icmp6_send_response_with_addrs_and_netif
+icmp6_send_response
+/IDF/components/lwip/lwip/src/core/ipv6/ip6.c
+check that first pbuf can hold struct ip6_hdr
+ip6_output_if_src
+::FFFF:
+p->tot_len >= IP6_HLEN
+/IDF/components/lwip/lwip/src/core/ipv6/ip6_frag.c
+ip6_frag
+bad valid lifetime
+/IDF/components/lwip/lwip/src/core/ipv6/nd6.c
+q->p != NULL
+target address is required
+selected router must have a neighbor entry
+nd6_get_next_hop_entry
+nd6_find_route
+nd6_tmr
+nd6_free_q
+nd6_process_autoconfig_prefix
+nd6_send_ns
+nd6_send_na
+netif->hwaddr_len must be 6 for ethernet_output!
+/IDF/components/lwip/lwip/src/netif/ethernet.c
+ethernet_output
+IPV6_MULTICAST_HOPS
+failed to take the mutex
+/IDF/components/lwip/port/freertos/sys_arch.c
+failed to give the mutex
+initial_count invalid (neither 0 nor 1)
+sys_sem_new: initial give failed
+sys_sem_signal: sane return value
+taking semaphore failed
+mbox post failed
+mbox fetch failed
+mbox quence not empty
+lwip_arch
+[0;31mE (%lu) %s: sys_init: failed to init lwip protect mutex
+[0;31mE (%lu) %s: thread_sem_init: out of memory
+LWIP_CORE_MARK_TCPIP_TASK: lwip_task == NULL
+sys_thread_tcpip
+sys_mbox_free
+sys_arch_mbox_tryfetch
+sys_arch_mbox_fetch
+sys_mbox_post
+sys_arch_sem_wait
+sys_sem_signal
+sys_sem_new
+sys_mutex_unlock
+sys_mutex_lock
+esp_vfs_register_fd_range(&vfs, NULL, LWIP_SOCKET_OFFSET, MAX_FDS)
+/IDF/components/lwip/port/esp32xx/vfs_lwip.c
+esp_vfs_lwip_sockets_register
+freeing conn without freeing pcb
+/IDF/components/lwip/lwip/src/api/api_lib.c
+conn has no recvmbox
+conn->acceptmbox shouldn't exist
+do_write failed to write all bytes
+netconn_write_vectors_partly
+netconn_recv_data
+netconn_new_with_proto_and_callback
+unhandled error
+/IDF/components/lwip/lwip/src/api/api_msg.c
+recv_udp must have a pcb argument
+recv_udp must have an argument
+recv_udp: recv for wrong pcb!
+pcb_new: pcb already allocated
+conn->state == NETCONN_CONNECT
+(conn->current_msg != NULL) || conn->in_non_blocking_connect
+blocking connect state error
+conn != NULL
+conn->current_msg != NULL
+inavlid op_completed_sem
+conn->current_msg == NULL
+conn->state == NETCONN_WRITE
+conn->pcb.tcp != NULL
+conn->current_msg->msg.w.offset < conn->current_msg->msg.w.len
+conn->current_msg->msg.w.vector_cnt > 0
+lwip_netconn_do_writemore: invalid length!
+invalid conn
+this is for tcp netconns only
+conn must be in state NETCONN_CLOSE
+pcb already closed
+Closing a listen pcb may not fail!
+err != ERR_OK
+recv_tcp must have a pcb argument
+recv_tcp must have an argument
+err != ERR_OK unhandled
+recv_tcp: recv for wrong pcb!
+err != NULL
+netconn_alloc: undefined netconn_type
+PCB must be deallocated outside this function
+recvmbox must be deallocated before calling this function
+acceptmbox must be deallocated before calling this function
+netconn marked closed
+expect newpcb == NULL or err == ERR_OK
+netconn state error
+msg->conn->current_msg != NULL
+already writing or closing
+msg->msg.w.len != 0
+invalid netconn_type
+msg->msg.sd.shut == NETCONN_SHUT_RD
+lwip_netconn_do_close
+lwip_netconn_do_getaddr
+lwip_netconn_do_write
+accept_function
+lwip_netconn_do_listen
+lwip_netconn_do_connected
+lwip_netconn_do_delconn
+netconn_drain
+netconn_free
+netconn_alloc
+recv_tcp
+sent_tcp
+lwip_netconn_do_close_internal
+lwip_netconn_do_writemore
+poll_tcp
+lwip_netconn_err_to_msg
+err_tcp
+recv_udp
+pcb_new
+lwip_netconn_is_err_msg
+check that first pbuf can hold size
+/IDF/components/lwip/lwip/src/api/netbuf.c
+netbuf_alloc
+invalid response
+/IDF/components/lwip/lwip/src/core/dns.c
+dns server out of array
+array index out of bounds
+unknown dns_table entry state:
+localhost
+.local
+dns_send
+dns_call_found
+dns_check_entry
+s_esp_netif_counter > 0
+//IDF/components/esp_netif/esp_netif_objects.c
+esp_netif_remove_from_list_unsafe
+IP_EVENT
+esp_netif_lwip
+[0;31mE (%lu) %s: Cannot start esp_netif: esp_netif must not be null
+[0;31mE (%lu) %s: Cannot start esp_netif: Missing mandatory configuration:
+esp_netif->driver_transmit: %p, esp_netif->driver_handle:%p, esp_netif->lwip_input_fn: %p, esp_netif->lwip_init_fn:%p
+[0;32mI (%lu) %s: DHCP server assigned IP to a client, IP is: %d.%d.%d.%d
+[0;31mE (%lu) %s: dhcps cb: failed to post IP_EVENT_AP_STAIPASSIGNED (%x)
+[0;31mE (%lu) %s: nd6 cb: failed to post IP_EVENT_GOT_IP6 (%x)
+[0;31mE (%lu) %s: ip lost timer: failed to post lost ip event (%x)
+[0;31mE (%lu) %s: %s not supported, please enable it in lwIP component configuration
+[0;31mE (%lu) %s: %s: Failed to configure netif with config=%p (config or if_key is NULL or duplicate key)
+[0;31mE (%lu) %s: %s: Failed to configure netif with config=%p (DHCP server and client cannot be configured together)
+[0;31mE (%lu) %s: Failed to allocate %d bytes (free heap size %d)
+[0;31mE (%lu) %s: Failed to create dhcp server handle
+[0;31mE (%lu) %s: Initial configuration of esp_netif failed with %d
+[0;31mE (%lu) %s: DHCP server cannot be started
+esp_netif_config_sanity_check(esp_netif)
+/IDF/components/esp_netif/lwip/esp_netif_lwip.c
+esp_netif_lwip_add(esp_netif)
+[0;32mI (%lu) %s: DHCP server started on interface %s with IP: %d.%d.%d.%d
+[0;31mE (%lu) %s: dhcp client start failed
+espressif
+[0;31mE (%lu) %s: esp netif cannot create tcpip_init semaphore
+[0;31mE (%lu) %s: esp netif api sync sem init fail
+[0;31mE (%lu) %s: esp netif api lock sem init fail
+[0;31mE (%lu) %s: Post-attach callback of driver(%p) failed with %d
+[0;31mE (%lu) %s: dhcpc cb: failed to post got ip event (%x)
+esp_netif_start_api
+esp_netif_new_api
+B/IDF/components/esp_netif/lwip/netif/wlanif.c
+wlanif_init
+Bnkey <= 64
+//IDF/components/wpa_supplicant/esp_supplicant/src/crypto/fastpbkdf2.c
+iterations
+out && nout
+HMAC_sha1_init
+pbkdf2_sha1
+wifi_init
+[0;32mI (%lu) %s: rx ba win: %d
+[0;32mI (%lu) %s: tcpip mbox: %d
+[0;32mI (%lu) %s: udp mbox: %d
+[0;32mI (%lu) %s: tcp mbox: %d
+[0;32mI (%lu) %s: tcp tx win: %d
+[0;32mI (%lu) %s: tcp rx win: %d
+[0;32mI (%lu) %s: tcp mss: %d
+[0;31mE (%lu) %s: Wi-Fi not stop
+[0;33mW (%lu) %s: Failed to unregister Rx callbacks
+[0;31mE (%lu) %s: Failed to deinit Wi-Fi driver (0x%x)
+mesh
+smartconfig
+ESPNOW
+[0;31mE (%lu) %s: Failed to init supplicant (0x%x)
+[0;31mE (%lu) %s: Failed to deinit Wi-Fi (0x%x)
+WIFI_EVENT
+<wifi_init_default
+[0;32mI (%lu) %s: esp_wifi_internal_set_sta_ip failed with %d
+[0;31mE (%lu) %s: esp_wifi_get_mac failed with %d
+[0;31mE (%lu) %s: esp_wifi_register_if_rxcb for if=%p failed with %d
+[0;31mE (%lu) %s: netstack cb reg failed with %d
+[0;31mE (%lu) %s: Failed to create wifi interface handle
+//IDF/components/esp_wifi/src/wifi_default.c
+esp_netif_attach_wifi_ap(netif)
+/IDF/components/esp_wifi/src/wifi_default.c
+esp_wifi_set_default_wifi_ap_handlers()
+esp_netif_attach_wifi_station(netif)
+esp_wifi_set_default_wifi_sta_handlers()
+esp_netif_create_default_wifi_sta
+wifi_netif
+[0;31mE (%lu) %s: No memory to create a wifi interface handle
+[0;31mE (%lu) %s: Invalid argument: supplied netif=%p does not equal to interface netif=%p
+[0;31mE (%lu) %s: Unknown wifi interface id if=%d
+[0;31mE (%lu) %s: esp_wifi_internal_reg_rxcb for if=%d failed with %d
+u->field_set & (1 << UF_HOST)
+//IDF/components/http_parser/http_parser.c
+HTTP_PARSER_ERRNO(parser) == HPE_OK
+0 && "Unknown header_state"
+0 && "Shouldn't get here."
+parser->content_length != 0 && parser->content_length != ULLONG_MAX
+parser->nread == 1
+parser->flags & F_CHUNKED
+parser->content_length == 0
+0 && "unhandled state"
+((header_field_mark ? 1 : 0) + (header_value_mark ? 1 : 0) + (url_mark ? 1 : 0) + (body_mark ? 1 : 0) + (status_mark ? 1 : 0)) <= 1
+connection
+transfer-encoding
+proxy-connection
+content-length
+upgrade
+chunked
+keep-alive
+!"Unexpected state"
+0 && "Attempting to pause parser in error state"
+http_parser_pause
+http_parse_host
+http_parser_parse_url
+http_parser_execute
+HPE_OK
+success
+HPE_CB_message_begin
+the on_message_begin callback failed
+HPE_CB_url
+the on_url callback failed
+HPE_CB_header_field
+the on_header_field callback failed
+HPE_CB_header_value
+the on_header_value callback failed
+HPE_CB_headers_complete
+the on_headers_complete callback failed
+HPE_CB_body
+the on_body callback failed
+HPE_CB_message_complete
+the on_message_complete callback failed
+HPE_CB_status
+the on_status callback failed
+HPE_CB_chunk_header
+the on_chunk_header callback failed
+HPE_CB_chunk_complete
+the on_chunk_complete callback failed
+HPE_INVALID_EOF_STATE
+stream ended at an unexpected time
+HPE_HEADER_OVERFLOW
+too many header bytes seen; overflow detected
+HPE_CLOSED_CONNECTION
+data received after completed connection: close message
+HPE_INVALID_VERSION
+invalid HTTP version
+HPE_INVALID_STATUS
+invalid HTTP status code
+HPE_INVALID_METHOD
+invalid HTTP method
+HPE_INVALID_URL
+invalid URL
+HPE_INVALID_HOST
+invalid host
+HPE_INVALID_PORT
+invalid port
+HPE_INVALID_PATH
+invalid path
+HPE_INVALID_QUERY_STRING
+invalid query string
+HPE_INVALID_FRAGMENT
+invalid fragment
+HPE_LF_EXPECTED
+LF character expected
+HPE_INVALID_HEADER_TOKEN
+invalid character in header
+HPE_INVALID_CONTENT_LENGTH
+invalid character in content-length header
+HPE_UNEXPECTED_CONTENT_LENGTH
+unexpected content-length header
+HPE_INVALID_CHUNK_SIZE
+invalid character in chunk size header
+HPE_INVALID_CONSTANT
+invalid constant string
+HPE_INVALID_INTERNAL_STATE
+encountered unexpected internal state
+HPE_STRICT
+strict mode assertion failed
+HPE_PAUSED
+parser is paused
+HPE_UNKNOWN
+an unknown error occurred
+DELETE
+HEAD
+POST
+CONNECT
+OPTIONS
+TRACE
+COPY
+MKCOL
+MOVE
+PROPFIND
+PROPPATCH
+SEARCH
+UNLOCK
+BIND
+REBIND
+UNBIND
+REPORT
+MKACTIVITY
+CHECKOUT
+MERGE
+M-SEARCH
+NOTIFY
+SUBSCRIBE
+UNSUBSCRIBE
+PURGE
+MKCALENDAR
+LINK
+UNLINK
+#$%&'
+0123456789
+abcdefghijklmnopqrstuvwxyz
+^_`abcdefghijklmnopqrstuvwxyz
+<esp-tls
+[0;31mE (%lu) %s: couldn't get hostname for :%s: getaddrinfo() returns %d, addrinfo=%p
+[0;31mE (%lu) %s: Failed to create socket (family %d socktype %d protocol %d)
+[0;31mE (%lu) %s: Unsupported protocol family %d
+[0;31mE (%lu) %s: Fail to setsockopt SO_RCVTIMEO
+[0;31mE (%lu) %s: Fail to setsockopt SO_SNDTIMEO
+[0;31mE (%lu) %s: Fail to setsockopt SO_KEEPALIVE
+[0;31mE (%lu) %s: Fail to setsockopt TCP_KEEPIDLE
+[0;31mE (%lu) %s: Fail to setsockopt TCP_KEEPINTVL
+[0;31mE (%lu) %s: Fail to setsockopt TCP_KEEPCNT
+[0;31mE (%lu) %s: Bind [sock=%d] to interface %s fail
+[0;31mE (%lu) %s: [sock=%d] get file flags error: %s
+[0;31mE (%lu) %s: [sock=%d] set blocking/nonblocking error: %s
+[0;31mE (%lu) %s: [sock=%d] select() error: %s
+[0;31mE (%lu) %s: [sock=%d] select() timeout
+[0;31mE (%lu) %s: [sock=%d] getsockopt() error: %s
+[0;31mE (%lu) %s: [sock=%d] delayed connect error: %s
+[0;31mE (%lu) %s: [sock=%d] connect() error: %s
+[0;31mE (%lu) %s: empty esp_tls parameter
+[0;31mE (%lu) %s: create_ssl_handle failed
+[0;31mE (%lu) %s: failed to open a new connection
+[0;31mE (%lu) %s: invalid esp-tls state
+[0;31mE (%lu) %s: Failed to open new connection
+[0;33mW (%lu) %s: Failed to open new connection in specified timeout
+[0;31mE (%lu) %s: Invalid arguments passed
+//IDF/components/esp-tls/esp_tls_mbedtls.c
+esp-tls-mbedtls
+[0;31mE (%lu) %s: global_cacert is NULL
+[0;31mE (%lu) %s: mbedtls_x509_crt_parse of CA cert returned -0x%04X
+[0;33mW (%lu) %s: mbedtls_x509_crt_parse was partly successful. No. of failed certificates: %d
+[0;31mE (%lu) %s: mbedtls_x509_crt_parse of public cert returned -0x%04X
+[0;31mE (%lu) %s: mbedtls_pk_parse_keyfile returned -0x%04X
+[0;31mE (%lu) %s: mbedtls_ssl_conf_own_cert returned -0x%04X
+[0;31mE (%lu) %s: read error :-0x%04zX:
+[0;31mE (%lu) %s: write error :-0x%04zX:
+[0;32mI (%lu) %s: Failed to verify peer certificate!
+[0;32mI (%lu) %s: Certificate verified.
+[0;31mE (%lu) %s: mbedtls_ssl_handshake returned -0x%04X
+[0;31mE (%lu) %s: empty arg passed to esp_tls_get_bytes_avail()
+cfg != NULL
+[0;31mE (%lu) %s: mbedtls_ssl_set_hostname returned -0x%04X
+[0;31mE (%lu) %s: mbedtls_ssl_config_defaults returned -0x%04X
+[0;31mE (%lu) %s: mbedtls_ssl_conf_alpn_protocols returned -0x%04X
+[0;31mE (%lu) %s: psk_hint_key configured but not enabled in menuconfig: Please enable ESP_TLS_PSK_VERIFICATION option
+[0;31mE (%lu) %s: Please enable secure element support for ESP-TLS in menuconfig
+[0;31mE (%lu) %s: Please enable the DS peripheral support for the ESP-TLS in menuconfig. (only supported for the ESP32-S2 chip)
+[0;31mE (%lu) %s: Please enable the support for signing using ECDSA peripheral in menuconfig.
+[0;31mE (%lu) %s: Failed to set client pki context
+[0;31mE (%lu) %s: You have to provide both clientcert_buf and clientkey_buf for mutual authentication
+[0;31mE (%lu) %s: Failed to set client configurations, returned [0x%04X] (%s)
+[0;31mE (%lu) %s: ESP_TLS_SERVER Not enabled in Kconfig
+[0;31mE (%lu) %s: mbedtls_ctr_drbg_seed returned -0x%04X
+[0;31mE (%lu) %s: mbedtls_ssl_setup returned -0x%04X
+set_pki_context
+set_ca_cert
+set_global_ca_store
+set_client_config
+esp_create_mbedtls_handle
+adc_cali
+[0;31mE (%lu) %s: %s(%d): invalid argument: null pointer
+[0;31mE (%lu) %s: %s(%d): no calibration scheme, create a scheme first
+adc_cali_raw_to_voltage
+[0;31mE (%lu) %s: %s(%d): invalid ADC unit
+[0;31mE (%lu) %s: %s(%d): invalid ADC attenuation
+[0;31mE (%lu) %s: %s(%d): invalid bitwidth
+(version_num >= ESP_EFUSE_ADC_CALIB_VER_MIN) && (version_num <= ESP_EFUSE_ADC_CALIB_VER_MAX)
+//IDF/components/esp_adc/adc_cali_curve_fitting.c
+ret == ESP_OK
+[0;31mE (%lu) %s: %s(%d): invalid arg: null pointer
+[0;31mE (%lu) %s: %s(%d): Calibration required eFuse bits not burnt
+[0;31mE (%lu) %s: %s(%d): no mem for adc calibration scheme
+[0;31mE (%lu) %s: %s(%d): no memory for the calibration characteristics
+get_first_step_reference_point
+check_valid
+adc_cali_create_scheme_curve_fitting
+adc_oneshot
+[0;31mE (%lu) %s: %s(%d): invalid channel
+[0;31mE (%lu) %s: %s(%d): IO config fail
+[0;31mE (%lu) %s: %s(%d): invalid unit
+[0;31mE (%lu) %s: %s(%d): adc unit not supported
+[0;31mE (%lu) %s: %s(%d): no mem for unit
+[0;31mE (%lu) %s: %s(%d): adc%d is already in use
+[0;31mE (%lu) %s: %s(%d): clock source not supported
+[0;31mE (%lu) %s: %s(%d): invalid attenuation
+adc_oneshot_read
+s_adc_io_init
+adc_oneshot_config_channel
+adc_oneshot_new_unit
+yA^y
+esp_eth
+[0;31mE (%lu) %s: %s(%d): extra lowlevel init failed
+[0;31mE (%lu) %s: %s(%d): extra lowlevel deinit failed
+[0;31mE (%lu) %s: %s(%d): ethernet mac set link failed
+ETH_EVENT
+[0;31mE (%lu) %s: %s(%d): send ETHERNET_EVENT_CONNECTED event failed
+[0;31mE (%lu) %s: %s(%d): send ETHERNET_EVENT_DISCONNECTED event failed
+[0;31mE (%lu) %s: %s(%d): ethernet mac set speed failed
+[0;31mE (%lu) %s: %s(%d): ethernet mac set duplex failed
+[0;31mE (%lu) %s: %s(%d): ethernet mac set peer pause ability failed
+[0;31mE (%lu) %s: %s(%d): unknown ethernet state: %d
+<transport
+esp_transport_init
+esp_transport_list_add
+esp_transport_list_init
+transport_base
+[0;31mE (%lu) %s: Error in obtaining socket fd for the session
+[0;31mE (%lu) %s: poll_write select error %d, errno = %s, fd = %d
+[0;31mE (%lu) %s: poll_read select error %d, errno = %s, fd = %d
+[0;33mW (%lu) %s: Poll timeout or error, errno=%s, fd=%d, timeout_ms=%d
+[0;31mE (%lu) %s: esp_tls_conn_write error, errno=%s
+[0;31mE (%lu) %s: Error in obtaining the error handle
+[0;31mE (%lu) %s: esp_tls_conn_read error, errno=%s
+[0;31mE (%lu) %s: Failed to initialize new connection object
+[0;31mE (%lu) %s: Failed to open a new connection
+[0;31mE (%lu) %s: tcp_write error, errno=%s
+[0;31mE (%lu) %s: tcp_read error, errno=%s
+[0;31mE (%lu) %s: Failed to open a new connection: %d
+esp_transport_base_init
+esp_transport_init_foundation_transport
+transport_ws
+[0;31mE (%lu) %s: Error transport_poll_write
+[0;31mE (%lu) %s: Error write header
+[0;31mE (%lu) %s: Error read data
+ESP32 Websocket Client
+[0;31mE (%lu) %s: Error connecting to host %s:%d
+GET %s HTTP/1.1
+Connection: Upgrade
+Host: %s:%d
+User-Agent: %s
+Upgrade: websocket
+Sec-WebSocket-Version: 13
+Sec-WebSocket-Key: %s
+[0;31mE (%lu) %s: Error in request generation, desired request len: %d, buffer size: %d
+Sec-WebSocket-Protocol: %s
+[0;31mE (%lu) %s: Error in request generation(snprintf of subprotocol returned %d, desired request len: %d, buffer size: %d
+Authorization: %s
+[0;31mE (%lu) %s: Error in request generation(snprintf of authorization returned %d, desired request len: %d, buffer size: %d
+[0;31mE (%lu) %s: Error in request generation(strncpy of headers returned %d, desired request len: %d, buffer size: %d
+[0;31mE (%lu) %s: Error in request generation(snprintf of header terminal returned %d, desired request len: %d, buffer size: %d
+[0;31mE (%lu) %s: Error write Upgrade header %s
+[0;31mE (%lu) %s: Error read response for Upgrade header %s
+[0;31mE (%lu) %s: HTTP upgrade failed
+Sec-WebSocket-Accept:
+[0;31mE (%lu) %s: Sec-WebSocket-Accept not found
+[0;31mE (%lu) %s: Invalid websocket key
+258EAFA5-E914-47DA-95CA-C5AB0DC85B11
+[0;31mE (%lu) %s: esp_transport_ws_set_path has internally failed with err=%d
+[0;31mE (%lu) %s: Invalid parent ptotocol
+[0;33mW (%lu) %s: esp_transport_ws_poll_connection_closed: unexpected data readable on socket=%d
+[0;31mE (%lu) %s: esp_transport_ws_poll_connection_closed: unexpected errno=%d on socket=%d
+[0;31mE (%lu) %s: Not enough room for processing the payload (need=%d, available=%d)
+[0;31mE (%lu) %s: PONG send failed (payload_len=%d, written_len=%d)
+[0;32mI (%lu) %s: Got CLOSE frame with status code=%u
+[0;31mE (%lu) %s: Sending CLOSE frame with 0 payload failed
+[0;33mW (%lu) %s: Connection cannot be terminated gracefully within timeout=%d
+[0;33mW (%lu) %s: Connection terminated while waiting for clean TCP close
+[0;32mI (%lu) %s: Connection terminated gracefully
+[0;31mE (%lu) %s: Not enough room for reading control frames (need=%d, max_allowed=%d)
+[0;31mE (%lu) %s: Cannot allocate buffer for control frames, need-%d
+[0;31mE (%lu) %s: Control frame (opcode=%d) payload read failed (payload_len=%d, read_len=%d)
+[0;31mE (%lu) %s: Error reading payload data
+esp_transport_ws_init
+httpd
+[0;33mW (%lu) %s: %s: error in recv (%d)
+[0;33mW (%lu) %s: %s: incomplete msg
+[0;31mE (%lu) %s: %s: Failed to allocate memory for HTTP server instance
+[0;31mE (%lu) %s: %s: Failed to allocate memory for HTTP URI handlers
+[0;31mE (%lu) %s: %s: Failed to allocate memory for HTTP session data
+[0;31mE (%lu) %s: %s: Failed to allocate memory for HTTP response headers
+[0;31mE (%lu) %s: %s: Failed to allocate memory for HTTP error handlers
+[0;31mE (%lu) %s: %s: error in socket (%d)
+[0;33mW (%lu) %s: %s: error in setsockopt SO_REUSEADDR (%d)
+[0;31mE (%lu) %s: %s: error in bind (%d)
+[0;31mE (%lu) %s: %s: error in listen (%d)
+[0;31mE (%lu) %s: %s: error in creating ctrl socket (%d)
+[0;31mE (%lu) %s: %s: error in creating msg socket (%d)
+ESP_HTTP_SERVER_EVENT
+[0;31mE (%lu) %s: Failed to post esp_http_server event: %s
+[0;31mE (%lu) %s: %s: error in accept (%d)
+[0;31mE (%lu) %s: %s: error in setsockopt SO_RCVTIMEO (%d)
+[0;31mE (%lu) %s: %s: error in setsockopt SO_SNDTIMEO (%d)
+[0;31mE (%lu) %s: %s: error in setsockopt SO_KEEPALIVE (%d)
+[0;31mE (%lu) %s: %s: error in setsockopt TCP_KEEPIDLE (%d)
+[0;31mE (%lu) %s: %s: error in setsockopt TCP_KEEPINTVL (%d)
+[0;31mE (%lu) %s: %s: error in setsockopt TCP_KEEPCNT (%d)
+[0;31mE (%lu) %s: %s: session creation failed
+[0;31mE (%lu) %s: %s: error in select (%d)
+[0;33mW (%lu) %s: %s: error accepting new connection
+[0;33mW (%lu) %s: %s: failed to queue work
+[0;31mE (%lu) %s: Config option max_open_sockets is too large (max allowed %d, 3 sockets used by HTTP server internally)
+Either decrease this or configure LWIP_MAX_SOCKETS to a larger value
+[0;31mE (%lu) %s: Failed to send shutdown signal err=%d
+httpd_server_init
+httpd_create
+httpd_accept_conn
+httpd_process_ctrl_msg
+httpd_server
+httpd_queue_work
+httpd_parse
+[0;31mE (%lu) %s: %s: unexpected state transition
+[0;33mW (%lu) %s: %s: URI length (%zu) greater than supported (%d)
+[0;33mW (%lu) %s: %s: URI length (%zu) greater than supported (%zu)
+[0;33mW (%lu) %s: %s: unsupported HTTP version = %d.%d
+[0;33mW (%lu) %s: %s: http_parser_parse_url failed with errno = %d
+[0;31mE (%lu) %s: %s: parsing beyond valid data = %d
+[0;31mE (%lu) %s: %s: data too large for un-recv = %d
+[0;33mW (%lu) %s: %s: request URI/header too long
+[0;31mE (%lu) %s: %s: unexpected state
+[0;33mW (%lu) %s: %s: parsing failed
+[0;33mW (%lu) %s: %s: incomplete (%zu/%zu) with parser error = %d
+[0;31mE (%lu) %s: %s: invalid length of data remaining to be parsed
+[0;31mE (%lu) %s: %s: incomplete termination of headers
+Upgrade
+[0;33mW (%lu) %s: %s: Upgrade header does not match the length of "websocket"
+websocket
+[0;33mW (%lu) %s: %s: Upgrade header found but it's %s
+parse_block
+cb_url
+cb_header_field
+cb_header_value
+cb_headers_complete
+cb_on_body
+pause_parsing
+verify_url
+cb_no_body
+httpd_sess
+[0;33mW (%lu) %s: %s: error enabling SO_LINGER (%d)
+[0;33mW (%lu) %s: %s: Closing invalid socket %d
+[0;31mE (%lu) %s: %s: session already exists with fd = %d
+httpd_sess_delete
+httpd_sess_new
+enum_function
+httpd_txrx
+[0;33mW (%lu) %s: %s: error in %s : %d
+HTTP/1.1 %s
+Content-Type: %s
+Content-Length: %d
+501 Method Not Implemented
+Server does not support this method
+505 Version Not Supported
+HTTP version not supported by server
+400 Bad Request
+Bad request syntax
+401 Unauthorized
+No permission -- see authorization schemes
+403 Forbidden
+Request forbidden -- authorization will not help
+404 Not Found
+Nothing matches the given URI
+405 Method Not Allowed
+Specified method is invalid for this resource
+408 Request Timeout
+Server closed this connection
+414 URI Too Long
+URI is too long
+411 Length Required
+Client must specify Content-Length
+431 Request Header Fields Too Large
+Header fields are too long
+500 Internal Server Error
+Server has encountered an unexpected error
+[0;33mW (%lu) %s: %s: %s - %s
+[0;33mW (%lu) %s: %s: error calling setsockopt : %d
+[0;31mE (%lu) %s: %s: error calling setsockopt : %d
+send
+recv
+httpd_sock_err
+httpd_resp_send_err
+httpd_uri
+[0;33mW (%lu) %s: %s: handler %s with method %d already registered
+[0;33mW (%lu) %s: %s: no slots left for registering handler
+[0;33mW (%lu) %s: %s: URI '%s' not found
+[0;33mW (%lu) %s: %s: Method '%d' not allowed for URI '%s'
+[0;33mW (%lu) %s: %s: uri handler execution failed
+httpd_uri
+httpd_register_uri_handler
+httpd_ws
+[0;33mW (%lu) %s: %s: Argument is null
+[0;33mW (%lu) %s: %s: State is invalid - No handshake performed
+[0;33mW (%lu) %s: %s: Invalid payload provided
+[0;33mW (%lu) %s: Sec-WebSocket-Protocol %s not supported, URI do not support any subprotocols
+[0;33mW (%lu) %s: Sec-WebSocket-Protocol %s not supported, supported subprotocol is %s
+[0;33mW (%lu) %s: %s: Argument is invalid
+[0;33mW (%lu) %s: %s: State is invalid - Handshake has been performed
+Sec-WebSocket-Version
+[0;33mW (%lu) %s: %s: "Sec-WebSocket-Version" is not found
+[0;33mW (%lu) %s: %s: "Sec-WebSocket-Version" is not "13", it is: %s
+Sec-WebSocket-Key
+[0;33mW (%lu) %s: %s: Cannot find client key
+Sec-WebSocket-Protocol
+[0;33mW (%lu) %s: Sec-WebSocket-Protocol length exceeded buffer size of %zu, was trunctated
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: %s
+[0;33mW (%lu) %s: %s: Failed to prepare Tx buffer
+[0;31mE (%lu) %s: Error in response generation(snprintf of subprotocol returned %d, buffer size: %zu
+[0;31mE (%lu) %s: Error in response generation(snprintf of subprotocol returned %d, desired response len: %d, buffer size: %zu
+[0;31mE (%lu) %s: Error in response generation(snprintf of header terminal returned %d, desired response len: %d, buffer size: %zu
+[0;33mW (%lu) %s: %s: Failed to send the response
+[0;33mW (%lu) %s: %s: Invalid Aux pointer
+[0;33mW (%lu) %s: %s: Frame pointer is invalid
+[0;33mW (%lu) %s: %s: Failed to receive the second byte
+[0;33mW (%lu) %s: %s: Failed to receive 2 bytes length
+[0;33mW (%lu) %s: %s: Failed to receive mask key
+[0;33mW (%lu) %s: %s: WS frame is not properly masked.
+[0;33mW (%lu) %s: %s: WS Message too long
+[0;33mW (%lu) %s: %s: Payload buffer is null
+[0;33mW (%lu) %s: %s: Failed to receive payload
+[0;33mW (%lu) %s: %s: Failed to send WS header
+[0;33mW (%lu) %s: %s: Failed to send WS payload
+[0;33mW (%lu) %s: %s: Invalid sd pointer
+[0;33mW (%lu) %s: %s: Failed to read header byte (socket FD invalid), closing socket now
+httpd_ws_get_frame_type
+httpd_ws_send_frame_async
+httpd_ws_unmask_payload
+httpd_ws_check_req
+httpd_ws_recv_frame
+httpd_ws_respond_server_handshake
+127.0.0.1
+master secret
+extended master secret
+client finished
+server finished
+key expansion
+TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA
+TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA
+TLS-ECDHE-ECDSA-WITH-AES-128-CBC-SHA256
+TLS-ECDHE-ECDSA-WITH-AES-128-GCM-SHA256
+TLS-ECDHE-ECDSA-WITH-AES-256-CBC-SHA384
+TLS-ECDHE-ECDSA-WITH-AES-256-GCM-SHA384
+TLS-ECDHE-ECDSA-WITH-AES-256-CCM
+TLS-ECDHE-ECDSA-WITH-AES-256-CCM-8
+TLS-ECDHE-ECDSA-WITH-AES-128-CCM
+TLS-ECDHE-ECDSA-WITH-AES-128-CCM-8
+TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA
+TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA
+TLS-ECDHE-RSA-WITH-AES-128-CBC-SHA256
+TLS-ECDHE-RSA-WITH-AES-128-GCM-SHA256
+TLS-ECDHE-RSA-WITH-AES-256-CBC-SHA384
+TLS-ECDHE-RSA-WITH-AES-256-GCM-SHA384
+TLS-RSA-WITH-AES-256-GCM-SHA384
+TLS-RSA-WITH-AES-128-GCM-SHA256
+TLS-RSA-WITH-AES-128-CBC-SHA256
+TLS-RSA-WITH-AES-256-CBC-SHA256
+TLS-RSA-WITH-AES-128-CBC-SHA
+TLS-RSA-WITH-AES-256-CBC-SHA
+TLS-RSA-WITH-AES-256-CCM
+TLS-RSA-WITH-AES-256-CCM-8
+TLS-RSA-WITH-AES-128-CCM
+TLS-RSA-WITH-AES-128-CCM-8
+TLS-ECDH-RSA-WITH-AES-128-CBC-SHA
+TLS-ECDH-RSA-WITH-AES-256-CBC-SHA
+TLS-ECDH-RSA-WITH-AES-128-CBC-SHA256
+TLS-ECDH-RSA-WITH-AES-128-GCM-SHA256
+TLS-ECDH-RSA-WITH-AES-256-CBC-SHA384
+TLS-ECDH-RSA-WITH-AES-256-GCM-SHA384
+TLS-ECDH-ECDSA-WITH-AES-128-CBC-SHA
+TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA
+TLS-ECDH-ECDSA-WITH-AES-128-CBC-SHA256
+TLS-ECDH-ECDSA-WITH-AES-128-GCM-SHA256
+TLS-ECDH-ECDSA-WITH-AES-256-CBC-SHA384
+TLS-ECDH-ECDSA-WITH-AES-256-GCM-SHA384
+TLS-RSA-WITH-ARIA-256-GCM-SHA384
+TLS-RSA-WITH-ARIA-256-CBC-SHA384
+TLS-RSA-WITH-ARIA-128-GCM-SHA256
+TLS-RSA-WITH-ARIA-128-CBC-SHA256
+TLS-ECDH-RSA-WITH-ARIA-256-GCM-SHA384
+TLS-ECDH-RSA-WITH-ARIA-256-CBC-SHA384
+TLS-ECDH-RSA-WITH-ARIA-128-GCM-SHA256
+TLS-ECDH-RSA-WITH-ARIA-128-CBC-SHA256
+TLS-ECDHE-RSA-WITH-ARIA-256-GCM-SHA384
+TLS-ECDHE-RSA-WITH-ARIA-256-CBC-SHA384
+TLS-ECDHE-RSA-WITH-ARIA-128-GCM-SHA256
+TLS-ECDHE-RSA-WITH-ARIA-128-CBC-SHA256
+TLS-ECDHE-ECDSA-WITH-ARIA-256-GCM-SHA384
+TLS-ECDHE-ECDSA-WITH-ARIA-256-CBC-SHA384
+TLS-ECDHE-ECDSA-WITH-ARIA-128-GCM-SHA256
+TLS-ECDHE-ECDSA-WITH-ARIA-128-CBC-SHA256
+TLS-ECDH-ECDSA-WITH-ARIA-256-GCM-SHA384
+TLS-ECDH-ECDSA-WITH-ARIA-256-CBC-SHA384
+TLS-ECDH-ECDSA-WITH-ARIA-128-GCM-SHA256
+TLS-ECDH-ECDSA-WITH-ARIA-128-CBC-SHA256
+ARIA-256-CCM*-NO-TAG
+ARIA-192-CCM*-NO-TAG
+ARIA-128-CCM*-NO-TAG
+ARIA-256-CCM
+ARIA-192-CCM
+ARIA-128-CCM
+ARIA-256-GCM
+ARIA-192-GCM
+ARIA-128-GCM
+ARIA-256-CTR
+ARIA-192-CTR
+ARIA-128-CTR
+ARIA-256-CFB128
+ARIA-192-CFB128
+ARIA-128-CFB128
+ARIA-256-CBC
+ARIA-192-CBC
+ARIA-128-CBC
+ARIA-256-ECB
+ARIA-192-ECB
+ARIA-128-ECB
+AES-256-CCM*-NO-TAG
+AES-192-CCM*-NO-TAG
+AES-128-CCM*-NO-TAG
+AES-256-CCM
+AES-192-CCM
+AES-128-CCM
+AES-256-GCM
+AES-192-GCM
+AES-128-GCM
+AES-256-XTS
+AES-128-XTS
+AES-256-CTR
+AES-192-CTR
+AES-128-CTR
+AES-256-OFB
+AES-192-OFB
+AES-128-OFB
+AES-256-CFB128
+AES-192-CFB128
+AES-128-CFB128
+AES-256-CBC
+AES-192-CBC
+AES-128-CBC
+AES-256-ECB
+AES-192-ECB
+AES-128-ECB
+<pd@
+<pc?
+<pb>
+B4000000000000000000000000000000000000000000000000000000000000000
+5C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C3C30
+5715ECCE24583F7A7023C24164390586842E816D7280A49EF6DF4EAE6B280BF8
+41A2B017516F6D254E1F002BCCBADD54BE30F8CEC737A0E912B4963B6BA74460
+5555555555555555555555555555555555555555555555555555555555555550
+7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8
+000000000000000000000000000000000000000000000001
+FFFFFFFFFFFFFFFFFFFFFFFE26F2FC170F69466A74DEFD8C
+5EA6F389A38B8BC81E767753B15AA5569E1782E30ABE7D25
+400000000000000000000000000000000000000000000000
+7FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+555555555555555555555555555555555555555555555555
+secp521r1
+brainpoolP512r1
+secp384r1
+brainpoolP384r1
+secp256r1
+secp256k1
+brainpoolP256r1
+secp224r1
+secp224k1
+secp192r1
+secp192k1
+x25519
+z|;A
+c'8(
+?LdY
+|iRI
+5cG%
+rrBp
+9un=
+@/9<zz;
+@Iz6 
+}7{fU
+[85@
+syCa
+#cH<
+pRny
+*9/"8[
+>hjC
+|{$4
+D_!:
+`zS
+~aA]
+efvGE
+Nn5T
+SM)6
+HT]_oH
+1W5-
+xzT\
+K0FR
+;&'wh
+0VJ8
+Dcm1Cq
+k,O8
+9a]\2
+f]~
+sYN
+.+x@
+$: ,
+Kf]4
+{q6X|
+JofO
+^X6I
+JNt4
+@SqK{
+[Nl
+\QT@
+V6~+
+JH-y^X
+$X5Z!2
+,]c(
+qukf
+[^H_JI
+2cV]8
+h^j@GPm|_}
+.2!Zd
+LA\>Up
+[^H_JI
+2cV]8
+h^j@GPm|_}
+.2!Zd
+H:XV`
+=<F'
+S?hz
+7o^Cq
+re.nE
+Usd,
+nq}50
+|zAEujU/
+Bwqn
+!<i}8WPRL
+4-liq
+f*TQ
+=]G1|
+OdYZ
+'8Uc
+.u90-B
+%VtQ
+/KdyP
+ibUW
+AchxL/S
+onhM
+/cysQ
+':5PN
+uPc-
+-zwR
+)o 4
+KAMP
+o~hn
+",{&
+SF^!
+&B2:
+:An
+!hZ&
+w:f\9)7dD/
+`Wr<b
+[z_h
+mIKm
+NL^f
+0PyBj
+ESbe
+d]0^
+x"+Xq
+8K^[
+Q@;G
+S<&A
+w!FF
+P~o]
+S<&A
+w!FF
+P~o]
+O$-K~
+maj}
+Ia^E
+`'#AM
+z\S!
+DP]v
+JJ>m
+K/mR
+}x&tV
+z{FV
++nB 
+Sa>v
+~Tb2
+/HK,
+~Tb2
+/HK,
+zA0u
+Z}wSn
+ ( &
+kV5!
+0y~$
+"<36] $LiEx
+Z2;%~y
+|H.h
+mbx"
+Nr!h
+N!I=U
+%ETE
+Xn?R
+J*dE
+?0&<
+2t#s
+(cmr
+yAA6
+wO|I
+a4MZ
+a3Pap
+NPRnH&
+p.I=>K
+.nWM
+&T!$
+D~2'
+1_T.
+%>)T
+)bV7
+cT09
+l""@
+M3[E
+M3[E
+c'ji
+Qpdx
+ynJH
+ d#kn
+zf][
+/H6L[
+tjFi
+MV'D
+6v$2
+mGZoE
+]><xJ>@
+r_nT({
+H9yd
+F.0a
+q x7y
+9dI1
+7CJ"
+ogh+M
+Bqs!
+C'Gn
+4}hd
+UD6+
+5TY[
+vN*P
+3D4_
+\e&a
+9&pS2
+h$wz
+1SzF
+Q[Dk
++L5:/
+jdjs
+Z.tG
+0f4&
+/AHK
+Q>W]
+w/dE
+`}F8
+AjrK
+s,q/i!
+(x.u42iW
+p<5a
+,f>'
+xj)9
+=Mk`
+p<5a
+,f>'
+xj)9
+=Mk`
+No+{
++u2
+ADNe>m
+t#MV
+s+I~
+*Rh\}L
+w!4(\
+0UtxH'4
+q>nfu
+!hq?B*R
+w?^!
+#H#c
+SGrD
+m[)0A
+B!APDMd1
+ZG,|X
+8TMQ
+$C.7T
+"f?]-
+aVbg
+QOV0K=$
+Y.u|
+%-o%
+P`Su
+jwA\
+UMm
+#U+-\
+%5-tQ
+qg]I
+cy/j
+B>rd
+#GZz
+(#Xg
+d~~M
+OezT>
+3o(J]
+41{zZ]}-
+(mO1
+3bzV
+=cTEo
+;M`
+;I~u
+n~U!
+]o,&
+vr8^T:l)U
+U8*T
+]o,&
+vr8^T:l)U
+U8*T
+$OLya
+rXC'ei[f
+7&6*
+RL5'1D
+}g^
+Ge^Y"
+`K7}
+*8fR
+3<XU4#
+Rz4v
+@$4yEW
+j]R5
+TL%O
+^1kW3
+kQ%c
+^1kW3
+N38,
+8$.:(%
+Wtw*
++8+5
+Mp}1
+=*\\E)
+U#C9
+DPV2A
+8HJ<
+4/t~{
+p/qX
+40I@
+X}mnf
++q&N|
+py>=
+onU, S/F
+m{G.
+p,>R>
+I0$r
+rsa.N
+rsa.E
+eckey.Q
+RSA-alt
+ECDSA
+EC_DH
+-----END RSA PRIVATE KEY-----
+-----BEGIN RSA PRIVATE KEY-----
+-----END EC PRIVATE KEY-----
+-----BEGIN EC PRIVATE KEY-----
+-----END PRIVATE KEY-----
+-----BEGIN PRIVATE KEY-----
+-----END ENCRYPTED PRIVATE KEY-----
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+-----END RSA PUBLIC KEY-----
+-----BEGIN RSA PUBLIC KEY-----
+-----END PUBLIC KEY-----
+-----BEGIN PUBLIC KEY-----
+%)+/5;=CGIOSYaegkmq
+D7q/;M
+}Uo
++Yo,
+&\8!
+* qW
+LwH'
+L*~e
+|6*)
+g&3g
+esp-aes
+[0;31mE (%lu) %s: No AES context supplied
+[0;31mE (%lu) %s: No input supplied
+[0;31mE (%lu) %s: No output supplied
+len > 0
+//IDF/components/mbedtls/port/aes/dma/esp_aes.c
+stream_bytes == 0 || stream_out != NULL
+[0;31mE (%lu) %s: Failed to allocate memory
+[0;31mE (%lu) %s: esp_aes_dma_start failed, no DMA channel available
+[0;31mE (%lu) %s: esp_aes_dma_wait_complete failed
+[0;31mE (%lu) %s: No IV supplied
+[0;31mE (%lu) %s: No IV offset supplied
+[0;31mE (%lu) %s: No stream supplied
+[0;31mE (%lu) %s: No nonce supplied
+[0;31mE (%lu) %s: No nonce offset supplied
+esp_aes_process_dma
+bignum
+[0;31mE (%lu) %s: Failed to create intr semaphore
+[0;31mE (%lu) %s: Failed to allocate RSA interrupt %d
+[0;31mE (%lu) %s: Timed out waiting for completion of MPI Interrupt
+(z_words >= mpi_words(Z)) && (z_words - mpi_words(Z) <= (size_t)1)
+//IDF/components/mbedtls/port/esp_bignum.c
+mpi_mult_mpi_failover_mod_mult
+esp-aes-gcm
+[0;31mE (%lu) %s: No aad supplied
+[0;31mE (%lu) %s: AES context in invalid state!
+[0;31mE (%lu) %s: No GCM context supplied
+[0;31mE (%lu) %s: No output length supplied
+!xP9
+b<>~^
+;qDF+
+|pZ}
+lpHP
+cU!}
+jF<M
+16!XH
+[3}ZR
+c|w{
+9JLX
+~=d]
+@8`$
+pbeWithSHAAnd3-KeyTripleDES-CBC
+PBE with SHA1 and 3-Key 3DES
+pbeWithSHAAnd2-KeyTripleDES-CBC
+PBE with SHA1 and 2-Key 3DES
+hmacSHA1
+HMAC-SHA-1
+hmacSHA224
+HMAC-SHA-224
+hmacSHA256
+HMAC-SHA-256
+hmacSHA384
+HMAC-SHA-384
+hmacSHA512
+HMAC-SHA-512
+hmacSHA3-224
+HMAC-SHA3-224
+hmacSHA3-256
+HMAC-SHA3-256
+hmacSHA3-384
+HMAC-SHA3-384
+hmacSHA3-512
+HMAC-SHA3-512
+id-md5
+id-sha1
+SHA-1
+id-sha224
+SHA-224
+id-sha256
+SHA-256
+id-sha384
+SHA-384
+id-sha512
+SHA-512
+id-sha3-224
+SHA-3-224
+id-sha3-256
+SHA-3-256
+id-sha3-384
+SHA-3-384
+id-sha3-512
+SHA-3-512
+desCBC
+des-ede3-cbc
+DES-EDE3-CBC
+X25519
+brainpool256r1
+brainpool384r1
+brainpool512r1
+rsaEncryption
+id-ecPublicKey
+Generic EC key
+id-ecDH
+EC key for ECDH
+md5WithRSAEncryption
+RSA with MD5
+sha-1WithRSAEncryption
+RSA with SHA1
+sha224WithRSAEncryption
+RSA with SHA-224
+sha256WithRSAEncryption
+RSA with SHA-256
+sha384WithRSAEncryption
+RSA with SHA-384
+sha512WithRSAEncryption
+RSA with SHA-512
+ecdsa-with-SHA1
+ECDSA with SHA1
+ecdsa-with-SHA224
+ECDSA with SHA224
+ecdsa-with-SHA256
+ECDSA with SHA256
+ecdsa-with-SHA384
+ECDSA with SHA384
+ecdsa-with-SHA512
+ECDSA with SHA512
+RSASSA-PSS
+anyPolicy
+Any Policy
+id-kp-serverAuth
+TLS Web Server Authentication
+id-kp-clientAuth
+TLS Web Client Authentication
+id-kp-codeSigning
+Code Signing
+id-kp-emailProtection
+E-mail Protection
+id-kp-timeStamping
+Time Stamping
+id-kp-OCSPSigning
+OCSP Signing
+id-kp-wisun-fan-device
+Wi-SUN Alliance Field Area Network (FAN)
+id-ce-basicConstraints
+Basic Constraints
+id-ce-keyUsage
+Key Usage
+id-ce-extKeyUsage
+Extended Key Usage
+id-ce-subjectAltName
+Subject Alt Name
+id-netscape-certtype
+Netscape Certificate Type
+id-ce-certificatePolicies
+Certificate Policies
+id-ce-subjectKeyIdentifier
+Subject Key Identifier
+id-ce-authorityKeyIdentifier
+Authority Key Identifier
+id-at-commonName
+Common Name
+id-at-countryName
+Country
+id-at-locality
+Locality
+id-at-state
+State
+id-at-organizationName
+Organization
+id-at-organizationalUnitName
+Org Unit
+emailAddress
+E-mail address
+id-at-serialNumber
+Serial number
+serialNumber
+id-at-postalAddress
+Postal address
+postalAddress
+id-at-postalCode
+Postal code
+postalCode
+id-at-surName
+Surname
+id-at-givenName
+Given name
+id-at-initials
+Initials
+initials
+id-at-generationQualifier
+Generation qualifier
+generationQualifier
+id-at-title
+Title
+title
+id-at-dnQualifier
+Distinguished Name qualifier
+dnQualifier
+id-at-pseudonym
+Pseudonym
+pseudonym
+id-uid
+User Id
+id-domainComponent
+Domain component
+id-at-uniqueIdentifier
+Unique Identifier
+uniqueIdentifier
+Proc-Type: 4,ENCRYPTED
+DEK-Info: AES-
+DEK-Info: AES-128-CBC,
+DEK-Info: AES-192-CBC,
+DEK-Info: AES-256-CBC,
+crypto_shared_gdma
+[0;31mE (%lu) %s: Failed to acquire DMA channel, Err=%d
+esp-sha
+[0;31mE (%lu) %s: esp_sha_dma_start failed, no DMA channel available
+[0;31mE (%lu) %s: SHA DMA buf_len cannot exceed max size for a single block
+[0;31mE (%lu) %s: Failed to allocate buf memory
+-----BEGIN CERTIFICATE-----
+-----END CERTIFICATE-----
+config is NULL
+net80211 rom version: %s
+WIFI_MESH_EVENT
+ca515c6
+a33db25
+6e87c4b
+df39f74
+90a27fb
+6b8aa5a
+OS adapter function is NULL
+OS adapter function version error! Version %d is expected, but it is %x
+OS adapter function magic error! Magic %d is expected, but it is %x
+resp
+ieee80211_crypto.c
+%c (%d) %s:
+ieee80211_hostap.c
+ieee80211_ht.c
+group cipher suite
+pairwise cipher suite count
+pairwise cipher suite
+AKM suite count
+AKM suite
+PMKID count
+PMKID list
+Group Mgmt cipher suite
+ieee80211_input.c
+wpa_crypto_funcs_init
+ieee80211_ioctl.c
+enabled
+disabled
+3ce09e5
+BESP_%02X%02X%02X
+opmode
+sta.ssid
+sta.authmode
+sta.pswd
+sta.pmk
+sta.chan
+auto.conn
+bssid.set
+sta.bssid
+sta.lis_intval
+sta.phym
+sta.phybw
+sta.apsw
+sta.apinfo
+sta.scan_method
+sta.sort_method
+sta.minrssi
+sta.minauth
+sta.pmf_e
+sta.pmf_r
+sta.btm_e
+sta.rrm_e
+sta.mbo_e
+ap.ssid
+ap.passwd
+ap.pmk
+ap.chan
+ap.authmode
+ap.hidden
+ap.max.conn
+bcn.interval
+ap.phym
+ap.phybw
+ap.sndchan
+ap.pmf_e
+ap.pmf_r
+ap.p_cipher
+lorate
+country
+ap.ftm_r
+sta.ft
+sta.owe
+sta.trans_d
+sta.sae_h2e
+sta.sae_pk_mode
+sta.bss_retry
+sta.owe_data
+sta.he_dcm
+sta.he_dcm_c_tx
+sta.he_dcm_c_rx
+sta.he_mcs9_d
+sta.he_su_b_d
+sta.he_su_b_f_d
+sta.he_mu_b_f_d
+sta.he_cqi_f_d
+ap.sae_h2e
+sta.sae_h2e_id
+ap.pmk_info
+nan.phym
+nvs.net80211
+ieee80211_output.c
+lrbg
+lrbgn
+ieee80211_phy.c
+ieee80211_scan.c
+Bieee80211_sta.c
+from beacon
+from user
+<auth
+assoc
+ieee80211_supplicant.c
+ieee80211_timer_connect
+ieee80211_scan_inter_chan
+ieee80211_scan_enter_op_chan
+ieee80211_csa
+ieee80211_probe_send
+ieee80211_beacon
+ieee80211_handshake
+ieee80211_chm_dwell
+ieee80211_send_beacon
+ieee80211_auth
+ieee80211_assoc
+ieee80211_hostap_handle
+ieee80211_sta_try_sa_query
+ieee80211_sta_sa_query_timeout
+ieee80211_sta_retry_assoc
+ieee80211_ap_try_sa_query
+ieee80211_ap_sa_query_timeout
+wl_chm.c
+BW20
+wl_cnx.c
+active
+passive
+Open Auth
+WPA-PSK
+WPA2-ENT
+WPA2-PSK
+WPA2-CCKM
+WPA3-SAE
+WAPI-PSK
+WAPI-CERT
+WPA3-ENT-192
+WPA2-PSK-FT
+WPA3-OWE
+WEP-40
+WEP-104
+ieee80211_action.c
+6\6\6\6\
+BlmacProcessTxopQComplete
+lmacProcessTxSuccess
+lmacDiscardFrameExchangeSequence
+lmacEndFrameExchangeSequence
+lmacProcessCollision
+lmacProcessTxComplete
+lmacProcessShortRetryFail
+lmacProcessLongRetryFail
+lmacProcessCtsTimeout
+lmacProcessAckTimeout
+lmacProcessTxRtsError
+lmacProcessTxError
+lmacTxFrame
+lmacTxDone
+lmac.c
+pm.c
+pp.c
+rcGetRate
+rcReachRetryLimit
+trc.c
+wDev_ProcessRxSucData
+wdev.c
+pp rom version: %s
+(uint8_t *)pucItem >= pxRingbuffer->pucHead
+//IDF/components/esp_ringbuf/ringbuf.c
+(uint8_t *)pucItem < pxRingbuffer->pucTail
+pxRingbuffer->pucAcquire >= pxRingbuffer->pucHead && pxRingbuffer->pucAcquire < pxRingbuffer->pucTail
+( ( ( UBaseType_t ) ( pxRingbuffer->pucAcquire ) & (0x03) ) == 0 )
+xRemLen >= sizeof(ItemHeader_t)
+*pvItem2 < *pvItem1
+xIsSplit == ( ( BaseType_t ) 0 )
+pxRingbuffer
+ppvItem != ((void *)0)
+(pxRingbuffer->uxRingbufferFlags & (( ( UBaseType_t ) 2 ) | ( ( UBaseType_t ) 1 ))) == 0
+pvItem != ((void *)0)
+pvItem != ((void *)0) || xItemSize == 0
+pxRingbuffer && pxItemSize
+vRingbufferReturnItem
+prvReceiveGeneric
+xRingbufferReceive
+xRingbufferSend
+prvAcquireItemNoSplit
+eFuse
+[0;33mW (%lu) %s: calibration efuse version does not match, set default version to 0
+(version >= ESP_EFUSE_ADC_CALIB_VER_MIN) && (version <= ESP_EFUSE_ADC_CALIB_VER_MAX)
+//IDF/components/efuse/esp32c3/esp_efuse_rtc_calib.c
+atten < 4
+init_code_size == 10
+esp_efuse_read_field_blob(init_code_efuse, &init_code, init_code_size)
+/IDF/components/efuse/esp32c3/esp_efuse_rtc_calib.c
+cal_vol_efuse[0]->bit_count == 10
+esp_efuse_read_field_blob(cal_vol_efuse, &cal_vol, cal_vol_efuse[0]->bit_count)
+esp_efuse_rtc_calib_get_cal_voltage
+esp_efuse_rtc_calib_get_init_code
+boot_comm
+[0;31mE (%lu) %s: mismatch chip ID, expected %d, found %d
+[0;31mE (%lu) %s: Image requires chip rev >= v%d.%d, but chip is v%d.%d
+[0;31mE (%lu) %s: Image requires chip rev <= v%d.%d, but chip is v%d.%d
+esp_image
+[0;31mE (%lu) %s: invalid segment length 0x%lx
+[0;31mE (%lu) %s: Segment %d load address 0x%08lx, doesn't match data 0x%08lx
+[0;31mE (%lu) %s: Image length %lu doesn't fit in partition length %lu
+[0;31mE (%lu) %s: Checksum failed. Calculated 0x%x read 0x%x
+[0;31mE (%lu) %s: image at 0x%lx has invalid magic byte (nothing flashed here?)
+[0;31mE (%lu) %s: image at 0x%lx segment count %d exceeds max %d
+[0;31mE (%lu) %s: bootloader_mmap(0x%lx, 0x%lx) failed
+load
+[0;31mE (%lu) %s: bootloader_flash_read failed at 0x%08lx
+[0;31mE (%lu) %s: unaligned segment length 0x%lx
+[0;32mI (%lu) %s: segment %d: paddr=%08lx vaddr=%08x size=%05lxh (%6lu) %s
+[0;31mE (%lu) %s: image offset has wrapped
+Calculated hash
+[0;31mE (%lu) %s: Image hash failed - image is corrupt
+Expected hash
+[0;31mE (%lu) %s: partition size 0x%lx invalid, larger than 16MB
+handle != NULL
+//IDF/components/bootloader_support/src/idf/bootloader_sha.c
+ret == 0
+bootloader_sha256_finish
+bootloader_sha256_data
+bits == ADC_BITWIDTH_12 || bits == ADC_BITWIDTH_DEFAULT
+/IDF/components/hal/esp32c3/include/hal/adc_ll.h
+adc_oneshot_ll_set_output_bits
+/IDF/components/hal/esp32c3/clk_tree_hal.c
+clk_hal
+[0;33mW (%lu) %s: invalid RTC_XTAL_FREQ_REG value, assume 40MHz
+clk_hal_lp_slow_get_freq_hz
+clk_hal_soc_root_get_freq_mhz
+[0;31mE (%lu) %s: Registered deepsleep callbacks exceeds MAX_DSLP_HOOKS
+s_platform.groups[group_id]
+//IDF/components/esp_hw_support/dma/gdma.c
+group->pairs[pair_id]
+gdma
+[0;31mE (%lu) %s: %s(%d): alloc interrupt failed
+[0;31mE (%lu) %s: %s(%d): invalid argument
+[0;31mE (%lu) %s: %s(%d): no mem for gdma tx channel
+[0;31mE (%lu) %s: %s(%d): no mem for gdma rx channel
+[0;31mE (%lu) %s: %s(%d): invalid sibling channel
+[0;31mE (%lu) %s: %s(%d): sibling channel should have a different direction
+[0;31mE (%lu) %s: %s(%d): no mem for group(%d)
+[0;31mE (%lu) %s: %s(%d): no mem for pair(%d,%d)
+[0;31mE (%lu) %s: %s(%d): no free gdma channel, search code=%d
+pair && group
+[0;31mE (%lu) %s: %s(%d): channel is using by peripheral: %d
+[0;31mE (%lu) %s: %s(%d): peripheral %d is already used by another channel
+[0;31mE (%lu) %s: %s(%d): no peripheral is connected to the channel
+[0;31mE (%lu) %s: %s(%d): invalid sram alignment: %zu
+[0;31mE (%lu) %s: %s(%d): channel is controlled by ETM
+gdma_start
+gdma_set_transfer_ability
+gdma_disconnect
+gdma_connect
+gdma_get_channel_id
+gdma_del_channel
+gdma_release_group_handle
+gdma_release_pair_handle
+gdma_new_channel
+gdma_new_channel
+ETSTimer
+esp_timer_create(&create_args, (esp_timer_handle_t*)&(ptimer->timer_arg))
+/IDF/components/esp_timer/src/ets_timer_legacy.c
+timer_initialized(ptimer)
+//IDF/components/esp_timer/src/ets_timer_legacy.c
+esp_timer_start_once(ESP_TIMER(ptimer), time_us)
+esp_timer_start_periodic(ESP_TIMER(ptimer), time_us)
+ets_timer_arm
+ets_timer_arm_us
+ets_timer_setfn
+[0;32mI (%lu) %s: %s
+cal_version
+cal_mac
+esp_efuse_mac_get_default(sta_mac)
+/IDF/components/esp_phy/src/phy_init.c
+phy_init
+[0;31mE (%lu) %s: %s: calibration data MAC check failed: expected %02x:%02x:%02x:%02x:%02x:%02x, found %02x:%02x:%02x:%02x:%02x:%02x
+cal_data
+[0;31mE (%lu) %s: %s: failed to get cal_data(0x%x)
+[0;31mE (%lu) %s: %s: store calibration data failed(0x%x)
+[0;31mE (%lu) %s: %s: store calibration mac failed(0x%x)
+[0;31mE (%lu) %s: %s: store calibration version failed(0x%x)
+[0;31mE (%lu) %s: %s: store calibration nvs commit failed(0x%x)
+[0;31mE (%lu) %s: %s: NVS has not been initialized. Call nvs_flash_init before starting WiFi/BT.
+[0;32mI (%lu) %s: phy_version %s
+[0;31mE (%lu) %s: failed to allocate memory for RF calibration data
+[0;31mE (%lu) %s: failed to obtain PHY init data
+[0;33mW (%lu) %s: failed to load RF calibration data (0x%x), falling back to full calibration
+[0;33mW (%lu) %s: saving new calibration data because of checksum failure, mode(%d)
+esp_deep_sleep_register_phy_hook(&phy_close_rf)
+esp_deep_sleep_register_phy_hook(&phy_xpd_tsens)
+esp_phy_load_cal_and_init
+store_cal_data_to_nvs_handle
+load_cal_data_from_nvs_handle
+esp_phy_load_cal_data_from_nvs
+PPPLLHLHHDJFFB
+phy-track-pll-timer
+esp_timer_create(&phy_track_pll_timer_args, &phy_track_pll_timer)
+/IDF/components/esp_phy/src/phy_common.c
+esp_timer_start_periodic(phy_track_pll_timer, PHY_TRACK_PLL_PERIOD_IN_US)
+esp_timer_stop(phy_track_pll_timer)
+esp_timer_delete(phy_track_pll_timer)
+phy_track_pll_deinit
+phy_track_pll_init
+namelen is too long
+/IDF/components/lwip/lwip/src/api/netdb.c
+total_size <= NETDB_ELEM_SIZE: please report this!
+lwip_getaddrinfo
+pre != NULL && pre->pnext != NULL
+//IDF/components/lwip/apps/dhcpserver/dhcpserver.c
+dhcps_start(): could not obtain pcb
+dhcps: Illegal subnet mask.
+dhcps: ip address and subnet mask do not match.
+kill_oldest_dhcps_pool
+Scconnected action: dhcpc failed
+esp_netif_handlers
+[0;31mE (%lu) %s: %s %d %s ret=0x%X
+esp_event_post in esp_netif_action_connected
+[0;31mE (%lu) %s: invalid static ip
+[0;32mI (%lu) %s: %s ip: %d.%d.%d.%d, mask: %d.%d.%d.%d, gw: %d.%d.%d.%d
+esp_netif_action_connected
+esp_wpa3_hostap_task
+Init Counter
+Group key expansion
+IGTK key expansion
+Pairwise key expansion
+Sync > dot11RSNASAESync
+Accept Confirm
+Sent Commit
+Sent Confirm
+Init
+Allow previous PWE to be reused
+Clear existing state to allow restart
+Unknown Password Identifier
+SSWU: m
+SSWU: t
+SSWU: x1a = b / (z * a)
+SSWU: x1b = (-b/a) * (1 + t)
+SSWU: x1 = CSEL(l, x1a, x1b)
+SSWU: gx1 = x1^3 + a * x1 + b
+SSWU: x2 = z * u^2 * x1
+SSWU: gx2 = x2^3 + a * x2 + b
+SSWU: gx1^((p-1)/2) modulo p
+SSWU: v = CSEL(l, gx1, gx2)
+SSWU: y = sqrt(v)
+SSWU: p - y
+SAE Hunting and Pecking
+SAE Hash to Element u1 P1
+SAE Hash to Element u2 P2
+SAE Hash to Element
+SAE: PT
+SAE-PK keys
+SAE KCK and PMK
+SAE: val(reduced to 1..q-1)
+SAE: PWE
+PMK Name
+bc1E
+1/?cz&!t
+5mmQ
+vb^~
+I(fQ
+mg5NJ
+OWE Key Generation
+(size_t) (pos - rsn_ie) <= rsn_ie_len
+//IDF/components/wpa_supplicant/src/rsn_supp/wpa_ie.c
+wpa_gen_wpa_ie_rsn
+abcdefghijklmnopqrstuvwxyz234567
+esp_crypto
+[0;31mE (%lu) %s: Error in calculating sha1 sum , Returned 0x%02X
+misc
+__gnu_cxx::__concurrence_lock_error
+__gnu_cxx::__concurrence_unlock_error
+St9exception
+<N9__gnu_cxx24__concurrence_lock_errorE
+<N9__gnu_cxx26__concurrence_unlock_errorE
+++CCUNGSt9bad_alloc
+<std::bad_alloc
+         (((((                  
+AAAAAA
+BBBBBB
+Not owner
+No such file or directory
+No such process
+Interrupted system call
+I/O error
+No such device or address
+Arg list too long
+Exec format error
+Socket already connected
+Bad file number
+No children
+Destination address required
+No more processes
+Not enough space
+Permission denied
+Bad address
+Device or resource busy
+File exists
+Cross-device link
+No such device
+Not a directory
+Host is down
+Connection already in progress
+Is a directory
+Invalid argument
+Network interface is not configured
+Connection aborted by network
+Too many open files in system
+File descriptor value too large
+Not a character device
+Text file busy
+File too large
+Host is unreachable
+No space left on device
+Not supported
+Illegal seek
+Read-only file system
+Too many links
+Broken pipe
+Mathematics argument out of domain of function
+Result too large
+No message of desired type
+Identifier removed
+Illegal byte sequence
+Deadlock
+Network is unreachable
+No lock
+Not a stream
+Stream ioctl timeout
+No stream resources
+Virtual circuit is gone
+Protocol error
+Unknown protocol
+Multihop attempted
+Bad message
+Function not implemented
+Directory not empty
+File or path name too long
+Too many symbolic links
+No buffer space available
+No data
+Address family not supported by protocol family
+Protocol wrong type for socket
+Socket operation on non-socket
+Protocol not available
+Connection refused
+Connection reset by peer
+Address already in use
+Address not available
+Software caused connection abort
+Socket is not connected
+Socket is already connected
+Operation canceled
+State not recoverable
+Previous owner died
+Operation not supported on socket
+Value too large for defined data type
+Message too long
+Connection timed out
+inity
+[%Co
+REENT malloc succeeded
+/builds/idf/crosstool-NG/.build/HOST-x86_64-w64-mingw32/riscv32-esp-elf/src/newlib/newlib/libc/string/strtok.c
+B                0000000000000000INF
+0123456789abcdef
+0123456789ABCDEF
+0@e%ld
+B                0000000000000000Infinity
+/builds/idf/crosstool-NG/.build/HOST-x86_64-w64-mingw32/riscv32-esp-elf/src/newlib/newlib/libc/stdlib/dtoa.c
+Balloc succeeded
+?aCoc
+@/builds/idf/crosstool-NG/.build/HOST-x86_64-w64-mingw32/riscv32-esp-elf/src/newlib/newlib/libc/stdlib/gdtoa-gethex.c
+POSIX
+Bv(B
+ASCII
+ASCII
+/builds/idf/crosstool-NG/.build/HOST-x86_64-w64-mingw32/riscv32-esp-elf/src/newlib/newlib/libc/stdlib/mprec.c
+vH7B
+W4vC
+[%Co
+O8M2
+=B*:B
+<Bd;B
+;B0<Bd;Bd;Bd;B
+;B0<B
+;B0<B
+;B8<B
+<Bl;Bt<B
+RBdCB
+RBNKB
+RBdCB
+RB0CB
+CBXCB
+RBJCB
+JBXCB
+RBNKBf@B
+RBj@B
+RBf@B
+                0000000000000000"YB
+VB(XB
+VBdXB
+VBPXB
+VB&YB
+WBh[B
+VBzWB
+WB4YB,XB.YB
+VBhXB
+WB@XB
+VBPXB
+WBJmB
+lBJmB
+lB$mB$mB
+rBruB
+uB8tB
+uB8tB8tB8tB
+sBbtBuBvtB
+tB@tBHuB
+yB2
+yB2
+BtyB2
+zB2
+B\zB
+zB2
+{B2
+|B2
+|B2
+|B2
+{B2
+|B2
+yBb
+yB2
+yB                0000000000000000wifi stop: out of memory!
+wifi stop stage2: out of memory!
+wifi stop stage3: out of memory!
+failed to post WiFi event=%d ret=%d
+failed to post event=%d ret=%d
+wifi ipc: failed to post wifi task
+alloc net80211 funcs fail
+wifi deinit internal: wifi not stop
+Mem alloc fail for SA Query
+BIP replay detected
+MIC computation for BIP Failed(res=%d)
+MIC mismatch for the Bcast Mgmt frame(res=%d)
+%s %d
+MIC computation for BIP Failed(res=%d)
+Invalid MMIE
+BIP replay detected
+MIC computation for BIP Failed(res=%d)
+MIC mismatch for the Bcast Mgmt frame(res=%d)
+Invalid MMIE
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+null wpa3_hostap_handle_auth
+null wpa3_hostap_handle_auth
+%s %d
+max connection, deauth!
+%s %d
+%s %d
+addba response cb: bssid change from %02x:%02x:%02x:%02x:%02x:%02x to %02x:%02x:%02x:%02x:%02x:%02x
+addba response cb: ap conn deleted
+addba response cb: ap bss deleted
+addba response cb: status %d not success, no need to configure hardware
+%s %d
+%s %d
+%s %d
+rap mem fail tid=%d
+rxa_eb mem fail tid=%d
+age_reorder: null rap
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+addba response invalid param
+addba response cb: sta conn deleted
+addba response cb: sta bss deleted
+%s %d
+alloc challenge: out of memory!
+%s %d
+ioctl_process: invalid arg
+sta is connecting, return error
+Invalid authmode ENABLE WPA3 in config for WPA3_PSK authmode
+Invalid authmode %d configured for softAP
+Channel number %d is out of range from %d to %d in country code cc=%c%c%c.
+%s %d
+%s %d
+%s %d
+%s %d
+parameter config should not be NULL
+invalid magic number %x, call WIFI_INIT_CONFIG_DEFAULT to init config
+wpa crypto funcs expected size=%d version=%d, actual size=%d version=%d
+static rx buf number %d is out of range
+dynamic rx buf number %d is out of range
+static tx buf number %d is out of range
+dynamic tx buf number %d is out of range
+tx buf type %d error
+management short buf number %d is out of range
+rx ba window %d error
+invalid core id %d
+In function %s, fail to register function!
+wifi stop stage error, stage=%d
+invalid ipc cfg
+%s %d
+station with bssid %02x:%02x:%02x:%02x:%02x:%02x not found
+failed to find bss
+init nvs: failed, ret=%x
+invalid wifi nvs key index %d
+nvs invalid min %d max %d
+wifi nvs cfg alloc out of memory
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+Error in constructing dh ie or OWE is not enabled in menuconfig
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+%s %d
+setup rate: out of memory!
+%s %d
+%s %d
+%s %d
+wpa_config_parse_string is null
+Station SAE H2E disabled, which is required by AP
+null wpa_parse_wpa_ie
+null wpa_parse_wpa_ie
+null wpa_parse_wpa_ie
+%s %d
+%s %d
+wpa michael mic failure cb empty
+invalid ac=%d
+%s %d
+Association refused temporarily, comeback time %lu (TUs) too long, max allowed 5000 (TUs)
+Set status to INIT
+Processing association response failed
+Wrong interface provided to get SAE PWE value
+%s %d
+%s %d
+timeout but fail to get lock, type=%d
+timeout when WiFi un-init, type=%d
+fail to post timer, type=%d
+fail to alloc timer, type=%d
+%s %d
+invalid channel
+invalid channel info
+ht2040 coex frame alloc fail
+sta_scan: STA not exist!
+null wpa_sta_ap_set_rsnxe
+%s %d
+cnx_bss_init: null bss
+%s %d
+%s %d
+%s %d
+Expected CCMP frame from %02x:%02x:%02x:%02x:%02x:%02x did not have ExtIV bit set to 1
+CCMP mgmt frame from %02x:%02x:%02x:%02x:%02x:%02x used non-zero reserved bit
+CCMP replay detected: A1=%02x:%02x:%02x:%02x:%02x:%02x A2=%02x:%02x:%02x:%02x:%02x:%02x PN=%llu, RSC=%llu seq=%u
+esf_buf_alloc_dynamic: invalid type=%d
+esf_buf_alloc: invalid type=%d
+ebuf_free: invalid type=%d
+set vif: invalid index=%d
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %s %u
+%s %d
+invalid micahel mic failure cb
+%s %u
+%s %u
+create wifi task: failed to create queue
+create wifi task: failed to create queue
+create wifi task: failed to create sem
+create wifi task: failed to create task
+%s %u
+%s %u
+%s %u
+%s %s %u
+desc is null
+%s %s %u
+sched is null, if=%d tid=%d flags=%x
+%s %s %u
+rc_enable_trc fail, no mem
+trc init fail, no mem
+update default trc: invalid ifx
+rcGet11NHighestRateIdx: invalid max rate=%d
+rcGet11GHighestRateIdx: invalid max rate=%d
+rcGet11BHighestRateIdx: invalid max rate=%d
+%s %s %u
+Failed to init rx desc space, buffer number=%d
+Expected to init %d rx buffer, actual is %d
+alloc pp wdev funcs fail
+mode : null
+mode : sta (%02x:%02x:%02x:%02x:%02x:%02x)
+mode : softAP (%02x:%02x:%02x:%02x:%02x:%02x)
+mode : sta (%02x:%02x:%02x:%02x:%02x:%02x) + softAP (%02x:%02x:%02x:%02x:%02x:%02x)
+Send SA Query %s with transaction id %x
+Rxd SA Query resp with matching transaction id %x
+Init max length of beacon: %d/%d
+max connection, deauth!
+max connection, deauth!
+WPA3 SAE %02x:%02x:%02x:%02x:%02x:%02x start reauthentication
+Removing the station %02x:%02x:%02x:%02x:%02x:%02x
+STA not responded to %d SA Query attempts, Reset connection sending disassoc
+starting SA query procedure with STA(%02x:%02x:%02x:%02x:%02x:%02x)
+ap channel adjust o:%u,%u n:%u,%u
+new:<%d,%d>, old:<%d,%d>, ap:<%d,%d>, sta:<%d,%d>, prof:%d
+scan in process, ignore set current channel
+AP not PMF Capable when STA requires, reject profile
+flush txq
+wifi firmware version: %s
+wifi certification version: v%d.%d
+config NVS flash: %s
+config nano formating: %s
+Total power save buffer number: %u
+clear tx_buf
+rx 11g in channel %d
+rx 40M intolerant in chan %d
+state: %s -> %s (%x)
+unexpected state: %s -> %s (%x)
+sta rx csa, newchan=%d, old=%d
+<from user>sta rx csa, csa (%d->%d) in progress, ignore newchan=%d, csa_count:%d
+<%s>sta rx csa, unchanged, newchan=%d, old=%d, csa_count:%d
+<%s>sta rx csa, unchanged, newchan=%d, old=%d, csa_count:%d
+<%s>sta rx csa, newchan=%d, old=%d, csa_count:%d
+Association refused temporarily, comeback time %lu (TUs)
+enable tsf
+No response to %d SA Queries, reset connection sending disassoc
+starting SA query procedure with AP(%02x:%02x:%02x:%02x:%02x:%02x)
+%s mode switch cause sta destroyed
+sta has disconnected from AP
+%s mode switch cause sta destroyed
+%s mode switch cause sta destroyed
+%s mode switch cause ap destroyed
+%s mode switch cause sta destroyed
+%s mode switch cause sta destroyed
+%s mode switch cause ap destroyed
+%s mode switch cause sta destroyed
+%s mode switch cause sta destroyed
+%s mode switch cause sta destroyed
+%s mode switch cause ap destroyed
+%s mode switch cause ap destroyed
+%s mode switch cause sta destroyed
+%s mode switch cause sta destroyed
+%s mode switch cause sta destroyed
+%s mode switch cause sta destroyed
+%s mode switch cause sta destroyed
+sta has disconnected from AP
+obss scan timeout: scan begin
+start obss scan, interval: %d
+connected with %s, aid = %d, channel %d, %s, bssid = %02x:%02x:%02x:%02x:%02x:%02x
+security: %s, phy: %s, rssi: %d
+tx ht2040 coex frame: hdr=%d len=%d chan_num=%d
+no %s found, reconnect after 1s
+auto reconnect
+switch to channel %d
+primary chan differ, old=%d, new=%d, start CSA timer
+<connect>csa, newchan=%d, old=%d, csa_count:%d
+bcn_timeout,ap_probe_send_start
+ap_probe_send over, resett wifi status to disassoc
+station: %02x:%02x:%02x:%02x:%02x:%02x leave, AID = %d, bss_flags is %d, bss:%p
+removing station <%02x:%02x:%02x:%02x:%02x:%02x> after unsuccessful auth/assoc, AID = %d
+max connection!
+station: %02x:%02x:%02x:%02x:%02x:%02x join, AID=%d, %s, %s
+Init data frame dynamic rx buffer num: %d
+Init static rx mgmt buffer num: %d
+Init dynamic rx mgmt buffer num: %d
+Init management short buffer num: %d
+Init static tx buffer num: %d
+Init dynamic tx buffer num: %d
+Init tx cache buffer num: %d
+Init static tx FG buffer num: %d
+stop sw txq
+int: state=%d i=%d
+discard flag
+lmac stop hw txq
+The router/mobile-hotspot does not follow Wi-Fi protocol.
+Please report this bug to the manufaturer of the router/mobile-hotspot.
+And use another outer/mobile-hotspot instead.
+There is no TIM IE in Beacon frame.
+The router/mobile-hotspot does not follow Wi-Fi protocol.
+Please report this bug to the manufaturer of the router/mobile-hotspot.
+And use another outer/mobile-hotspot instead.
+AP's beacon interval = %u us, DTIM period = %u
+Coexist!!! Wi-Fi station would only keep waked when available
+pm start, type: %d
+set rx beacon pti, rx_bcn_pti: %d, bcn_timeout: %d, mt_pti: %d, mt_time: %d
+pm stop, total sleep time: %llu us / %llu us
+(mesh)pm stop, sleep:%lld secs, total:%lld secs, current active set:%d, running:%.02f
+Set ps type: %d, coexist: %d
+Coexist!!! Wi-Fi station would only keep waked when available
+Coexist: Wi-Fi connect fail, apply reconnect coex policy
+dp: %u, bi: %u, li: %u, scale listen interval from %u us to %u us
+Beacon interval IE of Beacon frame is 0.
+Ignore BAR free!
+clear rx fragment
+wifi driver task: %x, prio:%d, stack:%d, core=%d
+ic_enable_sniffer
+ic_disable_sniffer
+Init static rx buffer size: %d
+Init static rx buffer num: %d
+Init dynamic rx buffer num: %d
+Deinit lldesc rx mblock:%d
+<ba-add>idx:%d (ifx:%d, %02x:%02x:%02x:%02x:%02x:%02x), tid:%d, ssn:%d, winSize:%d
+<ba-del>idx:%d, tid:%d
+deinit: deinit is in progress
+TX Q not empty: %d, TXQ_BLOCK=%x
+force witi stop
+scan is cancle
+init failed to wifi global lock
+init: init is in progress
+init: deinit is in progress
+deinit: init is in progress
+This was attack!!! <%02x:%02x:%02x:%02x:%02x:%02x> responded within %d SA Query attempts.
+alloc eb len=%d type=%d fail
+b a f
+inactive timer, bss(%p) is removed
+inactive timer: now=%x last_rx_time=%x diff=%x, aid[%d]%02x:%02x:%02x:%02x:%02x:%02x leave
+softap interface disabled. stop beacon tx
+IEEE80211 ELEMID RSN too big!
+IEEE80211 ELEMID VENDOR too big!
+IEEE80211 ELEMID VENDOR too big!
+bcn a f
+<MESH AP>adjust channel:%d, secondary channel offset:%d(%s)
+softAP updated bw to 20Mhz
+<MESH STA>adjust channel:%d, secondary channel offset:%d(%s)
+BSS already removed, simply leave...
+BSS already removed, simply leave...
+bcn a f
+The previous beacon was not Tx done
+(error)ic_tx_pkt beacon, failed
+ba not setup
+state wrong txa_flags=%x
+token mismatch, expect=%d(rx:%d), status=%d
+invalid tid=%d
+invalid free ba index=%d
+discard, invalid tid=%d
+discard: fragments not support, i_seq:0x%x, frag:0x%x
+40Mhz not supported, updated bw to 20Mhz
+mcs set is empty!
+invalid tid=%d
+mem fail
+mem fail
+[ADDBA]rx delba, code:%d, delete tid:%d
+invalid LLC/SNAP header, drop pkt!
+Unsupported Group Mgmt cipher %d
+Rejecting PMF incapable ciphers for OWE/WPA3 auth mode
+Pairwise cipher must be AES-CCM/GCM for PMF %d,  Disable PMF for this connection.
+wapi parse: WTF no func pointer defined!
+packet allocation failed
+ioctl_process: wifi thread sem NULL, potential bug, type=%d
+ioctl: failed to get wifi thread sem
+ioctl: failed to post WiFi task %d
+password less than 8
+password convert fail
+Affected by the ESP-NOW encrypt num, set the max connection num to %d
+Cannot set PMF to required when in WIFI_AUTH_WPA_WPA2_PSK! Setting PMF to optional.
+Cannot set PMF to optional when in WIFI_AUTH_WPA3_PSK! Setting PMF to required.
+init rx buffer number=%d, change to default %d
+wifi init: invalid config
+OWE is not enabled but threshold is set as WIFI_AUTH_OWE
+no mem
+appie a f
+appie a f
+wifi_nvs_set: wrong value
+wifi_nvs_set: unknow type=%d index=%d
+wifi_nvs_set fail, index=%d ret=%d
+wifi_nvs_load: no mem
+wifi_nvs_load: index mismatch, i=%d index=%d
+wifi osi_nvs_open fail ret=%d
+wifi nvs cfg already init
+wifi_nvs_set: wrong index
+wifi_nvs_set: wrong value
+m f null
+m f probe req l=%d
+m f assoc req l=%d
+m f assoc rsp l=%d
+m f auth
+m f deauth reason:%d
+m f disassoc
+m f deauth reason:%d
+conn is released
+tx op fail
+m f beacon l=%d
+tx null, bss is null
+m f null
+buffer null
+ieee80211_output_do: Packets larger than static buffer size, len = %d
+Invalid channel flag
+scan: failed to lock the channel, priority=%d
+Invalid WEP key %s
+scan not start, cnx_state=%d
+scan: sta is null
+sta rx wrong csa channel=%d
+eid = 255, invalid length:%d
+BSS already removed, simply leave...
+BSS already removed, simply leave...
+timer e
+no timer handle
+auth is done, but sta is disconnected
+sta_scan: STA is connecting, scan are not allowed!
+Error! Should use default active scan time parameter for WiFi scan when Bluetooth is enabled!!!!!!
+Error! Should use default passive scan time parameter for WiFi scan when Bluetooth is enabled!!!!!!
+invalid type
+add to blacklist: out of memory!
+WAPI: pn err rcv(0x%08x), rcd(0x%08x), not dropped<tid-%d>.
+esf_buf_setup_static: alloc eb fail(%d)
+tx rts error 0x%x
+sw txq[%d] state(%d) is not idle
+reject paintext fragment
+bar eb fail
+create wifi task: task not null
+create wifi task: queue not null
+timer e
+no timer handle
+add mismatch 
+rm mis
+rcUpdatePhyMode: phytype:%d, rs_nrate:%d, rssi:%d
+rcUpdatePhyMode: lowestRateIdx:%d, rateIdx:%d
+rx control blocks=%d
+malloc buffer fail
+ipencil
+ipencil
+misc nvs f
+wifi osi_nvs_open fail ret=%d
+zPLR
+78@T
+8@*K
+8@Np
+<8@~
+68@v
+<8@ <8@
+B:o8@
+Bx78@z
+v8@tv8@
+68@(
+BL68@
+Bl78@
+;8@Z
+;8@t
+;8@X78@D78@,78@
+<<<<P
+I %s: Brownout detector was triggered
+4FreeRTOS: FreeRTOS Task "
+%8@D%8@E %s: restore cache fail
+E %s: flash acquire lock failed
+E %s: flash encrypted write length must be multiple of 16
+E %s: flash encrypted write address must be 16 bytes aligned
+E %s: restore cache fail
+&8@b'8@
+&8@spi_flash
+48@j48@D48@
+38@ 38@
+Z48@
+8@Z"
+8@l"
+8@Tasks currently running:
+rtc_clk
+[0;33mW (%lu) %s: invalid RTC_XTAL_FREQ_REG value, assume 40MHz
+[0;31mE (%lu) %s: unsupported frequency configuration
+divider > 0
+/IDF/components/hal/esp32c3/include/hal/clk_tree_ll.h
+clk_ll_cpu_set_divider
+%s failed: esp_err_t 0x%x
+ (%s)
+ at 0x%08x
+file: "%s" line %d
+func: %s
+expression: %s
+ESP_ERROR_CHECK
+mmu_hal_check_valid_ext_vaddr_region(0, vaddr, size, MMU_VADDR_DATA | MMU_VADDR_INSTRUCTION)
+/IDF/components/hal/cache_hal.c
+cache_hal_invalidate_addr
+entry_id < MMU_ENTRY_NUM
+/IDF/components/hal/esp32c3/include/hal/mmu_ll.h
+mmu_ll_check_valid_paddr_region(mmu_id, paddr, 1)
+/IDF/components/hal/mmu_hal.c
+vaddr % page_size_in_bytes == 0
+paddr % page_size_in_bytes == 0
+mmu_ll_check_valid_paddr_region(mmu_id, paddr, len)
+mmu_hal_check_valid_ext_vaddr_region(mmu_id, vaddr, len, MMU_VADDR_DATA | MMU_VADDR_INSTRUCTION)
+target == MMU_TARGET_FLASH0
+mmu_hal_check_valid_ext_vaddr_region(mmu_id, vaddr, 1, MMU_VADDR_DATA | MMU_VADDR_INSTRUCTION)
+mmu_hal_paddr_to_vaddr
+mmu_ll_entry_id_to_paddr_base
+mmu_ll_get_entry_target
+mmu_ll_check_entry_valid
+mmu_hal_vaddr_to_paddr
+mmu_hal_unmap_region
+mmu_ll_write_entry
+mmu_hal_map_region
+type == FLASH_ENCRYPTION_MANU
+/IDF/components/hal/esp32c3/include/hal/spi_flash_encrypted_ll.h
+spi_flash_encrypt_ll_type
+period < (1 << 26)
+/IDF/components/hal/esp32c3/include/hal/systimer_ll.h
+systimer_ll_set_alarm_period
+false && "unsupported WDT stage"
+/IDF/components/hal/esp32c3/include/hal/mwdt_ll.h
+mwdt_ll_config_stage
+abort() was called at PC 0x
+ on core 
+<cached disabled>
+assert failed: 
+10:49:24
+Apr 30 2024
+f4aea9b
+%d,%s,%s,%s
+%d,%d,%d,%d,%d,%d
+error: pll_cal exceeds 2ms!!!
+index: %d value: 0x%x 0x%x 0x%x %d %d %d %d
+max_gain: %d
+temp=%d,%d,delta=%d
+cal:temp=%d,%d
+correct_power=%d,temp=%d %d
+ulp:set=%d,init=%d
+%d, atten=%d, pwr=%d, %d, %d
+i=%02d  acc=%03d  tgt=%03d  err=%03d  ser=%03d att=%03d %d
+%d, %d; 
+reg_i=%d, indata=%d
+RRRR
+o_O?/
+o_O?/
+%d,0x%x,%d, %d, power=%d, %d
+%d,0x%x,0x%x,%d, %d, power=%d, %d
+c@PG?82,
+%d_%d_%d
+ (%d,%d) 
+%d,%d 
+stage %d: CGAIN=%d FGAIN=%d, (%d,%d) %d; 
+%d, %d-%d, 
+total_pwr=%ld, min=%ld, max=%ld, rftx=0x%x, bb=0x%x, att=%d, dc_i=%d, dc_q=%d
+rxiq: rftx=0x%x, rfrx=x%x, att=%d, bb=0x%x, %d, %d
+[0;31mE (%lu) %s: no response
+start_address < 0x1000000
+//IDF/components/spi_flash/memspi_host_driver.c
+address + length <= 0x1000000
+memspi_host_program_page
+memspi_host_erase_block
+memspi_host_erase_sector
+memspi
+8@boya
+8@gd
+[0;31mE (%lu) %s: configure host io mode failed - unsupported
+out_write_protect!=NULL
+//IDF/components/spi_flash/spi_flash_chip_generic.c
+[0;31mE (%lu) %s: The flash you use doesn't support auto suspend, only 'XMC' is supported
+[0;31mE (%lu) %s: No response from device when trying to retrieve Unique ID
+spi_flash_chip_generic_get_write_protect
+8@generic
+chip_generic
+8@issi
+8@mxic
+8@th
+8@winbond
+chip_wb
+$ 4s)
+p`e*
+@"DA
+@"DA
+@"DA
+%EI?
+@"DA
+@"DA
+9y9*
+@"DA
+.3t$
+@"DA
+P0v1
+P0r*
+@"DA
+PPk)
+P0m\@
+@"DA
+P0cM
+P0\!
+PpV!
+PPX7
+PpGR
+PPI"
+P`l*
+@P`u
+P@{# 
+@"DA
+AXA3
+@"DA
+P '%
+P "I
+@"DA
+7G`TC
+IbJEa
+`0'&
+@"DA
+@"DA
+IbJEa
+2E\A
+2E\A
+P"TEa
+2E\A
+XIch
+2E\A
+bHrE
+2E\A
+2E\A
+2E\A
+C8Cu
+Kc`'
+2E\A
+CxCc
+2G\Kc
+2E\A
+2E\A
+9AczI
+[b\%a
+XCcb
+@*bE
+CxCc
+2EXIcj
+2E\A
+@"DA
+p>cx
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"D&
+G3#&
+VDD#
+VU77""#
+6Tv#
+uu"35
+@bD&
+7wkk
+7gbb
+7gcd
+X3w'
+ `4)
+ @6"
+@"DA
+SIv}
+SIv}
+@"DA
+`0v7
+`<O
+`<O
+`<O
+@"DA
+`<O
+``r*
+UXUc
+UXQc
+`@K# 
+2E|Q
+/2E\E
+``1i
+\\\c
+@"DA
+@"DA
+ -\@8@
+ +\D8@
+\\\c~
+ @Nm
+@T\8@3
+@"DA
+F^76
+F`76
+Fd76
+Fh76
+PPGA
+@"DA
+@"DA
+P0:<A
+ 77%
+@"DA
+@"DA
+ `%c
+\\\ci
+ F7%
+0F7%
+@F7%
+@O7%
+\\\cy
+`Q7%
+PZ7%
+Py39
+0\7%
+P`e<A
+p\7%
+Pg7%
+@"DA
+P`!A
+07'`
+'`#
+`]**
+@"DA
+@"DA
+?}W#
+aI#&$
+Gq#,
+@"DA
+W\Tc
+dXWch
+@"DA
+@"DA
+@"DA
+ 075
+KbL!a
+G\@c
+?}W#
+@"DA
+@"DA
+0p)A
+@"DA
+b\@3
+@"DA
+@"DA
+TUxEc
+bxDX
+UQ75
+?}W#
+`|C
+`|C
+@"DA
+Guw}
+Ax3w
+@AXI
+}V3V
+H370
+Gyw}
+Ax3w
+@AXI
+L370
+@AXL
+XA|K
+FAf}
+@"DA
+XA|G
+XA<C
+XA|_
+XA<[
+XA<G
+XA|G>
+ r\A
+XA<G
+XA|G
+XA|_
+XA<G
+ \@3
+(\@3
+,# G
+4X@q
+4# '
+@"DA
+2# g
+5Vy#
+5La)
+5L=)
+5Ve&
+5Li&c
+5LM,
+5VQ,c
+5L-,
+5L1,
+@"DA
+@"DA
+@"DA
+@I7m
+@"DA
+@"DA
+@"DA
+s% ~
+@"DA
+@"DA
+DFI%a
+Vq9A-
+0@Ne
+@"DA
+TBY!a
+ 0pe
+@"DA
+=Gck
+\DBG
+\HbG
+\@"G
+IHE
+@"DA
+y?HLm
+@"DA
+A\A
+EXE#(
+Kq?c
+@"DA
+@"DA
+@"DA
+ 7'`
+@"DA
+@"DA
+@"DA
+@=7g
+DqEU
+\Lqw
+\TAv
+Byw}
+`\G
+:@cx
+`#(
+`#"
+@"DA
+@"DA
+E53!
+EM;y
+@"DA
+DBI!a
+g@cZ
+%Efc@
+@\@7G
+@"DA
+@"DA
+@"DA
+`75
+H@HN
+@"DA
+7%8@
+F7&8@
+`f#*
+\M7d
+\MH@
+@"DA
+|M7g
+@"DA
+@"DA
+@"DA
+<]7g
+@"DA
+IbJEa
+@"DA
+@"DA
+@"DA
+&Glc
+@"DA
+Glc\
+`1[A
+`qz5
+`!zY
+@"DA
+@"DA
+ Qy"
+0a^m
+iq#&
+@"DA
+@"DA
+@"DA
+TB7f
+@"DA
+ n7&
+`k7&
+ @&*
+ Y7v
+@"DA
+'7g
+'Gnc
+D92F
+IbJEa
+IjJMa
+Q2cL
+ T~Y
+ dWQ
+*77u
+ T+%
+ tR-
+ TQQ
+ X7g
+w7l
+zd7u
+p!L*
+pA$*
+pa *
+EK7u
+EI7u
+EK7u
+AF7$
+DI7u
+EK7u
+EI7u
+@*DIa
+@"DA
+@"DA
+,#(!-#&1-#$A-
+1<cL
+@"DA
+AF7%
+TBY!a
+@"DA
+0PZ# 
+@"DA
+P"TEa
+DIH@
+`%7g
+'Gv3
+]Gci
+EHA
+EHA
+@"DA
+@)Gcp
+@"DA
+@"DA
+vA*m
+@g#(
+@"DA
+@"DA
+<U# 
+@"DA
+ dR7
+ $"*
+tH0H
+tL0L
+tD0D
+@{}U!
+@w}U
+@s}Ua
+@"DA
+@"DA
+HHcA
+IbJEa
+dc^
+ $}Z]
+  }Z
+@"DA
+I\L>
+ `E*
+I#($
+ @be
+@"DA
+ `[\P
+@"DA
+4I|IcU
+ 053
+#?cG
+  XQ
+IbJEa
+  b*
+P"TEa
+LP\T
+<HxH
+D\[cY
+@"DA
+`0}UQ
+@"DA
+ u#&
+E<_x_
+D4_x_cb
+|}Ui
+ x}U
+ w}U
+ s}U
+D4_x_cf
+\PTT
+I\@&
+XHcg
+@"DA
+PH&
+PHc}
+IcVI
+@"DA
+@"DA
+9Gck
+A\AX@
+@"DA
+A\AX@
+@"DA
+@"DA
+L\L3
+@"DA
+@"DA
+`OcS
+IbJEa
+EPAc
+@"DA
+`Z7*
+PJA*
+p>cl
+DX@c
+DX@c
+D\@cx
+D\@cz
+%Gcw
+p>cm
+DX@c
+D\@cu
+DX@c
+Gw2G
+GbGc
+ [cb
+0[cj
+0[cn
+0[cj
+0[cn
+@"DA
+G=Gck
+@"DA
+@"DA
+@"DA
+IbJEa
+@"DA
+@"DA
+DDH@
+@"DA
+@"DA
+@"DA
+@"DA
+@%D@N
+Dcr$
+K"LEa
+`NHH
+KbL!a
+ [cH
+0[cj
+@#&$
+P0bM
+)q#.
+0[ck
+ [cj7
+ [cj7
+ [clW
+ [cj7
+0[cj
+0[cj
+0[cj
+ [ck
+IbJEa
+@P_e
+K"LEa
+Lcs,
+@"DA
+p;;*
+p+r*
+p+W*
+ZF[Ia
+Dcv$
+0P"u
+FPLL&
+`;:*
+K"LEa
+`+a*
+K"LEa
+DFI%a
+`ncM
+P;j*
+P;_*
+@[{*
+L&Da
+L&DI
+L&Dq
+L&DY
+L&DA
+@k(*
+x|Tc
+0;s*
+x4W2G
+JBKEa
+EHA
+EHA
+x\@<
+EHA
+@"DA
+D\M}
+A(7d
+@"DA
+EHA
+@"DA
+EHA
+@"DA
+DH@
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+Nqw}
+E7%8@
+@"DA
+@"DA
+0`\,
+ p"F
+@>}U
+:}Ui
+ %}U
+!}Ua
+@"DA
+@"DA
+@>DD
+"\Ecf
+E=Gc{
+}Gcz
+-q#.
+uWcw
+LDH@
+LDH@
+`^\D
+-q#.
+@"DA
+@"DA
+TBY!a
+XO3w
+XPXC
+JBKEa
+@"DA
+|768@
+@"DA
+E758@
+@"DA
+F)7&
+@#7%
+@"DA
+@"DA
+@"DA
+@"DA
+s&&:7
+s&&:7
+;s&':7
+s&&:7
+;s'7:s
+@"DA
+@"DA
+@u7g
+EL7&
+%Gca
+@"DA
+ +}U
+@"DA
+p'$*
+@"DA
+@"DA
+@"DA
+IbJEa
+YAF@
+@"DA
+ `0*
+ `$"
+IbJEa
+HFJTJ
+HFJTJ
+P"TEa
+B^RS
+ @G}
+;Acj
+\B]%a
+YbZaa
+TBY!a
+TBY!a
+XRXbU
+YfZIa
+@"DA
+TBY!a
+@"DA
+G}Wc
+G}Wc
+ZB[aa
+xC3W
+@"DA
+@"DA
+@"DA
+C}Wc
+C}Wc
+C}Wc
+@"DA
+@"DA
+P"TEa
+uWci
+\EqWc
+\E}Wc
+@"DA
+F\"
+]}Wc
+\}Vc
+I\\c
+TBY!a
+\EAWc
+JFKea
+JFKea
+PbT!a
+\EyWc
+(HD
+IfJea
+\DyWc
+"aWc
+D}Zu
+I}Ze
+G}Wc
+\D}Wc
+Y"Z!a
+(HD
+@"DA
+@"DA
+@"DA
+=Gcl
+@"DA
+p17"
+@"DA
+@"DA
+ !75
+@"DA
+@"DA
+0q75
+`q75
+p1*J
+@"DA
+pa[*
+@"DA
+@"DA
+Pz75
+=GcD
+@:75
+P:75
+0>75
+KbL!a
+p!YE
+@F75
+@@5&
+<C# 
+IbJEa
+@"DA
+@"DA
+=Gcj
+ )75
+ZB[aa
+ZB[aa
+p1K*
+IbJEa
+@QH*
+D3d$
+@AI1
+\EEHA
+%E--
+%E-#}U
+!E])
+F.76
+@"DA
+@!."
+@"DA
+@"DA
+A\Mc
+@D\M
+A\Yc
+A\Ac
+PM75
+PO75
+!Gc@
+Fh7F
+pH75
+Fo7F
+@"DA
+pn75
+Fv7F
+`p75
+F{7F
+F~7F
+pU75
+`Uyq
+F~7F
+ aOi
+@"DA
+@"DA
+@"DA
+ 47E
+ 67E
+@"DA
+7Acc
+PP7E
+`T7E
+@"DA
+@"DA
+p97E
+@"DA
+@"DA
+@"DA
+0X]c
+@piJ
+@"DA
+@"DA
+\\)Gc
+@"DA
+`$7E
+@p#U
+`17E
+F7F
+XA\@
+XE\D
+@"DA
+0Hl\"
+@"DA
+@"DA
+PL7E
+`L7E
+pL7E
+|D7w
+tD7w
+tD7w
+F&7F
+0Hl\"
+@"DA
+p&7E
+ G7E
+b4H7w
+0@Jo
+Fb7V
+PZ7E
+`Z7E
+<H7w
+6XG#
+Fo7V
+Fq7V
+pr7E
+4I7w
+zt]7w
+P47E
+N%Gc
+ 87E
+Fz7V
+`;7E
+ !-5
+F|7V
+=Gcb
+pu7U
+`w7U
+K"LEa
+@r7U
+@"DA
+0t7U
+\DX@TC
+X@\D\
+`&7U
+ 17U
+p27U
+057U
+ A7U
+@A7U
+0D7U
+@D7U
+`F7U
+XD3e
+@f7U
+ l7U
+@"DA
+P|7U
+`|7U
+ N7U
+@N7U
+pS7U
+=Gcc
+@"DA
+ 7U
+@"DA
+@"DA
+@0$*
+\X#*
+<Dc
+K"LEa
+Y"Z!a
+00(*
+@"DA
+@"DA
+F_7V
+P}7U
+Fc7V
+Fc7V
+%Gco
+@"DA
+%Gco
+$Ec
+$E#
+$E5
+<D}Wc
+@"DA
+@"DA
+Fg7V
+c|D#
+$E# 
+P"TEa
+DXBc
+ @#"
+F~7V
+@"DA
+F~7V
+037U
+'E-
+%Gco
+@"DA
+$Ec
+@"DA
+@"DA
+@"DA
+H)O1
+%GcB
+`rAU
+F~7f
+pF7e
+ G7e
+`O}U
+IbJEa
+@"DA
+X@PL5
+F~7f
+%Gcc
+JBKEa
+"\W#
+p7e
+@"DA
+@"DA
+@"DA
+"HWc
+@"DA
+@"DA
+WA&m
+LBM!a
+0;7e
+uWcd
+P37e
+@p3q
+@"DA
+b3l
+PJ7e
+JBKEa
+"\Ac
+EAwc
+KbL!a
+%Fcb
+%Gco
+@"DA
+Y"Z!a
+@H@9
+@"DA
+@"DA
+p`a#
+ H77
+p@I#
+LK7w
+ {7e
+O77
+LO77
+S77
+"TK1g
+"XKy
+"XO]
+TCXA
+ o7e
+@"DA
+PA77
+PE77
+O77
+LO77
+S77
+@"DA
+@"DA
+p}UQ
+@"DA
+a}TQ
+`?# 
+@"DA
+F}Vl
+F"7f
+F"7f
+F"7f
+`U# 
+@"DA
+p#7e
+@"DA
+@"DA
+FE7f
+FJ7f
+TBY!a
+TBY!a
+YbZaa
+JiW#
+@"DA
+ '7e
+Fn7v
+Pl7e
+`l7e
+pl7e
+GXCc
+Po7e
+ =7e
+0=7e
+@=7e
+P=7e
+`=7e
+PG7e
+@"DA
+@"DA
+@"DA
+P37e
+@#7e
+SEW#
+ I7e
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+Pw7e
+`w7e
+SEW#
+@"DA
+EHE
+EHE
+EHE
+EHE
+@"DA
+AGcl
+@"DA
+@"DA
+`?7u
+JBKEa
+0J7u
+@"DA
+@"DA
+@"DA
+K"LEa
+ZB[aa
+F1FL
+HCGPG
+KXK#
+BAh}
+@"DA
+@"DA
+@"DA
+@"DA
+P"TEa
+@fD%a
+P"TEa
+@"DA
+@"DA
+ >HD
+@;(H
+@"DA
+p\H"
+@"DA
+h}UI
+@d}U
+@`}U
+g*#*
+@"DA
+F~7v
+MHI
+@"DA
+}Gc~7
+).cN
+@MGc}'
+ZB[aa
+JBKEa
+P2z"
+@"DA
+`bL*
+Pr`cM
+PrY*
+I&J%a
+JFKea
+JBKEa
+%A# 
+JBKEa
+%Gcs
+@"DA
+Pr?"
+@"DA
+%q#.
+`f#.
+E\E# h
+mq#&
+ZN[Qa
+Dr7v
+Dr7v
+Dr7v
+Dr7v
+Dr7v
+Dr7v
+@"DA
+p%{*
+`he7
+`hd7
+`hc7
+`hb7
+`ha7
+`h`7
+@"DA
+`HU*
+`(Q*
+@"DA
+E/7u
+@"DA
+@"DA
+eGcx
+eGcp
+eGcr
+eGc{
+%Gct
+eGcq
+%Gc|
+eGcs
+eGc|
+%Gct
+XI7
+UGct
+o0`KR
+)Gck
+iAo0
+o0@)
+o p^
+o pZ
+o PS
+o pK
+o 0G
+o  l
+qUDo 
+o P8
+o 0(
+o `fc
+o @i
+iAo 0X
+o  T
+o @T
+o @}#
+o  }
+o @[
+o  q
+o `G
+%Gcb
+o `?
+%Gc}
+o  7
+o  1
+eFc`
+7%cR
+D}U36
+uVcd
+}X36
+yVct
+"G37
+2G37
+BG37
+2W\C
+YbZaa
+E;!d
+ c!e
+Y"Z!a
+$}UQ
+)}U5
+'Dm#.
+1&!f
+%DlcQ
+na,"
+"G3G
+JBKEa
+`b;H@
+}PDD
+LPHH@
+P@@
+l}Ua
+ 1N"
+@"DA
+@"DA
+e<@J
+ |@c
+$\Dc
+(XHc
+Y"Z!a
+D@N
+\@#"
+P"TEa
+\B1Gc
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+TBY!a
+(PcJ
+@"DA
+IbJEa
+IbJEa
+pfXAV
+pFNA&
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+JBKEa
+@"DA
+@"DA
+IbJEa
+@"DA
+4;cF
+p6f*
+EsQGt
+@"DA
+TBY!a
+N}UY
+A}U5
+1}U%
+/}U1
+#}T&
+\Uc_
+F1FL
+TBY!a
+|}UE
+6x}U
+  y(X
+>}T1
+ 0RG|Hc
+(LcS
+v (L
+@ghH
+@"DA
+@"DA
+@n#$$
+@"DA
+@"DA
+@"DA
+#"$)#,
+D#$
+ @6*
+$E(9
+`w#(
+D}Wc
+@"DA
+@"DA
+PbT!a
+A}Wc
+ T# $
+@"DA
+PbT!a
+@"DA
+AYGcJ
+@"DA
+JBKEa
+@"DA
+@"DA
+@"DA
+@H-e
+@{-e
+\E#$
+@'}U
+!q#.
+F!F,
+%GcK
+@l}U=
+i}U)
+IbJEa
+!Gc
+@"DA
+BcD 
+2\Fc
+JXJc
+HXD3
+LbGc
+JXJc
+HXD3
+8T<P
+\P,T
+4AXA
+|\QGc
+@"DA
+@"DA
+@"DA
+@"DA
+Gt#
+QG#*
+@_cF
+|\YGc
+@"DA
+%D$J
+@"DA
+@"DA
+@"DA
+YG#*
+YbZaa
+ '\\%G
+ [0@
+A$@%E
+=$@)E
+@"DA
+@"DA
+@"DA
+Mq#&
+@PY*
+ppw*
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+ y# 
+`q#.
+@"DA
+`c#.
+@b# 
+@^<@
+@](H
+@"DA
+@"DA
+@"DA
+K\\:
+X\|[
+JBKEa
+Jc~4
+*IJ
+p4# 
+P3<H|
+@"DA
+0/T\
+#T
+AG#,
+YG#*
+<H<
+@"DA
+p qq
+@# j
+X],_
+@"DA
+@"DA
+@8[cD
+@TCci
+@6|#
+7A8@
+00c
+JBKEa
+`Pt!
+y\\#
+`E\\#
+4A# 
+TA1Gc
+C!Gc
+@"DA
+D]<A
+Gct7
+LBM!a
+]Gc
+IbJEa
+0FA#$
+`-\\
+YG#*
+L\hE
+KbL!a
+UA#,
+K"LEa
+@X\PC
+@@5R
+YfZIa
+t\YGc
+I&J%a
+HA!Gc
+@"DA
+@"DA
+@"DA
+@"DA
+3<A#
+LBM!a
+IbJEa
+DAcb
+JBKEa
+@}Gc|
+tAc}
+@# z
+KbL!a
+tA# |
+ZA# K
+@"DA
+@"DA
+yGcb
+}L3
+CbG\
+[b\%a
+@"DA
+EA# V
+@# F
+=c3s
+=c3s
+@"DA
+=g3w
+AGcd
+C=ey
+")gc
+&XPc
+DH\
+V## 
+DH\
+DH\
+DH\
+DH\
+B=g}
+H\D
+IbJEa
+T"T3
+"Scbh
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+p`>*
+@"DA
+@"DA
+p 8*
+@"DA
+@"DA
+@"DA
+@cdF
+I&J%a
+$# !%#.1##,A##*Q#
+AGcs7
+YbZaa
+%q#.
+@"DA
+@"DA
+I\Mc
+`@yJ
+ @N*
+@"DA
+@"DA
+@"DA
+IbJEa
+IbJEa
+P Q"
+K"LEa
+JBKEa
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+K&Lea
+@"DA
+K"LEa
+K&Lea
+K&Lea
+)q#.
+Fci&
+IbJEa
+!Gcz
+C3w7
+C3w7
+K&Lea
+AGcp
+IGcu
+@fD%a
+@\BcC
+@\NcL
+@\RcI
+@\VcM
+@XBc
+@\FcH
+@\JcO
+@TBc
+@XFc
+@\JcN
+IfJea
+-EY,t
+O2G6
+M$#(
+@"DA
+@"DA
+"-EY 
+ `G&
+I&J%a
+C%Gc
+@"DA
+C%Gc
+A%Gc
+C-Gc
+C%Gc
+P@"!
+I&J%a
+@"DA
+@"DA
+IbJEa
+@"DA
+@"DA
+@"DA
+@"DA
+FrF@J
+IbJEa
+ZB[aa
+ZB[aa
+"E"V
+"ERF
+["\aa
+E9,*
+@gqt
+Y"Z!a
+@"DA
+@"DA
+JBKEa
+P@e*
+JBKEa
+@)Gcx
+JBKEa
+UWcn'
+@p8*
+3WGA
+\AQWcm
+K"LEa
+F# !G#.1E#,AE#*QE#(aE#&qE#$
+A3hh
+@#(!A#&1A#$AA
+F# !G#.1E#,AE#*QE#(aE#&qE#$
+3WwA
+@"DA
+JFKea
+0pC*
+0p**
+JBKEa
+JBKEa
+0P5"
+00\*
+0pj*
+I# e
+2# !3#.11#,A1#*Q1#(a1#&q1#$
+#$a,#&
+*#.Q*
+#(q*#*
+-#&a,
+# q/#"
+IbJEa
+(@l@
+(DlD
+aGcCg
+BPB
+]GcC
+G3H
+ 7#$
+@"DA
+CLC)
+"F2E
+IbJEa
+InJma
+@"DA
+@"DA
+[b\%a
+=Gcb
+@"DA
+@t}U
+q}UU
+@"DA
+-]
+-e
+.}Tu
+@*}T
+K"LEa
+K"LEa
+@"DA
+F768@
+q.}Tc
+KbL!a
+P`h"
+P [9
+P 7*
+P@4}
+C\C3
+@"DA
+}1Uq
+@z}U
+1Gch
+IbJEa
+WbWt
+`J1U
+K"LEa
+CrG5
+GbG5
+GRG5
+CrG5
+GbG5
+GRG5
+JBKEa
+2F@&
+@"DA
+IbJEa
+@"DA
+7Acb
+7AcP
+@"DA
+@"DA
+@#(%
+XQcl
+XQcp
+XT\Pc
+IbJEa
+I&IJ
+IjJMa
+)GcM
+F"F,
+iq#&
+Y"Z!a
+IbJEa
+JBKEa
+Y"Z!a
+@cs6
+1Gcc
+JBKEa
+IbJEa
+WbWt
+@"DA
+@"DA
+JFKea
+%q#.
+|L0H
+K"LEa
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+vA# 
+@UGcZ
+@"DA
+KbL!a
+(#(!)#&1)#$A)#"Q)# a)#.q'#,
+K*LMa
+ZWcm
+IbJEa
+mq#&
+[.\Qa
+*W\A
+YbZaa
+2/7z
+"h2F
+IbJEa
+JBKEa
+@P@c
+IbJEa
+@"DA
+["\aa
+PHLJ
+KbL!a
+HLHJ
+D7u
+FJFl
+ZB[aa
+"W|D
+JBKEa
+-Gc`
+qGc`
+YbZaa
+I&J%a
+1Tcx%
+~cU%
+@"DA
+A!Gc
+G[#*
+@"DA
+@"DA
+"D3E
+@"DA
+B"DD
+@"DA
+@bD&
+/yqJ
+\E}Y
+P"TJ
+"DA
+@ I7
+QcLH
+1ZHbD
+)yq"
+JBKEa
+F2G]
+E!EA
+G'!>
+P"T&
+Em#E
+G7!>
+G'!>
+}Gc\
+@"DA
+A9qZ
+PbTN
+A9qZ
+$}T"
+LBM!a
+A]qR
+@&D&
+'GQck
+Y"Zaa
+01kA
+Eo@qG*
+XU\A
+TCXW
+@TCXW
+Eaao
+YbZaao
+"W2X
+IbJEa
+p!3*
+D/"
+ E7I
+XCcS
+Z@7F
+G7?#
+%Gcd
+%Gce
+op!.
+/AgU
+0bDBI
+mq#&
+%A35
+%A35
+EyF#&
+ rGc
+`Aro
+pA"c
+EA35
+'U\@
+X@TC
+XAPC
+Eo aC*
+43EE
+!43EE
+GI&3
+\U9qN
+E!am
+&!G5
+!aop!3
+E!ao
+PQ`7
+P1nbD
+aoPQ]7
+Ud@#
+q.2F
+E# 4
+Wg@#
+K"LEa
+KyqN
+IbJEa
+H!Fc{
+C3?6
+[b\%a
+\D!w}
+\DAg
+EEao
+!Gch
+GAFc
+GAFc
+X@\C
+@"DA
+\AX@2F
+@bD&
+\LAw}
+H5/c
+@"D35
+=G34
+G2Ea
+JBKEa
+P"TEa
+LBM!a
+0@%G#
+MGcU'
+GBG#
+P"T35
+@"D&
+aGct
+h\@"
+0`zc
+T!9E
+T!=E
+0 sc
+T!EE
+0`mc
+T!ME
+T!UE
+T!QE
+0 hc
+T!YE
+0@fc
+0@dc
+0@bc
+0@[c
+0@Yc
+@"DA
+$!7E
+IbJEa
+ao0@
+@1r2EQ
+dhX35
+hX35
+<!G#
+@"DA
+PfT&
+GD?c
+GDGc
+FZ!#
+E4?iE
+p@ cq
+FT@rG*
+FZ!#
+ET?qE
+Ed?uE
+o 1oA
+Gg$*
+@"DJ
+ Q97
+@(\l\c
+@"DA
+ Ai"
+ @h*
+@"DA
+D4@H
+` <c
+F|Ac
+@bDJ
+XI9q"
+XITE
+g?cw
+LIHE
+@"DJ
+`L7D
+d?)H
+P"T&
+IbJEa
+@"D)G#
+`qA!
+`Q?!
+XXT#
+`Q9)
+XXT#
+`q.}
+@"DA
+\C}v
+@bD#
+@"DB
+@C!G
+U!g&
+@"DA
+!Gc{
+@"DA
+P"TJ
+IbJEa
+@"DA
+9XT\K
+X@TT}v\C
+%A35
+ p;*
+XT\K
+GUA7K
+PbTb
+ =Gc
+<%F>
+!Gc
+@&DZ
+#\\2E
+G0]H
+X@\C
+FAFc
+P"T&
+GAFc
+P"T&
+Fo`T_TU
+Uyq"
+LBM!a
+6)Mcd
+RE!F
+:RE,
+@fDN
+P"TEa
+XAXC
+EA35
+IbJEa
+\AaF
+TEao
+G)Dcd
+PbT&
+\AaF
+F\Ec
+IbJEa
+@bDN
+X@"D
+@bD&
+@"DA
+XU\A
+IbJEa
+@"DA
+N=Ock
+@"DA
+Eo`p
+Y"Z!a
+@"DA
+``e*
+K&Lea
+1CcI
+[&\Ia
+K"LEa
+ZB[aa
+@"DA
+JBKEa
+0pv7
+@bDN
+\Uuq"
+GUAc
+PPK9
+!Gcx
+V2S*
+Eo00O
+=D"
+-Gck
+-Gco
+'L'c
+@}UA
+IEao
+LBM!a
+G|Xc
+gLPL
+5f7E
+@eBF
+/AgU
+0bDBI
+JBKEa
+JBKEa
+EEao
+` ,c
+P0Wc
+!WcG
+G} c
+WL c
+@"DA
+@"DA
+!F9E#
+``B=
+@"DJ
+@&D&
+@&DN
+F"T*
+TEao
+G"G2F
+DBI6
+BbDD
+B"DD
+@"D&
+HA)+
+%E1H
+@"DA
+ao`pS
+@bD>
+LBM!a
+LDbD
+@"DJ
+!Gcm
+Eo`PtA
+Y"Z!a
+Y"Z!ao
+EEao
+IbJEa
+@bDJ
+(3:@
+PbT!a
+IbJEa
+@"DA
+IbJEa
+@3#$
+=GcU
+Gi #
+L!F#
+KEao
+@bD&
+bD#,
+G4/#
+ 3%FL
+GT/#
+G\Dc
+GTB:
+\A]q
+GTB:
+bD#"6
+<!F#
+GTB:
+@bD&
+o` ]
+o`@K)N3
+o0`Io0 Go@
+(o0`C
+EoPpu
+Lo`ps.
+o`PaoP
+ao@05
+@@F*
+op Z77
+oPp"op ]op
+o@pNoP 
+po0PIo00u
+o@0hA
+X@\TDC
+pcr&
+FoP0
+@\UXA
+P"TJ
+JBKEa
+@`v)
+aop#E"
+)Eo0 2
+%Eo0
+E!Eo0 1
+Eo0 0
+Eo0 /
+Eo0 .
+TS\[
+@"DA
+@"DA
+@"DA
+E3i[
+K"LEao
+@cfY
+K"LEa
+@"DA
+=Gc`
+X\T>
+ce\P
+@"DA
+IbJEa
+@"DA
+@"DA
+KbL!a
+Eaao 
+9)7E
+P S#
+@"D&
+E#,$
+@"DA
+o03Yyq
+ 0I2G
+JBKEa
+\U]q
+i)"G
+@&DN
+@"D&
+@bDN
+@"DA
+G)Dc
+GADc
+G)Ec
+G!Ec
+JBKEa
+@bD#"9
+KTA#"
+K"LEa
+(]qR
+YbZB[
+G3w'
+\Ayq&
+IbJEa
+@3wg
+<yq"
+@X"H
+A/#"
+A!# 
+Ay#(
+A2#*
+@"DA
+G%#,
+Gr#&
+Gn#(
+Gl#.
+G-#"
+Gq#&
+Go#.
+g/#"
+G[#&
+Gm#,
+g^#$
+Gj#&
+Gg#(
+'e#&
+',#,
+Gs#.
+Gt# 
+'g#(
+G{#"
+Gq#,
+'3#*
+g4#,
+Gb#.
+G^#$
+gH#,
+G~# 
+G}#"
+Gh#(
+'1#,
+Ge#.
+'0#$
+Gf#&
+G~#"
+g3# 
+G/#$
+'\#(
+GW#*
+(3iI
+PbTq
+GB# 
+E3w'
+IbJEa
+`\X7
+]Gcd
+`S}U
+K"LEa
+P"TEa
+IbJEa
+@"DA
+@"DA
+%Gci
+%Gc`
+ZB[aa
+@"DA
+|Hqw
+|H7G
+%Gcd
+@z!e
+X@|C
+2JcS
+IbJEa
+2JcQ
+@"DA
+@"DA
+@"DA
+DFI%a
+@"DA
+@@7w
+@:7w
+@"DA
+7E8@
+7E8@
+@"DA
+@"DA
+@"DA
+`QcgZ
+4Acq
+XH\Tc
+HXTce
+H\Tc
+K"LEa
+}Z#"D
+TBY!a
+@"DA
+@"DA
+0[7e
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+[b\%a
+ Y#$
+@"DA
+IbJEa
+P`u*
+@"DA
+ e}U
+a}UA
+@"DA
+@\@\
+IbJEa
+[}Vl
+[}Vl
+@"DA
+@"DA
+X@#"
+`J#"
+A\A\
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+ McE
+IbJEa
+ # !!#.1
+Y"Z!a
+JBKEa
+@"DA
+@"DA
+"#(!##&1##$A##"Q## a##.q!#,
+@"DA
+JBKEa
+@\@\
+DXDc@
+>BD3
+"EH
+@"DA
+` }# 
+@"DA
+G=Gcb
+XA\G
+XA\G
+X@\G
+@"DA
+@"DA
+@fD%a
+ n#&
+@"DA
+I&J%a
+@"DA
+FL@&
+@"DA
+}TAF,
+P"TEa
+@"DA
+@"DA
+L@AF
+PbT!a
+uYH<
+rYH<
+` tYH<
+I&J%a
+@"DA
+@75
+@"DA
+X@\G
+@"DA
+@"DA
+@"DA
+@"DA
+@"DA
+Lc
+p#35
+K"LEa
+MGcv
+ .<@
+P@49
+@"DA
+KbL!a
+\@#"
+@"DA
+p0~&
+pPs&
+pp+N
+C#"7
+@"DA
+P"TEa
+D# !E#.1C#,AC#*QC#(aC*
+0DtB
+#.QA
+@#"1C#(!A8
+@#&AC#,aA
+B# !C#.1A#,AA#*QA*
+ppk#"
+pp}cB
+Aq#&
+p0S*
+p0W*
+p0V*
+pPM*
+p0fcC
+p0VcN
+pPUcL
+p0TcJ
+p0@cO
+pPEcO
+pP_cG
+pP^cO
+pPAcC
+pP@cK
+pP=cG
+pPWcO
+pPVcG
+p00cM
+pPB*
+ `~cT
+G2Wc
+)q#.
+8EtC|
+8DtC<
+"# !##.1!#,A!*
+p`)"
+K&Lea
+<D!F
+$# !%#.1##,A##*Q##(a##&q##$
+`pxcB
+#$A!# 
+`0cN
+`p5#.
+@"DA
+PpO#&
+@8DxC
+`P,u
+@8DxC
+IfJea
+@8DxC
+@"DA
+``Z(
+`@TcJ
+` XcI
+6# !7#.15#,A5#*Q5#(a5#&q5#$
+IHE
+LHH
+` ,*
+``/*
+` :cE
+`@<cG
+` =c@
+4#(!5#&15#$A5#"Q5# a5#.q3*
+e<D#
+)q#.
+P0bJ
+PPU*
+P0^cF
+PpLV
+KbL!a
+@0/*
+@0+#
+@P&#
+@p!#
+@ }*
+P ecI
+P IcW
+P@,#
+P@"J
+JFKea
+P`0cE
+P *
+TBY!a
+@&Daa
+,LpL|
+,L|L
+[j\-a
+@"DA
+Y"Z!a
+@"DA
+ 3ff
+'D$c
+@"DA
+002Y
+\yY!
+Y"Z!a
+0p #.
+@"DA
+IbJEa
+XQG:
+XqG:
+LBM!a
+G#%Gc
+G#-Gc
+#,$!
+0.cE
+ QFl
+@"DA
+  X"
+@"DA
+P&#&
+MGcv
+`I}Um
+@"DA
+@"DA
+<P@DJ
+9Gcs
+-q#.
+mq#&
+-q#.
+X8@3
+K&Lea
+ E|@
+(@c
+Tt@
+Xt@
+}#c@
+A+cA
+@"DA
+@"DA
+@"DA
+=Gcy
+JFKea
+\EI"
+@"DA
+KbL!a
+8L|L8
+@"DA
+@"DA
+@"D&
+BHA:
+F"F2G
+AHAA
+G# $
+AHAJ
+bD2F
+DR@C
+EP@ci
+DR7i
+@"DA
+@"D&
+@"D&
+2EbD
+\A"F
+DBIN
+@"DA
+@"DA
+@"D&
+@"D&
+Eo@P}A
+@"DA
+N#"o
+12DA
+@bDU
+'D&
+C7W8@
+7G8@
+7G8@
+7G8@
+$7G8@
+"7G8@
+7G8@
+7W8@
+7W8@
+7W8@
+&7G8@
+$7G8@
+7'8@
+7'8@
+@"D7G
+GFD7
+@bDN
+E-E#
+@jDN
+`\T7
+@"DA
+[-ao
+IEaB
+@bDB
+DBIA
+}E7f
+@#"h
+@"D"
+GZ29
+@&DZ
+GqTE
+K"LEa
+rNbC
+P&TN
+?cdl
+E%O3U
+V3@}
+# !!#*Q
+`!fTW
+$A U
+W'!&
+@BI#
+FG EG
+@bD#
+IbJEa
+@bD#
+2CcZ
+"NcW>
+yKct
+DBI"J
+|LAy
+WU3w'
+|L-g
+@"DA
+Eaao
+A#4
+E%ao
+`<CN
+LcCp
+-DaK
+@"DA
+D AG
+eG3E
+rORN#
+I&J%a
+F9H(
+@"D&
+G*2c
+IbJRK
+@"D#
+IbJ7
+Eaop
+XBGRU
+BGcS
+XRGbU
+BGcU
+"G#"
+eq#"
+!G#.1
+2GcP
+2Gc_
+cME/
+3YYAB
+\Ac
+XbUuI
+ErW6M
+rY3YYA
+'(,>
+F)F,
+D}Z5I<
+?9G#
+3Z*AR
+}Y3Y
+0@8cG
+@U#*
+ T#$
+a&|P#
+.2El
+XTU
+\TP
+`C#*
+@bD&
+0*|Q
+?2El
+!F# 
+M=2El
+Y2El
+bD2F
+hH\@
+$HP
+HLX#"
+DTHc
+DHH
+THcy
+TPZ
+TPZ
+G=g}
+G#*4
+P"T&
+ CLP
+@B\
+`AL\
+`<LX
+H\PTHP
+ $<@#*
+TFYIa
+ocU%
+PgcU%
+@*DMa
+@"DA
+IBI&
+@"DA
+Wcm'
+J%F!H
+%Fcw
+!HAC)Fc
+!Gc@
+%Fcc
+0rc_
+3yy
+ WcJ
+VBVN
+C&HcH
+'ARE
+bD2F
+IbJ&
+IbJEao
+<3t$
+IbJ&
+IbJEao
+<3t$
+N}T3
+}Scj
+@"DA
+F}X3^
+M+2G
+]Fcz
+FPF# 
+C}Vc
+C}Vc
+HIcS
+\B]n
+@#(!A#&1A#$AA#"QA# aA#.q?#,
+`c\A>
+}FcF
+vW}F
+A}F
+APA
+vW}F
+CPC
+FbN2E<
+IRWc
+]AcQ
+WjW# 
+W2W!
+W# +
+jIcT
+W# 7
+WRWc
+W2W!
+WcX0
+W# +
+W# +
+pplc
+p0jc
+GbW!
+pPfc
+W# +
+pPbc
+pPZc
+p0Vc
+W2W!
+JZW# 
+pPF5
+WRW3
+pP:o
+8#(!9#&19#.
+8#$A9#"Q9# a9#.q7#,
+`Pn#"
+}FcO
+}FcO
+}Fc@
+}FcO
+W+@ca
+}FcO
+}W#.
+}W#.
+P 8#$
+}FcO
+pp`a
+@ca|
+9Ecd
+5Ocg
+5Ocl
+!Ocp
+3ZA
+p@R7
+P 1#
+aop4
+bD2F
+aop4
+aop4
+M+2G
+]Fcz
+FPF# 
+C}Vc
+C}Vc
+\B]n
+@#"QA
+@#(!A#&1A#$AA# aA#.q?#,
+ `K9
+V2E&
+00F\A>
+}FcG
+pT37
+A}FcO
+`icU
+APA
+vW}F
+CPC
+FrG.
+XjE,
+ 3cD
+FRN2E\
+,*\3
+I6Gc
+2BT>
+mAcQ
+WjW#
+*\ce
+ZIcT
+W# 7
+WBWc
+<AcS;
+WcX0
+`PZc
+`PVc
+`0Rc
+@AHcN
+`pMc
+W2W!
+KZW# 
+WBW3
+%Gco
+mq# !
+F2F,
+FD"
+bD2G
+%G# 
+XH#$
+^o
+`LcS
+ *rW*
+9GcR
+VbGc
+d2Dc
+E"Ej
+ c"E
+`&PE
+P?cU
+p;rF5
+F"E)F
+*LMa
+U@cG
+K%?=
+FI%a
+Y)@#($
+@cQ*
+-# 
+i## 
+TZ@V
+9?!Fc
+GA}W3W
+bD2F
+bD2G
+\P#&
+@2#"
+DBI"JN
+n#&5
+EAMGcH
+I"J>
+):2G
+2D#,
+bJEa
+IbJEa
+]Fc{
+FPF# 
+C}Vc
+C}Vc
+FyqN
+P"T#
+DHH
+TA# $
+#.19#*Q9#&
+:# !;#,A9#(a9#&q9#$
+ErN>
+2W}F
+E)F%G3
+G)F%G
+2V}E
+2VB
+2VB
+2VB
+2VB
+3,Ac^
+2VB
+2VB
+2VB
+2VB
+ q"SrG
+3ACA
+HAHA
+<@#*
+@"DA
+D@@c
+K"LN
+"#(!##&1##.
+"#$A##"Q## a##.q!#,
+}FcO
+}FcO
+}Fc@
+}FcO
+*@ca
+}FcO
+}FcO
+9Ecd
+lP# 
+l # 
+)# D
+~2El
+r2El
+bD2F
+M+2G
+]Fcz
+FPF# 
+C}Vc
+C}Vc
+\B]n
+#(!;#$A;#.
+:#&1;#"Q;# a;#.q9#,
+ErN>
+2W}F
+E)F%G3
+G)F%G
+2V}E
+2VB
+2VB
+2VB
+2VB
+<Ac^
+2VB
+2VB
+2VB
+2VB
+"SrG
+jACA
+mq# !
+F2F,
+P"T# 
+BE!f
+!Fch
+5A35
+GL&3W'
+1g3w
+XT\K
+C\U&
+A/cP
+D"JN
+bDBI
+C\U"
+B3wg
+"G2F
+ERF3
+B3wG
+"G2F
+EbG3
+@"DA
+@"DA
+\A# %
+@BI&
+TC#$
+KLCI
+P"TZ
+`Y\T"D
+KbL!a
+0yq&
+JBK>
+|X0Xcf
+|X0Xcf
+T!ao
+3# W
+O\TbD
+@3vV
+@q!E
+PfTJ
+ao`<
+DBI"J
+E"E\X
+@bD>
+HPXN
+2ETT
+IBK6
+JBKEa
+@"DA
+@"DA
+@"DA
+@bD}
+Ud""D
+IbJ&
+TEao
+GrG"
+@"DA
+0Xcf
+E!aoP\
+K!ao
+aoP,
+H\@"
+ J2G
+"\aa
+KbJN
+IBKEao
+K"LEa
+@"DA
+CbGc
+@cRP
+["\aa
+@"DA
+@(75
+K"LEa
+JBKEa
+@"DA
+@"DA
+@"DA
+@"DA
+E<7&
+ T7g
+E<7&
+FD7&
+@"DA
+s$ ~
+@"DA
+-q#.
+P"TEa
+P"TEa
+eGcs
+P"TEa
+P"TEa
+6F3
+}Gch
+X@PS
+6F3
