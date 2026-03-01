@@ -1,0 +1,326 @@
+################################################################################
+# Panda Breath — ESPHome Configuration
+# Target: BIQU Panda Breath (ESP32-C3-MINI-1-H4X)
+#
+# !! GPIO VERIFICATION REQUIRED BEFORE FIRST FLASH !!
+#    The hardware schematic lists ESP32-C3 physical IC package pin numbers in the
+#    "ESP32 pin" column — these are NOT GPIO numbers. Three GPIOs are unresolved:
+#      - TH0 (chamber NTC): physical pin 12 → GPIO unknown
+#      - TH1 (PTC NTC):     physical pin 13 → GPIO unknown
+#      - RLY_MOSFET:        physical pin 26 → GPIO unknown
+#                           (GPIO26 does not exist on ESP32-C3; max is GPIO21)
+#    Cross-reference ESP32-C3-MINI-1-H4X module pad layout with the schematic
+#    before compiling. Edit the substitutions block below to correct values.
+#    Verified GPIOs (from IO-labeled nets): GPIO0,2,3,4,5,6,7 — leave those alone.
+#
+# Klipper integration: MQTT
+#   panda_breath.py Klipper module subscribes to sensor state topics and
+#   publishes to climate/switch command topics via a local MQTT broker.
+################################################################################
+
+esphome:
+  name: panda-breath
+  friendly_name: Panda Breath
+  on_boot:
+    priority: -100
+    then:
+      # Safe start state: heater and fan off.
+      - switch.turn_off: heater_relay
+      - fan.turn_off: panda_breath_fan
+
+esp32:
+  board: esp32-c3-devkitm-1
+  variant: ESP32C3
+  framework:
+    # arduino framework used for widest ESPHome component compatibility.
+    # Switch to esp-idf if stability issues arise on this hardware.
+    type: arduino
+
+logger:
+  level: DEBUG
+
+# ESPHome native API — disable if using MQTT-only (no Home Assistant).
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  # Fallback AP for initial setup or WiFi failure.
+  ap:
+    ssid: "panda-breath-setup"
+    password: !secret wifi_ap_password
+
+captive_portal:
+
+# MQTT broker for Klipper integration.
+# The Klipper panda_breath.py module subscribes to:
+#   panda-breath/sensor/chamber_temperature/state
+#   panda-breath/sensor/ptc_element_temperature/state
+#   panda-breath/climate/chamber/state
+# and publishes to:
+#   panda-breath/climate/chamber/target_temperature/set
+#   panda-breath/climate/chamber/mode/set
+#   panda-breath/fan/fan/speed/set
+#   panda-breath/fan/fan/command
+mqtt:
+  broker: !secret mqtt_broker
+  port: 1883
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+  topic_prefix: panda-breath
+  # Set discovery: true if also integrating with Home Assistant.
+  discovery: false
+
+################################################################################
+# !! GPIO SUBSTITUTIONS — VERIFY BEFORE COMPILING !!
+# Edit these to match actual GPIO numbers once confirmed from module datasheet.
+################################################################################
+substitutions:
+  # TH0: chamber air temperature NTC. Schematic physical pin 12.
+  # Must be an ADC-capable GPIO (ESP32-C3 ADC1: GPIO0–GPIO5).
+  # GPIO0 and GPIO3 are already allocated (IO00, IO03/FAN). Best candidates: GPIO1.
+  gpio_ntc_chamber: "GPIO1"
+
+  # TH1: PTC element temperature NTC. Schematic physical pin 13.
+  # Must be an ADC-capable GPIO. Best candidate after GPIO1 taken: unclear.
+  # GPIO2 (IO02/K3 button) and GPIO4–5 (LEDs) are allocated. Placeholder below.
+  # Measure continuity from TH1 pad to ESP32-C3 pads to resolve.
+  gpio_ntc_ptc: "GPIO19"  # !! PLACEHOLDER — GPIO19 is USB D+ and likely wrong
+
+  # RLY_MOSFET: relay drive. Schematic physical pin 26.
+  # ESP32-C3 max GPIO is GPIO21; GPIO18/19 = USB; GPIO20/21 = UART0.
+  # Plausible candidates: GPIO8 or GPIO10 (IO10 listed as TBD in schematic).
+  gpio_relay: "GPIO8"  # !! PLACEHOLDER — verify with multimeter continuity
+
+################################################################################
+# Temperature Sensors
+# Circuit: 3.3V → R22/R31 (33kΩ 0.1%) → TH_pin → NTC 100kΩ → GND
+# ESPHome "DOWNSTREAM" = the measured resistor (NTC) is between pin and GND.
+#
+# B-constant 3950 is standard for 100kΩ NTC (same value Klipper uses for
+# "Generic 100K"). Validate against OEM firmware readings on first boot.
+################################################################################
+sensor:
+  - platform: adc
+    pin: ${gpio_ntc_chamber}
+    id: chamber_adc
+    update_interval: 5s
+    attenuation: 11db  # 0–3.9V range; covers the full 3.3V divider output
+    internal: true
+
+  - platform: adc
+    pin: ${gpio_ntc_ptc}
+    id: ptc_adc
+    update_interval: 5s
+    attenuation: 11db
+    internal: true
+
+  - platform: resistance
+    sensor: chamber_adc
+    configuration: DOWNSTREAM
+    resistor: 33kΩ
+    id: chamber_resistance
+    internal: true
+
+  - platform: resistance
+    sensor: ptc_adc
+    configuration: DOWNSTREAM
+    resistor: 33kΩ
+    id: ptc_resistance
+    internal: true
+
+  - platform: ntc
+    sensor: chamber_resistance
+    id: chamber_temp
+    name: "Chamber Temperature"
+    unit_of_measurement: "°C"
+    calibration:
+      b_constant: 3950
+      reference_temperature: 25°C
+      reference_resistance: 100kΩ
+    filters:
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 1
+
+  - platform: ntc
+    sensor: ptc_resistance
+    id: ptc_temp
+    name: "PTC Element Temperature"
+    unit_of_measurement: "°C"
+    calibration:
+      b_constant: 3950
+      reference_temperature: 25°C
+      reference_resistance: 100kΩ
+
+################################################################################
+# PTC Heater Relay
+# ${gpio_relay} (RLY_MOSFET) → Q3 NPN base → MGR-GJ-5-L SSR coil
+# HIGH = heater energised. Always start OFF on boot (also enforced in on_boot).
+################################################################################
+switch:
+  - platform: gpio
+    pin: ${gpio_relay}
+    id: heater_relay
+    name: "PTC Heater Relay"
+    restore_mode: ALWAYS_OFF
+
+################################################################################
+# Fan Speed Control — TRIAC Phase-Angle
+# GPIO3 (IO03/FAN) → Q2 NPN → MOC3021S optocoupler → BT136-800E TRIAC gate
+# GPIO7 (IO07/ZERO) ← TLP785 zero-crossing optocoupler output
+#
+# GPIO7 conflict: The OEM firmware uses GPIO7 as both the TRIAC zero-cross
+# interrupt and the K1 button. In this ESPHome config, GPIO7 is dedicated to
+# zero_cross_pin. K1 button input is therefore NOT available (see binary_sensor).
+#
+# TODO: Verify whether IO00 (GPIO0) also receives the ZERO signal.
+#   If the TLP785 fans to both GPIO0 and GPIO7, configure zero_cross_pin to
+#   GPIO0 and restore GPIO7 as binary_sensor for K1 button. Confirm with scope.
+#
+# min_power: fans typically stall below ~25–35% TRIAC duty. Tune on hardware.
+# zero_missing_percent: 0.0 = fan off if zero-crossing signal is absent (safe).
+#
+# TODO: Set correct AC line frequency for your region.
+#   50 Hz: EU, AU, UK, most of Asia
+#   60 Hz: NA, parts of South America, Japan (mixed)
+################################################################################
+output:
+  - platform: ac_dimmer
+    id: fan_dimmer
+    gate_pin: GPIO3
+    zero_cross_pin:
+      number: GPIO7
+      mode:
+        input: true
+        pullup: false  # TLP785 output drives actively; schematic shows no pullup needed
+    method: leading_pulse  # standard for TRIAC + inductive (motor) loads
+    min_power: 0.30        # tune on real hardware — below this fan may not spin
+    zero_missing_percent: 0.0
+
+  - platform: gpio
+    pin: GPIO6
+    id: led_k1_output  # K1-LED (IO06) via R34 (1kΩ)
+
+  - platform: gpio
+    pin: GPIO5
+    id: led_k2_output  # K2-LED (IO05) via R35 (1kΩ)
+
+  - platform: gpio
+    pin: GPIO4
+    id: led_k3_output  # K3-LED (IO04) via R36 (1kΩ)
+
+fan:
+  - platform: speed
+    output: fan_dimmer
+    id: panda_breath_fan
+    name: "Fan"
+    restore_mode: ALWAYS_OFF
+
+################################################################################
+# Climate — Bang-Bang Thermostat
+# Drives heater_relay switch. Heat_deadband/overrun create a ±1°C hysteresis
+# band around the target temperature, same behaviour as the OEM relay duty-cycle.
+#
+# Upgrade path: replace with climate.pid + output.slow_pwm for tighter control.
+################################################################################
+climate:
+  - platform: bang_bang
+    id: chamber_climate
+    name: "Chamber"
+    sensor: chamber_temp
+    default_target_temperature: 40°C
+    heat_action:
+      - switch.turn_on: heater_relay
+    idle_action:
+      - switch.turn_off: heater_relay
+    heat_deadband: 1.0°C  # heater on when temp drops this far below target
+    heat_overrun: 1.0°C   # heater off when temp rises this far above target
+
+################################################################################
+# Physical Buttons
+# K1 (GPIO7): NOT available — dedicated to TRIAC zero_cross_pin (see fan section).
+# K2 (GPIO0): active-low; external pullup on schematic.
+# K3 (GPIO2): active-low; 10kΩ pullup R2 on schematic.
+# SW4/BOOT (GPIO9): hardware flash-mode button — do not configure in firmware.
+#
+# NOTE on GPIO0 (K2): The schematic annotates IO00 as "K2 button + ZERO crossing".
+# If GPIO0 also carries the 100/120 Hz ZERO signal from the TLP785, binary_sensor
+# reads will be corrupted by AC frequency pulses. Verify with oscilloscope.
+################################################################################
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO2
+      mode:
+        input: true
+        pullup: false  # external 10kΩ pullup R2; do not add internal pullup
+      inverted: true   # active-low
+    name: "Button K3"
+    id: button_k3
+
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode:
+        input: true
+        pullup: false
+      inverted: true   # active-low
+    name: "Button K2"
+    id: button_k2
+
+################################################################################
+# Button LED Indicators
+################################################################################
+light:
+  - platform: binary
+    name: "LED K1"
+    id: led_k1
+    output: led_k1_output
+
+  - platform: binary
+    name: "LED K2"
+    id: led_k2
+    output: led_k2_output
+
+  - platform: binary
+    name: "LED K3"
+    id: led_k3
+    output: led_k3_output
+
+################################################################################
+# Safety: PTC Overheat Protection
+#
+# BTT removed thermal runaway detection from firmware v1.0.2. This restores it
+# as an independent software layer. If the PTC element NTC exceeds the cutoff
+# temperature, the heater relay is killed and the climate controller is switched
+# off. A manual restart (power cycle or climate mode set) is required to resume.
+#
+# 90°C is a conservative starting cutoff. Adjust based on PTC datasheet and
+# real-world measurements once NTC GPIOs are confirmed.
+################################################################################
+interval:
+  - interval: 3s
+    then:
+      - if:
+          condition:
+            and:
+              - switch.is_on: heater_relay
+              - sensor.in_range:
+                  id: ptc_temp
+                  above: 90.0
+          then:
+            - switch.turn_off: heater_relay
+            - climate.control:
+                id: chamber_climate
+                mode: "OFF"
+            - logger.log:
+                level: ERROR
+                format: "SAFETY CUTOFF: PTC element %.1f°C > 90°C — heater disabled"
+                args: ["id(ptc_temp).state"]
