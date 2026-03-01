@@ -4,7 +4,12 @@ Klipper extras module to integrate the **BIQU Panda Breath** smart chamber heate
 
 ## Project Goal
 
-The Panda Breath has no native Klipper support yet. BTT has not released the firmware source. The plan is to write a Klipper `extras/` module that speaks the device's WebSocket JSON API and exposes it to Klipper as a temperature sensor + heater, making it fully scriptable via macros and `printer.cfg`.
+The Panda Breath has no native Klipper support yet. BTT has not released the firmware source. Two parallel strategies are in development:
+
+1. **Stock firmware path** — Klipper `extras/` module that speaks the device's WebSocket JSON API. Target firmware: v0.0.0 (only confirmed stable release; v1.0.1+ has thermal/timing bugs including removal of PTC thermal runaway detection in v1.0.2).
+2. **ESPHome path** — Reflash the ESP32-C3 with ESPHome, which provides native TRIAC phase-angle fan speed control (`ac_dimmer` component), configurable PTC heater relay, NTC sensors, and restored thermal runaway protection. ESPHome integration with Klipper via MQTT.
+
+The Klipper module (`panda_breath.py`) supports both via a transport abstraction: `firmware: stock` uses the WebSocket transport; `firmware: esphome` uses the MQTT transport. From Klipper's perspective the interface is identical either way.
 
 ## Device: BIQU Panda Breath
 
@@ -96,7 +101,7 @@ See [research/firmware-analysis.md](research/firmware-analysis.md) for binary an
 **U1 Extended Firmware — key facts for development:**
 - SSH credentials: `root` / `snapmaker` and `lava` / `snapmaker`
 - Klipper path on device: `/home/lava/klipper/`
-- Entware package manager available in devel builds (`opkg install python3-websocket` etc.)
+- Entware package manager available in devel builds (`DEVEL=1` flag) — but **no pre-built opkg repo exists yet**; one will need to be sourced/built when the U1 overlay is developed
 - Web UI selectable: Fluidd or Mainsail
 - Overlay-based build system — Klipper patches go in `overlays/firmware-extended/20-klipper-patches/patches/home/lava/klipper/klippy/`
 - Build: `./dev.sh make extract` → edit overlays → build profile `basic` or `extended`
@@ -104,17 +109,30 @@ See [research/firmware-analysis.md](research/firmware-analysis.md) for binary an
 
 ## Integration Architecture
 
-**Approach:** Klipper `extras/` plugin (`panda_breath.py`) — a single file.
+**Approach:** Klipper `extras/` plugin (`panda_breath.py`) — a single self-contained file, **no external Python dependencies**.
 
 **Design decision:** Expose as a standard Klipper heater only. No custom GCode commands. Orca Slicer already handles chamber temperature via `SET_HEATER_TEMPERATURE [HEATER=panda_breath]` — adding custom GCodes would duplicate that and create complexity for no gain.
 
+### Transport abstraction
+
+The module contains two transport classes sharing a common internal interface (`connect`, `set_target`, state callback). `PandaBreath.__init__` instantiates the correct one from the `firmware:` config key:
+
+```
+PandaBreath (Klipper heater_generic)
+    ├── get_temp() / set_temp() / check_busy()   ← identical either way
+    └── self.transport ─┬─ WebSocketTransport    (firmware: stock)
+                        └─ MqttTransport         (firmware: esphome)
+```
+
+Both transports run a background I/O thread and push state updates into a thread-safe deque that the Klipper reactor timer drains.
+
 ### What the module does
-1. Maintains a persistent WebSocket connection to the device (reconnects on drop)
-2. **Listens for temperature** — `temp_task` on device pushes `warehouse_temper`/`cal_warehouse_temp` periodically; no confirmed query command exists. On reconnect the device may push initial state (`init one:` pattern seen in strings — unverified). Klipper is the authority on desired state, so we track what we sent rather than querying.
-3. Reports current temperature; prefer `cal_warehouse_temp` (ADC-calibrated) over `warehouse_temper` (raw)
+1. Instantiates the appropriate transport based on `firmware:` config key
+2. Transport maintains a persistent connection and reconnects on drop
+3. Reports current temperature via `get_temp()` — prefers `cal_warehouse_temp` over `warehouse_temper` (stock), or `chamber_temperature` MQTT topic (ESPHome)
 4. Implements standard Klipper heater interface — `set_temp()` / `get_temp()` / `check_busy()`
-5. When target > 0: sends `work_mode: 2` (always_on) + `work_on: true`
-6. When target = 0: sends `work_on: false`
+5. When target > 0: stock sends `{work_mode: 2, work_on: true, temp: t}`; ESPHome publishes to climate mode/target topics
+6. When target = 0: stock sends `{work_on: false}`; ESPHome publishes `mode: off`
 7. Uses Klipper reactor for I/O (`reactor.register_timer`) — no raw asyncio
 
 ### What the module does NOT do
@@ -122,11 +140,23 @@ See [research/firmware-analysis.md](research/firmware-analysis.md) for binary an
 - No custom macros
 - No mode-switching logic (user sets target temp; the module turns the device on/off)
 
-### `printer.cfg` config block (target)
+### `printer.cfg` config blocks
+
+**Stock firmware (default; recommended firmware: v0.0.0):**
 ```ini
 [panda_breath]
+firmware: stock
 host: pandabreath.local   # or IP address
 port: 80
+```
+
+**ESPHome firmware:**
+```ini
+[panda_breath]
+firmware: esphome
+mqtt_broker: 192.168.1.x
+mqtt_port: 1883
+mqtt_topic_prefix: panda-breath
 ```
 
 ### Key Klipper patterns to follow
@@ -134,31 +164,55 @@ port: 80
 - `extras/temperature_sensor.py` — reference for sensor registration pattern
 - Klipper reactor for non-blocking I/O: `self.reactor.register_timer()`
 
-### Python WebSocket on U1
-- **Production:** ship `websocket-client` as a firmware overlay (installed at build time via entware/opkg)
-- **Development/testing:** use devel extended firmware build (`DEVEL=1`) which has opkg available, then `opkg install python3-websocket`
+### Python dependencies — stdlib only
+`panda_breath.py` uses **only Python standard library** — no `websocket-client`, no `paho-mqtt`.
+- WebSocket transport: `socket` + `hashlib` + `base64` + `struct` + `json` (~150 lines, implements the subset of RFC 6455 actually used)
+- MQTT transport: `socket` + `struct` + `json` (~200 lines, implements CONNECT/SUBSCRIBE/PUBLISH/PINGREQ only)
+
+This means the U1 overlay is a single file drop — no opkg, no entware packages, no build-time installs required. This is critical because no pre-built opkg repo exists yet for the U1 extended firmware.
 
 ## Known Constraints
 
-- Firmware bugs in V1.0.1+ mean some features (auto mode, temp setting) may be unreliable
+- Firmware bugs in V1.0.1+ mean some features (auto mode, temp setting) may be unreliable; **v1.0.2 silently removed PTC thermal runaway detection** — ESPHome path restores this
 - BTT has not published WebSocket API docs — all protocol knowledge is from reverse engineering
-- **No confirmed state-query command** — button/UI changes don't push WS messages (confirmed v0.0.0); no "get state" request exists in JS source; reconnecting may be the only way to get a full state snapshot (unverified). Module tracks its own sent state rather than querying.
+- **No confirmed state-query command** (stock firmware) — button/UI changes don't push WS messages (confirmed v0.0.0); no "get state" request exists in JS source; reconnecting may be the only way to get a full state snapshot (unverified). Module tracks its own sent state rather than querying.
 - The device WebSocket drops and needs reconnection — reliability of WS connection is a concern
 - No authentication on the WebSocket — only a concern on untrusted networks
 - Snapmaker U1 modified Klipper may have subtle differences from upstream — test on real hardware
+- **No pre-built opkg repo for U1 extended firmware** — Entware is present on devel builds but packages must be sourced/built manually; this is a future task when building the U1 overlay
+- **ESPHome GPIO verification pending** — three GPIO pin assignments (TH0 chamber NTC, TH1 PTC NTC, RLY_MOSFET relay) use placeholder values in `esphome/panda_breath.yaml`; physical pin numbers in the schematic are IC package pin numbers, not GPIO numbers — requires continuity testing on real hardware before first ESPHome flash
 
 ## Development Approach
 
-1. Start with a standalone Python test script to validate WebSocket protocol
-2. Build the Klipper extras module against upstream Klipper
-3. Test on U1 with extended firmware (SSH access)
-4. Handle reconnection, error states, and thermal-runaway-safe defaults
-5. Provide sample macros for common workflows (pre-heat chamber before print, filament drying, etc.)
+### Klipper module (`panda_breath.py`)
+1. Implement `WebSocketTransport` with inline stdlib WebSocket client
+2. Implement `MqttTransport` with inline stdlib MQTT client (CONNECT/SUBSCRIBE/PUBLISH/PINGREQ only)
+3. Implement `PandaBreath` heater class with transport abstraction
+4. Test both transports with standalone scripts before integrating with Klipper
+5. Test on U1 with extended firmware (SSH access)
+6. Handle reconnection, error states, and thermal-runaway-safe defaults
 
-## File Structure (planned)
+### ESPHome firmware (`esphome/`)
+1. Resolve three placeholder GPIO substitutions (TH0, TH1, RLY_MOSFET) via hardware continuity testing
+2. Verify GPIO0/GPIO7 zero-crossing conflict (oscilloscope with mains connected)
+3. Flash ESPHome, validate NTC readings against OEM firmware values
+4. Tune `min_power` for fan stall threshold
+5. Validate thermal safety cutoff (PTC element overheat interval)
+
+### U1 extended firmware overlay (future)
+1. Source/build opkg packages needed for any remaining dependencies
+2. Create overlay that drops `panda_breath.py` into `/home/lava/klipper/klippy/extras/`
+3. Build and test on real U1 hardware
+
+## File Structure
 ```
-panda_breath.py          # Klipper extras module — the deliverable
-test_ws.py               # standalone WebSocket probe/test tool
+panda_breath.py          # Klipper extras module — stock + ESPHome, stdlib only
+test_ws.py               # standalone WebSocket probe/test tool (stock firmware)
+esphome/
+  panda_breath.yaml      # ESPHome config (!! 3 GPIO substitutions need hardware verification)
+  secrets.yaml           # credentials — gitignored
+  secrets.yaml.example   # template
+  README.md              # ESPHome setup, TODOs, validation steps, recovery
 research/                # firmware analysis and protocol notes
 docs/
   klipper_install.md     # installation instructions for U1
