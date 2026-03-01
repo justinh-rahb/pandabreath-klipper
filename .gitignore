@@ -8,3 +8,8 @@ __pycache__/
 *.pyo
 *.pyd
 *.log
+
+# ESPHome secrets — never commit with real credentials
+esphome/secrets.yaml
+# ESPHome build artifacts
+esphome/.esphome/
