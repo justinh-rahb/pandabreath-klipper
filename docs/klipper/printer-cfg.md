@@ -1,17 +1,38 @@
 # printer.cfg Reference
 
-## Module configuration
+## Configuration options
 
-```ini
-[panda_breath]
-host: PandaBreath.local   # mDNS hostname or IP address
-port: 80                  # WebSocket port (default: 80)
-```
+=== "Stock firmware"
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `host` | string | — | **Required.** Hostname or IP of the device |
-| `port` | int | `80` | WebSocket port |
+    ```ini
+    [panda_breath]
+    firmware: stock
+    host: PandaBreath.local   # mDNS hostname or IP address
+    port: 80                  # WebSocket port (default: 80)
+    ```
+
+    | Option | Type | Default | Description |
+    |---|---|---|---|
+    | `firmware` | string | `stock` | Transport to use: `stock` or `esphome` |
+    | `host` | string | — | **Required.** Hostname or IP of the Panda Breath |
+    | `port` | int | `80` | WebSocket port |
+
+=== "ESPHome firmware"
+
+    ```ini
+    [panda_breath]
+    firmware: esphome
+    mqtt_broker: 192.168.1.x     # IP of your MQTT broker
+    mqtt_port: 1883              # MQTT port (default: 1883)
+    mqtt_topic_prefix: panda-breath   # ESPHome topic prefix (default: panda-breath)
+    ```
+
+    | Option | Type | Default | Description |
+    |---|---|---|---|
+    | `firmware` | string | `stock` | Transport to use: `stock` or `esphome` |
+    | `mqtt_broker` | string | — | **Required.** IP address of the MQTT broker |
+    | `mqtt_port` | int | `1883` | MQTT broker port |
+    | `mqtt_topic_prefix` | string | `panda-breath` | Must match `topic_prefix` in ESPHome YAML |
 
 The module registers itself as a Klipper `heater_generic` named `panda_breath` and a temperature sensor. No additional `[heater_generic]` or `[temperature_sensor]` blocks are needed.
 
@@ -19,15 +40,26 @@ The module registers itself as a Klipper `heater_generic` named `panda_breath` a
 
 ## Behaviour
 
-| Condition | Action |
-|---|---|
-| Klipper sets `TARGET > 0` | Sends `work_mode: 2, work_on: true` |
-| Klipper sets `TARGET = 0` | Sends `work_on: false` |
-| `cal_warehouse_temp` received | Reported as current temperature |
-| `warehouse_temper` received (fallback) | Reported if `cal_warehouse_temp` absent |
-| WebSocket drops | Reconnects; resends last desired state |
+=== "Stock firmware"
 
-The device manages all heater duty-cycling and fan speed internally. The module only tells it to be on or off.
+    | Condition | Action |
+    |---|---|
+    | Klipper sets `TARGET > 0` | Sends `{"settings": {"work_mode": 2, "work_on": true, "temp": TARGET}}` |
+    | Klipper sets `TARGET = 0` | Sends `{"settings": {"work_on": false}}` |
+    | `cal_warehouse_temp` received | Reported as current temperature (preferred) |
+    | `warehouse_temper` received | Reported as current temperature (fallback) |
+    | WebSocket drops | Reconnects; resends last command |
+
+=== "ESPHome firmware"
+
+    | Condition | Action |
+    |---|---|
+    | Klipper sets `TARGET > 0` | Publishes `TARGET` to `…/climate/chamber/target_temperature/set` and `heat` to `…/climate/chamber/mode/set` |
+    | Klipper sets `TARGET = 0` | Publishes `off` to `…/climate/chamber/mode/set` |
+    | `…/sensor/chamber_temperature/state` received | Reported as current temperature |
+    | MQTT connection drops | Reconnects; republishes last command |
+
+The device manages all heater duty-cycling and fan speed control internally. The module only tells it to be on or off and at what target temperature.
 
 ---
 
@@ -54,16 +86,17 @@ PREHEAT_CHAMBER TEMP=45
 
 ```ini
 [gcode_macro DRY_FILAMENT]
-description: Run filament drying cycle at target temp for given hours
+description: Run filament drying at target temp
 gcode:
     {% set TEMP = params.TEMP|default(55)|int %}
     {% set HOURS = params.HOURS|default(6)|int %}
     SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET={TEMP}
+    TEMPERATURE_WAIT SENSOR="heater_generic panda_breath" MINIMUM={TEMP - 2}
     M117 Drying filament at {TEMP}C for {HOURS}h
 ```
 
 !!! note
-    The Panda Breath's built-in filament drying mode (with countdown timer) is triggered via `work_mode: 3` over WebSocket. From Klipper, the simplest approach is to use always-on mode (`work_mode: 2`) and let a Klipper timer macro handle the duration.
+    The Panda Breath's built-in filament drying mode (with countdown timer) uses `work_mode: 3` internally. Via Klipper, the simplest approach is to use always-on mode and let a macro or timer handle duration.
 
 ### Chamber cooldown / print end
 
@@ -78,21 +111,20 @@ gcode:
 
 ## Orca Slicer integration
 
-Orca Slicer sets chamber temperature automatically based on the filament profile. In **Printer Settings → General**, set:
+Orca Slicer sets chamber temperature automatically based on the filament profile. Set the **Chamber temperature** field in your filament profile. Orca will emit:
 
+```gcode
+SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET=<temp>
 ```
-Chamber temperature: [HEATER_NAME]
-```
 
-Orca will then emit `SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET=<temp>` at the start of prints that require chamber heating, and `TARGET=0` at the end.
-
-No custom slicer GCode is needed — this works out of the box with any heater registered in Klipper.
+at the start of prints that require chamber heating, and `TARGET=0` at the end. No custom slicer GCode is needed.
 
 ---
 
 ## Safety notes
 
 - The Panda Breath reaches up to 60°C chamber temperature
-- The module does not implement independent thermal-runaway detection — it relies on the device's built-in PTC sensor monitoring (present in v0.0.0; may have regressed in v1.0.1+)
-- The WebSocket has no authentication — only use on a trusted local network
-- Always ensure mains AC is disconnected before servicing the device
+- **Stock firmware (v0.0.0):** PTC thermal runaway detection is present in the device firmware. v1.0.2 removed this — use v0.0.0 only
+- **ESPHome firmware:** thermal runaway protection is implemented directly in the ESPHome config (`esphome/panda_breath.yaml`) and does not depend on BTT firmware
+- The stock WebSocket has no authentication — LAN use only
+- Always disconnect mains AC before servicing the device
