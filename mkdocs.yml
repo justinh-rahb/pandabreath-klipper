@@ -44,6 +44,8 @@ nav:
       - Overview: klipper/index.md
       - Install on U1: klipper/install.md
       - printer.cfg Reference: klipper/printer-cfg.md
+  - ESPHome Firmware:
+      - Overview: esphome/index.md
   - Research:
       - Methodology: research/methodology.md
 
