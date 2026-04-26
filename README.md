@@ -8,7 +8,7 @@ Klipper extras module for the **BIQU Panda Breath** smart chamber heater and air
 
 The [BIQU Panda Breath](https://biqu.equipment/products/biqu-panda-breath-smart-air-filtration-and-heating-system-with-precise-temperature-regulation) is a 300W PTC chamber heater and HEPA/carbon air filter with WiFi control, designed for enclosed 3D printers. It has native Bambu Lab integration but no Klipper support.
 
-This project reverse-engineers its WebSocket API and wraps it in a standard Klipper `extras/` module, exposing the Panda Breath as a `heater_generic` — no custom GCodes, no special macros. Orca Slicer and other tools already know how to set chamber temperature via `SET_HEATER_TEMPERATURE`; this module makes that work.
+This project reverse-engineers its WebSocket API and wraps it in a standard Klipper `extras/` module, exposing the Panda Breath as a `heater_generic`. Orca Slicer and other tools already know how to set chamber temperature via `SET_HEATER_TEMPERATURE`; this module makes that work. For stock firmware, it also exposes an optional `PANDA_BREATH_AUTO` command to configure the device's native auto mode from Klipper macros.
 
 ---
 
@@ -30,10 +30,11 @@ This project reverse-engineers its WebSocket API and wraps it in a standard Klip
 The module will:
 
 1. Maintain a persistent WebSocket connection to the device at `ws://<ip>/ws`
-2. Set `work_mode: 2` (always-on) — the device's native auto mode requires a Bambu MQTT connection, which doesn't exist in a Klipper environment
-3. Send `work_on: true` when Klipper sets a non-zero target temperature; `work_on: false` when target is 0
-4. Report `cal_warehouse_temp` (calibrated NTC ADC reading) as the current temperature
-5. Reconnect automatically on connection drop
+2. Use `work_mode: 2` (always-on) for normal `heater_generic` chamber heating
+3. Optionally configure the device's native auto mode (`work_mode: 1`) via `PANDA_BREATH_AUTO`
+4. Send `work_on: true` when Klipper sets a non-zero target temperature; `work_on: false` when target is 0
+5. Report `cal_warehouse_temp` (calibrated NTC ADC reading) as the current temperature
+6. Reconnect automatically on connection drop
 
 The device handles all heater duty-cycling and fan speed control internally. The module only tells it to be on or off.
 
@@ -72,6 +73,26 @@ gcode:
         TEMPERATURE_WAIT SENSOR="heater_generic panda_breath" MINIMUM={s}
     {% endif %}
 ```
+
+### Native auto mode (stock firmware only)
+
+For stock Panda Breath firmware, the module also exposes a `PANDA_BREATH_AUTO` command that switches the device into its own native auto mode (`work_mode: 1`) instead of the normal Klipper-controlled heating mode (`work_mode: 2`).
+
+This is mainly useful if you want macros to toggle and configure the Panda's built-in automatic behavior directly.
+
+```ini
+[gcode_macro PANDA_AUTO_ON]
+description: Enable Panda Breath native auto mode
+gcode:
+    PANDA_BREATH_AUTO ENABLE=1 TARGET=45 FILTERTEMP=30 HOTBEDTEMP=80
+
+[gcode_macro PANDA_AUTO_OFF]
+description: Disable Panda Breath native auto mode
+gcode:
+    PANDA_BREATH_AUTO ENABLE=0
+```
+
+`TARGET`, `FILTERTEMP`, and `HOTBEDTEMP` are Panda firmware auto-mode settings, not standard Klipper heater targets.
 
 ---
 

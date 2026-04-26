@@ -83,6 +83,7 @@ class _WebSocketTransport:
         self._thread = None
         # Last target degrees — resent on reconnect to keep device in sync
         self._last_target = 0.
+        self._last_auto = None
 
     def start(self):
         self._running = True
@@ -101,6 +102,7 @@ class _WebSocketTransport:
 
     def set_target(self, degrees):
         self._last_target = degrees
+        self._last_auto = None
         if degrees > 0:
             # Match the stock web UI's update order for better v1.0.3
             # compatibility while still using the same control fields.
@@ -110,10 +112,25 @@ class _WebSocketTransport:
         else:
             self._send_settings({"work_on": False})
 
+    def set_auto_mode(self, enabled, target_c, filtertemp_c, hotbedtemp_c):
+        self._last_target = 0.
+        self._last_auto = (
+            bool(enabled),
+            int(target_c),
+            int(filtertemp_c),
+            int(hotbedtemp_c),
+        )
+        self._send_settings({"work_mode": 1})
+        self._send_settings({"temp": int(target_c)})
+        self._send_settings({"filtertemp": int(filtertemp_c)})
+        self._send_settings({"hotbedtemp": int(hotbedtemp_c)})
+        self._send_settings({"work_on": bool(enabled)})
+
     # ── internal ──────────────────────────────────────────────────────────────
 
     def force_off(self):
         self._last_target = 0.
+        self._last_auto = None
         self._send_settings({"work_on": False})
         self._send_settings_once({"work_on": False})
 
@@ -229,7 +246,10 @@ class _WebSocketTransport:
                 logger.info("panda_breath: WebSocket connected to %s:%s",
                             self._host, self._port)
                 # Resend desired state so device is in sync after reconnect
-                self.set_target(self._last_target)
+                if self._last_auto is not None and self._last_auto[0]:
+                    self.set_auto_mode(*self._last_auto)
+                else:
+                    self.set_target(self._last_target)
                 while self._running:
                     opcode, payload = self._recv_frame(sock)
                     if opcode == 0x8:   # close
@@ -265,13 +285,34 @@ class _WebSocketTransport:
         settings = msg.get("settings")
         if not isinstance(settings, dict):
             return
+        state = {}
         # Prefer the ADC-calibrated reading; fall back to raw
         temp = settings.get("cal_warehouse_temp", settings.get("warehouse_temper"))
         if temp is not None:
             try:
-                self._on_message({"temperature": float(temp)})
+                state["temperature"] = float(temp)
             except (TypeError, ValueError):
                 pass
+        for key in ("work_mode", "set_temp"):
+            if key in settings:
+                state[key] = settings.get(key)
+        if "temp" in settings:
+            state["auto_target"] = settings.get("temp")
+        if "filtertemp" in settings:
+            state["auto_filtertemp"] = settings.get("filtertemp")
+        if "hotbedtemp" in settings:
+            state["auto_hotbedtemp"] = settings.get("hotbedtemp")
+        if "work_on" in settings:
+            raw = settings.get("work_on")
+            if isinstance(raw, bool):
+                state["work_on"] = raw
+            else:
+                try:
+                    state["work_on"] = bool(int(raw))
+                except Exception:
+                    pass
+        if state:
+            self._on_message(state)
 
 
 # ─── MQTT transport (ESPHome firmware) ────────────────────────────────────────
@@ -545,6 +586,13 @@ class PandaBreath:
         self.target = 0.
         self.smoothed_temp = 0.
         self.is_connected = False
+        self.work_mode = 2
+        self.work_on = False
+        self.device_target = 0.
+        self.auto_enabled = False
+        self.auto_target = 45
+        self.auto_filtertemp = 30
+        self.auto_hotbedtemp = 80
         self._in_shutdown = False
         self._external_off_lockout = False
         self._last_temp_time = 0.
@@ -588,6 +636,9 @@ class PandaBreath:
         self._poll_timer = self.reactor.register_timer(
             self._reactor_poll, self.reactor.NEVER)
 
+        gcode = self.printer.lookup_object('gcode')
+        gcode.register_command('PANDA_BREATH_AUTO', self._cmd_panda_breath_auto)
+
     def _create_sensor(self, config):
         self._sensor = PandaBreathSensor(config, self)
         return self._sensor
@@ -622,6 +673,9 @@ class PandaBreath:
     def _force_device_off(self, reason):
         self._clear_heater_target_state()
         self.target = 0.
+        self.device_target = 0.
+        self.auto_enabled = False
+        self.work_on = False
         self._external_off_lockout = True
         try:
             self._transport.force_off()
@@ -657,6 +711,56 @@ class PandaBreath:
 
         heater.set_temp = wrapped_set_temp
 
+    cmd_PANDA_BREATH_AUTO_help = (
+        "Configure Panda Breath native auto mode "
+        "(ENABLE=0|1 TARGET=<C> FILTERTEMP=<C> HOTBEDTEMP=<C>)"
+    )
+
+    def _cmd_panda_breath_auto(self, gcmd):
+        enabled = bool(gcmd.get_int(
+            'ENABLE', default=int(self.auto_enabled), minval=0, maxval=1))
+        target = int(gcmd.get_float(
+            'TARGET', default=float(self.auto_target), minval=0.0, maxval=80.0))
+        filtertemp = int(gcmd.get_float(
+            'FILTERTEMP', default=float(self.auto_filtertemp), minval=0.0, maxval=120.0))
+        hotbedtemp = int(gcmd.get_float(
+            'HOTBEDTEMP', default=float(self.auto_hotbedtemp), minval=0.0, maxval=120.0))
+        self._set_auto_mode(enabled, target, filtertemp, hotbedtemp, gcmd=gcmd)
+
+    def _set_auto_mode(self, enabled, target, filtertemp, hotbedtemp, gcmd=None):
+        if not callable(getattr(self._transport, "set_auto_mode", None)):
+            message = "Native Panda auto mode is only available with stock firmware transport"
+            if gcmd is not None:
+                raise gcmd.error(message)
+            raise RuntimeError(message)
+        if self._in_shutdown and enabled:
+            message = "Cannot enable Panda auto mode while Klipper is shutdown"
+            if gcmd is not None:
+                raise gcmd.error(message)
+            raise RuntimeError(message)
+        self._external_off_lockout = False
+        self._clear_heater_target_state()
+        self.auto_enabled = bool(enabled)
+        self.auto_target = int(target)
+        self.auto_filtertemp = int(filtertemp)
+        self.auto_hotbedtemp = int(hotbedtemp)
+        self.work_mode = 1
+        self.work_on = bool(enabled)
+        self.target = 0.
+        self.device_target = 0.
+        try:
+            self._transport.set_auto_mode(
+                self.auto_enabled,
+                self.auto_target,
+                self.auto_filtertemp,
+                self.auto_hotbedtemp,
+            )
+        except Exception as exc:
+            logger.warning("panda_breath: failed to configure auto mode: %s", exc)
+            if gcmd is not None:
+                raise gcmd.error("Failed to configure Panda Breath auto mode")
+            raise
+
     def _clear_heater_target_state(self):
         self._attach_heater_hook()
         if self._heater_set_temp_orig is None:
@@ -683,6 +787,37 @@ class PandaBreath:
                 self.temperature = float(temp)
                 self.smoothed_temp = self.temperature
                 self._last_temp_time = eventtime
+            if "work_mode" in data:
+                try:
+                    self.work_mode = int(data.get("work_mode"))
+                    if self.work_mode != 1:
+                        self.auto_enabled = False
+                except Exception:
+                    pass
+            if "work_on" in data:
+                self.work_on = bool(data.get("work_on"))
+                if self.work_mode == 1:
+                    self.auto_enabled = self.work_on
+            if "set_temp" in data:
+                try:
+                    self.device_target = float(data.get("set_temp"))
+                except Exception:
+                    pass
+            if "auto_target" in data:
+                try:
+                    self.auto_target = int(data.get("auto_target"))
+                except Exception:
+                    pass
+            if "auto_filtertemp" in data:
+                try:
+                    self.auto_filtertemp = int(data.get("auto_filtertemp"))
+                except Exception:
+                    pass
+            if "auto_hotbedtemp" in data:
+                try:
+                    self.auto_hotbedtemp = int(data.get("auto_hotbedtemp"))
+                except Exception:
+                    pass
 
         # Keep the heater callback fresh every poll cycle and use MCU print
         # time so verify_heater compares timestamps from the correct clock.
@@ -715,7 +850,11 @@ class PandaBreath:
                 pass
         if heater_target is not None and abs(float(heater_target) - self.target) > 0.01:
             heater_target = float(heater_target)
-            if self._external_off_lockout and heater_target > 0.:
+            if self.work_mode == 1:
+                logger.debug(
+                    "panda_breath: ignoring synced heater target %.1f while mode=%s",
+                    heater_target, self.work_mode)
+            elif self._external_off_lockout and heater_target > 0.:
                 logger.info(
                     "panda_breath: ignoring synced heater target %.1f after forced off",
                     heater_target)
@@ -767,7 +906,11 @@ class PandaBreath:
                 "panda_breath: ignoring target %.1f while Klipper is shutdown",
                 float(degrees))
             return
+        self.auto_enabled = False
+        self.work_mode = 2
         self.target = float(degrees)
+        self.device_target = float(degrees)
+        self.work_on = self.target > 0.
         self._transport.set_target(degrees)
 
     def get_status(self, eventtime):
@@ -775,7 +918,14 @@ class PandaBreath:
             "temperature": self.temperature,
             "target": self.target,
             "smoothed_temp": self.smoothed_temp,
-            "connected": self.is_connected
+            "connected": self.is_connected,
+            "work_mode": self.work_mode,
+            "work_on": self.work_on,
+            "device_target": self.device_target,
+            "auto_enabled": self.auto_enabled,
+            "auto_target": self.auto_target,
+            "auto_filtertemp": self.auto_filtertemp,
+            "auto_hotbedtemp": self.auto_hotbedtemp,
         }
 
 
