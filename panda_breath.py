@@ -102,21 +102,51 @@ class _WebSocketTransport:
     def set_target(self, degrees):
         self._last_target = degrees
         if degrees > 0:
-            self._send_settings(
-                {"work_mode": 2, "work_on": True, "set_temp": int(degrees)})
+            # Match the stock web UI's update order for better v1.0.3
+            # compatibility while still using the same control fields.
+            self._send_settings({"work_mode": 2})
+            self._send_settings({"set_temp": int(degrees)})
+            self._send_settings({"work_on": True})
         else:
             self._send_settings({"work_on": False})
 
     # ── internal ──────────────────────────────────────────────────────────────
 
+    def force_off(self):
+        self._last_target = 0.
+        self._send_settings({"work_on": False})
+        self._send_settings_once({"work_on": False})
+
     def _send_settings(self, fields):
         """Wrap fields in {"settings": fields} and send as a WebSocket text frame."""
         self._ws_send(json.dumps({"settings": fields}))
+
+    def _send_settings_once(self, fields):
+        sock = None
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(2.)
+            sock.connect((self._host, self._port))
+            self._handshake(sock)
+            self._send_frame(sock, json.dumps({"settings": fields}))
+        except Exception as exc:
+            logger.warning(
+                "panda_breath: one-shot WS send failed settings=%s: %s",
+                fields, exc)
+        finally:
+            if sock is not None:
+                try:
+                    sock.close()
+                except Exception:
+                    pass
 
     def _ws_send(self, text):
         sock = self._sock
         if sock is None:
             return
+        self._send_frame(sock, text)
+
+    def _send_frame(self, sock, text):
         payload = text.encode("utf-8")
         length = len(payload)
         mask = os.urandom(4)
@@ -301,6 +331,10 @@ class _MqttTransport:
         else:
             self._publish(
                 "%s/climate/chamber/mode/set" % self._prefix, "off")
+
+    def force_off(self):
+        self._last_target = 0.
+        self._publish("%s/climate/chamber/mode/set" % self._prefix, "off")
 
     # ── MQTT packet helpers ───────────────────────────────────────────────────
 
@@ -511,8 +545,13 @@ class PandaBreath:
         self.target = 0.
         self.smoothed_temp = 0.
         self.is_connected = False
+        self._in_shutdown = False
+        self._external_off_lockout = False
         self._last_temp_time = 0.
         self._sensor = None
+        self._virtual_pin = None
+        self._heater = None
+        self._heater_set_temp_orig = None
 
         # Thread-safe queue for background I/O
         self._state_queue = collections.deque()
@@ -555,28 +594,77 @@ class PandaBreath:
 
     def setup_pin(self, pin_type, pin_params):
         if pin_params['pin'] == 'pwm':
-            return PandaBreathVirtualPin(self)
+            self._virtual_pin = PandaBreathVirtualPin(self)
+            return self._virtual_pin
         raise self.printer.config.error(
             "Unknown panda_breath pin: %s" % (pin_params['pin'],))
 
     # ── lifecycle ─────────────────────────────────────────────────────────────
 
     def _handle_connect(self):
+        self._in_shutdown = False
+        self._attach_heater_hook()
         self._transport.start()
         self.reactor.update_timer(self._poll_timer, self.reactor.NOW)
-        # Force the device to turn off on connect to synchronize state
-        self.set_device_target(0)
+        self._force_device_off("connect")
 
     def _handle_disconnect(self):
+        self._in_shutdown = True
+        self._force_device_off("disconnect")
         self._transport.stop()
         self.reactor.update_timer(self._poll_timer, self.reactor.NEVER)
         
     def _handle_shutdown(self):
         """Emergency turn off the external heater if Klipper crashes."""
+        self._in_shutdown = True
+        self._force_device_off("shutdown")
+
+    def _force_device_off(self, reason):
+        self._clear_heater_target_state()
+        self.target = 0.
+        self._external_off_lockout = True
         try:
-            self.set_device_target(0)
-        except Exception:
-            pass
+            self._transport.force_off()
+            return
+        except AttributeError:
+            self._transport.set_target(0.)
+        except Exception as exc:
+            logger.warning(
+                "panda_breath: failed to force off on %s: %s", reason, exc)
+            try:
+                self._transport.set_target(0.)
+            except Exception:
+                pass
+
+    def _attach_heater_hook(self):
+        if self._heater_set_temp_orig is not None:
+            return
+        try:
+            pheaters = self.printer.lookup_object('heaters')
+            heater = pheaters.lookup_heater(self.name)
+        except Exception as exc:
+            logger.warning("panda_breath: unable to hook heater '%s': %s",
+                           self.name, exc)
+            return
+        self._heater = heater
+        self._heater_set_temp_orig = heater.set_temp
+
+        def wrapped_set_temp(degrees):
+            self._heater_set_temp_orig(degrees)
+            if degrees > 0.:
+                self._external_off_lockout = False
+            self.set_device_target(degrees)
+
+        heater.set_temp = wrapped_set_temp
+
+    def _clear_heater_target_state(self):
+        self._attach_heater_hook()
+        if self._heater_set_temp_orig is None:
+            return
+        try:
+            self._heater_set_temp_orig(0.)
+        except Exception as exc:
+            logger.debug("panda_breath: unable to clear heater target state: %s", exc)
 
     # ── state queue ───────────────────────────────────────────────────────────
 
@@ -595,9 +683,16 @@ class PandaBreath:
                 self.temperature = float(temp)
                 self.smoothed_temp = self.temperature
                 self._last_temp_time = eventtime
-                # Update sensor callback for heater history
-                if self._sensor and self._sensor.callback:
-                    self._sensor.callback(eventtime, self.temperature)
+
+        # Keep the heater callback fresh every poll cycle and use MCU print
+        # time so verify_heater compares timestamps from the correct clock.
+        if self._sensor and self._sensor.callback and self._last_temp_time > 0:
+            try:
+                mcu = self.printer.lookup_object('mcu')
+                read_time = mcu.estimated_print_time(eventtime)
+            except Exception:
+                read_time = eventtime
+            self._sensor.callback(read_time, self.temperature)
         
         if (self._last_temp_time > 0. 
                 and eventtime - self._last_temp_time > TEMP_STALE_WARN):
@@ -605,11 +700,73 @@ class PandaBreath:
                 "panda_breath: temperature data stale (%.0fs)",
                 eventtime - self._last_temp_time)
             self._last_temp_time = eventtime
+
+        # Keep device target synchronized with heater target even if no PWM
+        # callback arrives (seen on some modified Klipper builds).
+        heater_target = self._lookup_heater_target()
+        if heater_target is None:
+            try:
+                webhooks = self.printer.lookup_object('webhooks')
+                all_status = webhooks.get_status(eventtime)
+                hstatus = all_status.get('heater_generic %s' % self.name)
+                if isinstance(hstatus, dict):
+                    heater_target = hstatus.get('target')
+            except Exception:
+                pass
+        if heater_target is not None and abs(float(heater_target) - self.target) > 0.01:
+            heater_target = float(heater_target)
+            if self._external_off_lockout and heater_target > 0.:
+                logger.info(
+                    "panda_breath: ignoring synced heater target %.1f after forced off",
+                    heater_target)
+            else:
+                self.set_device_target(heater_target)
         
         return eventtime + REACTOR_POLL
 
+    def _lookup_heater_target(self):
+        try:
+            pheaters = self.printer.lookup_object('heaters')
+            if self._heater is None:
+                try:
+                    self._heater = pheaters.lookup_heater(self.name)
+                except Exception:
+                    self._heater = None
+            if self._heater is not None:
+                return float(getattr(self._heater, 'target_temp', 0.0))
+
+            try:
+                hobj = self.printer.lookup_object('heater_generic %s' % self.name)
+                if hobj is not None:
+                    return float(getattr(hobj, 'target_temp', 0.0))
+            except Exception:
+                pass
+
+            heater = pheaters.heaters.get(self.name)
+            if heater is None:
+                for hname, hobj in pheaters.heaters.items():
+                    if hname.endswith(self.name):
+                        heater = hobj
+                        break
+            if heater is not None:
+                return float(getattr(heater, 'target_temp', 0.0))
+
+            if self._virtual_pin is None:
+                return None
+            for _, heater in pheaters.heaters.items():
+                if getattr(heater, 'mcu_pwm', None) == self._virtual_pin:
+                    return float(getattr(heater, 'target_temp', 0.0))
+        except Exception:
+            pass
+        return None
+
     def set_device_target(self, degrees):
         """Send target to device. Only sends if changed or 0."""
+        if self._in_shutdown and float(degrees) > 0.:
+            logger.info(
+                "panda_breath: ignoring target %.1f while Klipper is shutdown",
+                float(degrees))
+            return
         self.target = float(degrees)
         self._transport.set_target(degrees)
 
@@ -662,13 +819,15 @@ class PandaBreathVirtualPin:
         return self.module.printer.lookup_object('mcu')
 
     def set_pwm(self, print_time, value, cycle_time=None):
-        if value > 0:
-            target = self._lookup_heater_target()
-            # If target changed or we are turning ON from OFF, push to device
-            if target is not None and (target != self.module.target or self.last_value == 0):
+        target = self._lookup_heater_target()
+        if target is not None:
+            if target <= 0:
+                if self.module.target != 0:
+                    self.module.set_device_target(0)
+            elif self.module._external_off_lockout:
+                pass
+            elif target != self.module.target or self.last_value == 0:
                 self.module.set_device_target(target)
-        elif value == 0 and self.last_value > 0:
-            self.module.set_device_target(0)
         self.last_value = value
 
     def _lookup_heater_target(self):
