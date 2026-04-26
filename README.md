@@ -60,20 +60,45 @@ hysteresis: 5
 heating_gain: 1
 
 [gcode_macro M141]
-description: Set chamber temperature (Panda Breath)
+description: Set chamber temperature (heat with Klipper, hold/cool with Panda auto)
 gcode:
     {% set s = params.S|default(0)|float %}
-    SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET={s}
+    {% set current = printer["heater_generic panda_breath"].temperature|float %}
+    {% set filtertemp = params.FILTERTEMP|default(30)|int %}
+    {% set hotbedtemp = params.HOTBEDTEMP|default(80)|int %}
+    {% if s <= 0 %}
+        PANDA_BREATH_AUTO ENABLE=0
+        SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET=0
+    {% elif s > current %}
+        SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET={s}
+    {% else %}
+        PANDA_BREATH_AUTO ENABLE=1 TARGET={s} FILTERTEMP={filtertemp} HOTBEDTEMP={hotbedtemp}
+    {% endif %}
 
 [gcode_macro M191]
-description: Wait for chamber temperature (Panda Breath)
+description: Reach and hold chamber temperature
 gcode:
     {% set s = params.S|default(0)|float %}
-    M141 S{s}
-    {% if s > 0 %}
+    {% set current = printer["heater_generic panda_breath"].temperature|float %}
+    {% set filtertemp = params.FILTERTEMP|default(30)|int %}
+    {% set hotbedtemp = params.HOTBEDTEMP|default(80)|int %}
+    {% if s <= 0 %}
+        M141 S0
+    {% elif current < s %}
+        SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET={s}
         TEMPERATURE_WAIT SENSOR="heater_generic panda_breath" MINIMUM={s}
+        PANDA_BREATH_AUTO ENABLE=1 TARGET={s} FILTERTEMP={filtertemp} HOTBEDTEMP={hotbedtemp}
+    {% else %}
+        PANDA_BREATH_AUTO ENABLE=1 TARGET={s} FILTERTEMP={filtertemp} HOTBEDTEMP={hotbedtemp}
+        TEMPERATURE_WAIT SENSOR="heater_generic panda_breath" MAXIMUM={s}
     {% endif %}
 ```
+
+These macros are for the stock firmware path and deliberately use both control modes:
+
+- Heating up from below target uses normal `heater_generic` control (`work_mode: 2`).
+- Holding a reached target, or cooling down to a lower target while keeping the Panda active, uses native Panda auto mode (`work_mode: 1`).
+- `S=0` fully turns the Panda off.
 
 ### Native auto mode (stock firmware only)
 
