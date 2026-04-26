@@ -131,7 +131,6 @@ In the firmware integration repo:
    - `auto`: recommended, requires `v1.0.3+`
    - `manual`: may be less safe if connectivity is lost
 5. Ship the appropriate config template/macros for each mode.
-6. Ensure the integration still works if users do not upgrade Panda firmware, but do not make `manual` look like the preferred option.
 
 ## Suggested user-facing wording
 
@@ -149,12 +148,8 @@ The key point is that the warning belongs on `manual`, not on the whole Panda Br
 - `manual` mode installs the older pure manual heating behavior.
 - `auto` mode is clearly documented as requiring Panda firmware `v1.0.3+`.
 - `manual` mode is clearly documented as a fallback that may be less safe.
-- No changes are required in this repo beyond consuming the already-published backend commands/status.
 
 ## Out of scope for the next repo
 
-- Re-implementing Panda protocol logic in the firmware integration repo
-- KlipperScreen work
-- ESPHome behavior changes
 - Further changes to `pandabreath-klipper` itself unless a real integration gap is discovered
 
