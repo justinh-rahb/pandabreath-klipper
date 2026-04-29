@@ -8,7 +8,7 @@ Klipper extras module for the **BIQU Panda Breath** smart chamber heater and air
 
 The [BIQU Panda Breath](https://biqu.equipment/products/biqu-panda-breath-smart-air-filtration-and-heating-system-with-precise-temperature-regulation) is a 300W PTC chamber heater and HEPA/carbon air filter with WiFi control, designed for enclosed 3D printers. It has native Bambu Lab integration but no Klipper support.
 
-This project reverse-engineers its WebSocket API and wraps it in a standard Klipper `extras/` module, exposing the Panda Breath as a `heater_generic` — no custom GCodes, no special macros. Orca Slicer and other tools already know how to set chamber temperature via `SET_HEATER_TEMPERATURE`; this module makes that work.
+This project reverse-engineers its WebSocket API and wraps it in a standard Klipper `extras/` module, exposing the Panda Breath as a `heater_generic`. Orca Slicer and other tools already know how to set chamber temperature via `SET_HEATER_TEMPERATURE`; this module makes that work. For stock firmware, it also exposes optional `PANDA_BREATH_AUTO` and `PANDA_BREATH_DRY_*` commands to configure the device's native modes from Klipper macros.
 
 ---
 
@@ -30,10 +30,12 @@ This project reverse-engineers its WebSocket API and wraps it in a standard Klip
 The module will:
 
 1. Maintain a persistent WebSocket connection to the device at `ws://<ip>/ws`
-2. Set `work_mode: 2` (always-on) — the device's native auto mode requires a Bambu MQTT connection, which doesn't exist in a Klipper environment
-3. Send `work_on: true` when Klipper sets a non-zero target temperature; `work_on: false` when target is 0
-4. Report `cal_warehouse_temp` (calibrated NTC ADC reading) as the current temperature
-5. Reconnect automatically on connection drop
+2. Use `work_mode: 2` (always-on) for normal `heater_generic` chamber heating
+3. Optionally configure the device's native auto mode (`work_mode: 1`) via `PANDA_BREATH_AUTO`
+4. Optionally start and stop the device's native filament drying mode (`work_mode: 3`)
+5. Send `work_on: true` when Klipper sets a non-zero target temperature; `work_on: false` when target is 0
+6. Report `cal_warehouse_temp` (calibrated NTC ADC reading) as the current temperature
+7. Reconnect automatically on connection drop
 
 The device handles all heater duty-cycling and fan speed control internally. The module only tells it to be on or off.
 
@@ -58,20 +60,83 @@ hysteresis: 5
 heating_gain: 1
 
 [gcode_macro M141]
-description: Set chamber temperature (Panda Breath)
+description: Set chamber temperature (heat with Klipper, hold/cool with Panda auto)
 gcode:
     {% set s = params.S|default(0)|float %}
-    SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET={s}
+    {% set current = printer["heater_generic panda_breath"].temperature|float %}
+    {% set filtertemp = params.FILTERTEMP|default(30)|int %}
+    {% set hotbedtemp = params.HOTBEDTEMP|default(80)|int %}
+    {% if s <= 0 %}
+        PANDA_BREATH_AUTO ENABLE=0
+        SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET=0
+    {% elif s > current %}
+        SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET={s}
+    {% else %}
+        PANDA_BREATH_AUTO ENABLE=1 TARGET={s} FILTERTEMP={filtertemp} HOTBEDTEMP={hotbedtemp}
+    {% endif %}
 
 [gcode_macro M191]
-description: Wait for chamber temperature (Panda Breath)
+description: Reach and hold chamber temperature
 gcode:
     {% set s = params.S|default(0)|float %}
-    M141 S{s}
-    {% if s > 0 %}
+    {% set current = printer["heater_generic panda_breath"].temperature|float %}
+    {% set filtertemp = params.FILTERTEMP|default(30)|int %}
+    {% set hotbedtemp = params.HOTBEDTEMP|default(80)|int %}
+    {% if s <= 0 %}
+        M141 S0
+    {% elif current < s %}
+        SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET={s}
         TEMPERATURE_WAIT SENSOR="heater_generic panda_breath" MINIMUM={s}
+        PANDA_BREATH_AUTO ENABLE=1 TARGET={s} FILTERTEMP={filtertemp} HOTBEDTEMP={hotbedtemp}
+    {% else %}
+        PANDA_BREATH_AUTO ENABLE=1 TARGET={s} FILTERTEMP={filtertemp} HOTBEDTEMP={hotbedtemp}
+        TEMPERATURE_WAIT SENSOR="heater_generic panda_breath" MAXIMUM={s}
     {% endif %}
 ```
+
+These macros are for the stock firmware path and deliberately use both control modes:
+
+- Heating up from below target uses normal `heater_generic` control (`work_mode: 2`).
+- Holding a reached target, or cooling down to a lower target while keeping the Panda active, uses native Panda auto mode (`work_mode: 1`).
+- `S=0` fully turns the Panda off.
+
+### Native auto mode (stock firmware only)
+
+For stock Panda Breath firmware, the module also exposes a `PANDA_BREATH_AUTO` command that switches the device into its own native auto mode (`work_mode: 1`) instead of the normal Klipper-controlled heating mode (`work_mode: 2`).
+
+This is mainly useful if you want macros to toggle and configure the Panda's built-in automatic behavior directly.
+
+```ini
+[gcode_macro PANDA_AUTO_ON]
+description: Enable Panda Breath native auto mode
+gcode:
+    PANDA_BREATH_AUTO ENABLE=1 TARGET=45 FILTERTEMP=30 HOTBEDTEMP=80
+
+[gcode_macro PANDA_AUTO_OFF]
+description: Disable Panda Breath native auto mode
+gcode:
+    PANDA_BREATH_AUTO ENABLE=0
+```
+
+`TARGET`, `FILTERTEMP`, and `HOTBEDTEMP` are Panda firmware auto-mode settings, not standard Klipper heater targets.
+
+### Native drying mode (stock firmware only)
+
+For stock Panda Breath firmware, the module also exposes `PANDA_BREATH_DRY_START` and `PANDA_BREATH_DRY_STOP` to control the Panda's built-in drying cycle (`work_mode: 3`) directly from macros.
+
+```ini
+[gcode_macro PANDA_DRY_START]
+description: Start Panda Breath native drying mode
+gcode:
+    PANDA_BREATH_DRY_START TEMP=55 HOURS=6
+
+[gcode_macro PANDA_DRY_STOP]
+description: Stop Panda Breath native drying mode
+gcode:
+    PANDA_BREATH_DRY_STOP
+```
+
+`TEMP` is the Panda drying target in Celsius and `HOURS` is the drying-cycle duration in whole hours.
 
 ---
 
