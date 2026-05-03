@@ -1,91 +1,87 @@
-# Install on Snapmaker U1
-
----
+# Install the Klipper Module
 
 ## Prerequisites
 
-- Snapmaker U1 running the [community extended firmware](https://snapmakeru1-extended-firmware.pages.dev)
-- SSH access to the U1
-- BIQU Panda Breath connected to your WiFi network
-- Panda Breath IP address or mDNS hostname (`PandaBreath.local`)
-- If using ESPHome firmware path: an MQTT broker reachable by both the Panda Breath and the U1
+- A Klipper host with access to its `klippy/extras/` directory
+- A BIQU Panda Breath on your network
+- For `firmware: stock`: a hostname or IP your Klipper host can resolve
+- For `firmware: esphome`: an MQTT broker reachable by both the device and the Klipper host
 
-### U1 SSH credentials
+## Step 1: Copy `panda_breath.py`
 
-| User | Password |
-|---|---|
-| `root` | `snapmaker` |
-| `lava` | `snapmaker` |
+`panda_breath.py` uses only Python standard library modules. No package installation is required.
 
-```sh
-ssh lava@<u1-ip>
-```
+Copy the file into your Klipper `extras/` directory. Common locations include:
 
----
+- `/home/pi/klipper/klippy/extras/`
+- `/home/mks/klipper/klippy/extras/`
+- `/home/lava/klipper/klippy/extras/`
 
-## Step 1: Copy the Klipper extra
-
-`panda_breath.py` has no external Python dependencies — it uses only the standard library. No package installation is required.
-
-Copy the file to the Klipper extras directory from your workstation:
+Example:
 
 ```sh
-scp panda_breath.py lava@<u1-ip>:/home/lava/klipper/klippy/extras/
+cp panda_breath.py /path/to/klipper/klippy/extras/
 ```
 
-Or directly on the device:
+## Step 2: Add `printer.cfg` sections
 
-```sh
-cp panda_breath.py /home/lava/klipper/klippy/extras/
-```
+Use the heater name `panda_breath`. The module hooks that heater by name.
 
----
-
-## Step 2: Configure `printer.cfg`
-
-Add one of the following sections depending on which firmware your Panda Breath is running.
-
-=== "Stock firmware (OEM v0.0.0)"
+=== "Stock firmware"
 
     ```ini
     [panda_breath]
     firmware: stock
-    host: PandaBreath.local   # or IP address
+    host: PandaBreath.local   # or an IP / hostname your Klipper host can resolve
     port: 80
+
+    [heater_generic panda_breath]
+    heater_pin: panda_breath:pwm
+    sensor_type: panda_breath
+    control: watermark
+    max_delta: 0.5
+    min_temp: 15
+    max_temp: 80
+
+    [verify_heater panda_breath]
+    check_gain_time: 360
+    hysteresis: 5
+    heating_gain: 1
     ```
 
-    !!! tip "Recommended firmware"
-        Use OEM v0.0.0 — it is the only confirmed stable release. v1.0.1+ have thermal regression bugs and v1.0.2 silently removed PTC thermal runaway detection. See [Firmware](../firmware.md).
+    !!! tip
+        `v0.0.0` is still the only stock firmware release this repo treats as community-confirmed stable. See [Firmware](../firmware.md).
 
 === "ESPHome firmware"
 
     ```ini
     [panda_breath]
     firmware: esphome
-    mqtt_broker: 192.168.1.x   # IP of your MQTT broker
+    mqtt_broker: 192.168.1.10
     mqtt_port: 1883
     mqtt_topic_prefix: panda-breath
+
+    [heater_generic panda_breath]
+    heater_pin: panda_breath:pwm
+    sensor_type: panda_breath
+    control: watermark
+    max_delta: 0.5
+    min_temp: 15
+    max_temp: 80
+
+    [verify_heater panda_breath]
+    check_gain_time: 360
+    hysteresis: 5
+    heating_gain: 1
     ```
-
-    An MQTT broker (e.g. Mosquitto) must be reachable from both the Panda Breath and the U1. See [ESPHome](../esphome/index.md) for setup details.
-
-The module registers itself as a Klipper heater named `panda_breath`. No additional `[heater_generic]` or `[temperature_sensor]` blocks are needed.
-
----
 
 ## Step 3: Restart Klipper
 
-```sh
-sudo systemctl restart klipper
-```
-
-Or use the Fluidd/Mainsail UI to restart the Klipper service.
-
----
+Restart Klipper using your normal service manager or web UI.
 
 ## Step 4: Verify
 
-In the Klipper log (`/tmp/klippy.log`), you should see a connection message within a few seconds:
+Look in `klippy.log` for a connection message:
 
 === "Stock firmware"
 
@@ -96,50 +92,49 @@ In the Klipper log (`/tmp/klippy.log`), you should see a connection message with
 === "ESPHome firmware"
 
     ```
-    panda_breath: MQTT connected to 192.168.1.x:1883
+    panda_breath: MQTT connected to 192.168.1.10:1883
     ```
 
-In Fluidd/Mainsail, the Panda Breath should appear as a temperature sensor and heater. Chamber temperature will populate once the device's `temp_task` pushes its first reading (typically within 5 seconds of connection).
-
----
-
-## Orca Slicer integration
-
-Orca Slicer sets chamber temperature automatically based on the filament profile. In your filament profile, set the **Chamber temperature** field. Orca will emit:
+Then test the normal heater path:
 
 ```gcode
 SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET=45
+SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET=0
 ```
 
-No custom GCode or printer profile changes are needed beyond ensuring `panda_breath` is registered as a heater in Klipper.
+Temperature should begin updating once the device pushes its first reading.
 
----
+## Optional stock-only commands
+
+If you are using OEM stock firmware, the module also exposes:
+
+- `PANDA_BREATH_AUTO ENABLE=<0|1> TARGET=<C> FILTERTEMP=<C> HOTBEDTEMP=<C>`
+- `PANDA_BREATH_DRY_START TEMP=<C> HOURS=<1-12>`
+- `PANDA_BREATH_DRY_STOP`
+
+These are optional advanced controls. They are not needed for basic Klipper heater operation.
 
 ## Troubleshooting
 
-**Device not found / connection refused (stock firmware)**
+**Stock firmware connection issues**
 
-- Verify the device is on your WiFi: `ping PandaBreath.local`
-- Try the IP address directly instead of the mDNS hostname — mDNS can be unreliable on some networks
-- If the device isn't on WiFi, it falls back to AP mode: SSID `Panda_Breath_XXXXXXXXXX`, password `987654321`, IP `192.168.254.1`
+- Verify the Panda Breath is reachable from the Klipper host.
+- If `PandaBreath.local` does not resolve on your system, use the device IP directly.
+- If the device is not on WiFi, it falls back to AP mode at `192.168.254.1`.
 
-**MQTT connection refused (ESPHome firmware)**
+**ESPHome MQTT issues**
 
-- Verify the broker is running and reachable from the U1: `mosquitto_pub -h <broker-ip> -t test -m hello`
-- Check `mqtt_broker` in `printer.cfg` is the broker IP, not the Panda Breath IP
-- Confirm the ESPHome device is connected to WiFi and the broker address in `esphome/panda_breath.yaml` matches
+- Verify `mqtt_broker` points to the broker, not the Panda Breath.
+- Confirm the broker is reachable from both the device and the Klipper host.
+- Confirm `mqtt_topic_prefix` matches the ESPHome config.
 
-**Temperature stuck at 0 or not updating**
+**Temperature does not update**
 
-- Stock: temperature is pushed periodically by the device's `temp_task`. If the WebSocket connects but no temperature arrives within ~30 seconds, check that the Panda Breath is running v0.0.0 — v1.0.1+ may have regressions. See [Firmware](../firmware.md).
-- ESPHome: check that ESPHome is publishing to `panda-breath/sensor/chamber_temperature/state` — verify with `mosquitto_sub -h <broker> -t 'panda-breath/#' -v`
+- Stock: the device pushes readings periodically; no manual poll command is required.
+- ESPHome: confirm the broker is receiving `.../sensor/chamber_temperature/state`.
 
-**Heater turns on but chamber doesn't heat**
+**The heater appears but control is inconsistent**
 
-- Confirm mains AC is connected and the main power switch on the Panda Breath is on
-- The device manages all internal heater relay duty-cycling; the module only sends `work_on: true`
-
-**`ImportError` or `AttributeError` on Klipper start**
-
-- Verify the file was copied to the correct path: `/home/lava/klipper/klippy/extras/panda_breath.py`
-- Confirm there are no leftover `*.pyc` files from a different Python version in the same directory
+- Make sure the heater section is named `[heater_generic panda_breath]`.
+- Make sure `heater_pin` is `panda_breath:pwm` and `sensor_type` is `panda_breath`.
+- Remove stale copies of older `panda_breath.py` files if more than one exists on the host.

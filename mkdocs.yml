@@ -42,7 +42,7 @@ nav:
   - Firmware: firmware.md
   - Klipper Integration:
       - Overview: klipper/index.md
-      - Install on U1: klipper/install.md
+      - Install: klipper/install.md
       - printer.cfg Reference: klipper/printer-cfg.md
   - ESPHome Firmware:
       - Overview: esphome/index.md

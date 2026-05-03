@@ -1,140 +1,112 @@
 # pandabreath-klipper
 
-Klipper extras module for the **BIQU Panda Breath** smart chamber heater and air filter.
-Primary target: **Snapmaker U1**.
+Klipper integration and firmware research for the **BIQU Panda Breath** smart chamber heater and air filter.
 
-!!! tip "Status: Three integration paths implemented — hardware testing in progress"
-    `panda_breath.py` (WebSocket/MQTT) is ready to deploy — copy the file and restart Klipper. Alternatively, the KlipperMCU firmware (`klipper-firmware/`) replaces the OEM firmware entirely and makes the device a native Klipper MCU over USB, with no extras module needed.
+!!! tip "Status"
+    `panda_breath.py` is ready to deploy for stock WebSocket and ESPHome MQTT integrations. The repo also contains a separate KlipperMCU reflash path for users who want the device to appear as a native Klipper MCU over USB.
 
----
+## Overview
 
-## What is this?
+This repository exists because the Panda Breath has no official Klipper support. It provides three upstream paths:
 
-The [BIQU Panda Breath](https://biqu.equipment/products/biqu-panda-breath-smart-air-filtration-and-heating-system-with-precise-temperature-regulation) is a 300W PTC chamber heater and HEPA/carbon air filter with WiFi control, designed for enclosed 3D printers. It integrates natively with Bambu Lab printers but has **no Klipper support**.
+| Path | Device firmware | Klipper side | Notes |
+|---|---|---|---|
+| Stock | OEM firmware | `panda_breath.py` | Reverse-engineered WebSocket transport |
+| ESPHome | ESPHome reflash | `panda_breath.py` | MQTT transport |
+| KlipperMCU | Custom ESP-IDF reflash | Native `[mcu]` | No `extras/` module required |
 
-This project provides a Klipper `extras/` module that exposes the Panda Breath as a standard `heater_generic`. No custom GCodes, no special macros — Orca Slicer and other tools already know how to set chamber temperature via `SET_HEATER_TEMPERATURE`, and this module makes that work.
-
-Three integration paths are supported:
-
-| Path | Device firmware | Transport | Klipper interface | Notes |
-|---|---|---|---|---|
-| **Stock** | OEM v0.0.0 | WebSocket JSON | `extras/` module | Minimal risk; keep original firmware |
-| **ESPHome** | ESPHome (reflash) | MQTT | `extras/` module | Better reliability; restores thermal runaway protection |
-| **KlipperMCU** | Custom ESP-IDF (reflash) | USB serial | Native `[mcu]` | No extras module; Klipper PID and safety apply directly |
-
-The Stock and ESPHome paths use `panda_breath.py` and are identical from the GCode side. The KlipperMCU path skips the extras module entirely — the device appears as a native MCU.
-
----
-
-## Progress
-
-- [x] Protocol reverse-engineered from firmware strings (v1.0.1, v1.0.2) and embedded JS (v0.0.0 full flash dump)
-- [x] Hardware schematic analyzed (ESP32-C3, relay heater, TRIAC fan, NTC thermistors)
-- [x] Protocol documented — see [Protocol](protocol.md)
-- [x] Klipper extras module (`panda_breath.py`) — stock WebSocket + ESPHome MQTT, stdlib only
-- [x] ESPHome configuration (`esphome/panda_breath.yaml`) — GPIO pins inferred from module datasheet, continuity test recommended
-- [x] KlipperMCU firmware (`klipper-firmware/`) — custom ESP-IDF firmware, native Klipper MCU protocol over USB
-- [ ] Standalone WebSocket test tool (`test_ws.py`)
-- [ ] Hardware validation on Snapmaker U1
-- [ ] GPIO pin mapping confirmed via continuity testing (TH0 → GPIO0, TH1 → GPIO1, RLY_MOSFET → GPIO18 inferred — needs physical verification)
-
----
+For the stock and ESPHome paths, the module gives Klipper a `sensor_type: panda_breath` and a virtual `heater_pin: panda_breath:pwm`. You still define the actual `[heater_generic panda_breath]` yourself.
 
 ## Quick start
 
-=== "Stock firmware (OEM v0.0.0)"
+=== "Stock firmware"
 
     ```ini
     [panda_breath]
     firmware: stock
-    host: PandaBreath.local   # or IP address
+    host: PandaBreath.local   # or an IP / hostname your Klipper host can resolve
     port: 80
+
+    [heater_generic panda_breath]
+    heater_pin: panda_breath:pwm
+    sensor_type: panda_breath
+    control: watermark
+    max_delta: 0.5
+    min_temp: 15
+    max_temp: 80
     ```
-
-    Copy `panda_breath.py` to `/home/lava/klipper/klippy/extras/` and restart Klipper. No other install steps — the module uses Python standard library only.
-
-    See [Install on U1](klipper/install.md) for the full procedure.
 
 === "ESPHome firmware"
 
     ```ini
     [panda_breath]
     firmware: esphome
-    mqtt_broker: 192.168.1.x
+    mqtt_broker: 192.168.1.10
     mqtt_port: 1883
     mqtt_topic_prefix: panda-breath
+
+    [heater_generic panda_breath]
+    heater_pin: panda_breath:pwm
+    sensor_type: panda_breath
+    control: watermark
+    max_delta: 0.5
+    min_temp: 15
+    max_temp: 80
     ```
 
-    Copy `panda_breath.py` to `/home/lava/klipper/klippy/extras/` and restart Klipper. Requires a local MQTT broker and ESPHome firmware flashed to the device.
-
-    See [ESPHome Firmware](esphome/index.md) for the full procedure.
-
-=== "KlipperMCU firmware (USB)"
+=== "KlipperMCU firmware"
 
     ```ini
     [mcu panda_breath]
-    serial: /dev/ttyUSB0        # adjust port
+    serial: /dev/ttyUSB0
 
     [heater_generic chamber]
-    heater_pin: panda_breath:gpio18      # GPIO_RELAY (module pad 26)
+    heater_pin: panda_breath:gpio18
     sensor_type: NTC 100K beta 3950
-    sensor_pin: panda_breath:gpio0       # GPIO_NTC_CHAMBER (module pad 12)
+    sensor_pin: panda_breath:gpio0
     control: pid
-    pid_kp: 10
-    pid_ki: 0.1
-    pid_kd: 100
     min_temp: 0
     max_temp: 60
-
-    [verify_heater chamber]
-    max_error: 200
-    check_gain_time: 300
-    hysteresis: 5
-    heating_gain: 1
     ```
 
-    Connect via USB-C cable. No `panda_breath.py` needed — Klipper controls the device directly as a native MCU. Requires building and flashing the custom ESP-IDF firmware first.
+The baseline control path is normal Klipper heater control:
 
-    See [KlipperMCU Firmware](klipper-mcu/index.md) for build and flash steps.
+```gcode
+SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET=45
+SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET=0
+```
 
----
+## Optional stock-only commands
 
-## Target platform: Snapmaker U1
+The stock transport also exposes optional passthrough commands for OEM native modes:
 
-The Snapmaker U1 runs a modified Klipper + Moonraker stack. The BIQU Panda Breath is officially listed as U1-compatible. The U1 has no built-in active chamber heater — the Panda Breath fills that gap, and this module makes it scriptable.
+- `PANDA_BREATH_AUTO ENABLE=<0|1> TARGET=<C> FILTERTEMP=<C> HOTBEDTEMP=<C>`
+- `PANDA_BREATH_DRY_START TEMP=<C> HOURS=<1-12>`
+- `PANDA_BREATH_DRY_STOP`
 
-- Klipper extras path on U1: `/home/lava/klipper/klippy/extras/`
-- Community extended firmware: [snapmakeru1-extended-firmware.pages.dev](https://snapmakeru1-extended-firmware.pages.dev)
-
----
+These are useful for advanced macros and downstream integrations, but they are not required for the normal `heater_generic` path.
 
 ## Quick links
 
 | Topic | Page |
 |---|---|
-| Klipper module architecture (Stock/ESPHome) | [Klipper Integration](klipper/index.md) |
-| Install on Snapmaker U1 | [Install on U1](klipper/install.md) |
-| `printer.cfg` reference (Stock/ESPHome) | [printer.cfg Reference](klipper/printer-cfg.md) |
-| ESPHome firmware (reflash alternative) | [ESPHome](esphome/index.md) |
-| KlipperMCU firmware (native MCU, USB) | [KlipperMCU](klipper-mcu/index.md) |
-| Multi-instance bridging (KlipperMCU) | [Klipper Router](https://github.com/paxx12/klipper-router) |
+| Klipper module architecture | [Klipper Integration](klipper/index.md) |
+| Install the module | [Install](klipper/install.md) |
+| `printer.cfg` reference | [printer.cfg Reference](klipper/printer-cfg.md) |
+| ESPHome reflash path | [ESPHome](esphome/index.md) |
+| KlipperMCU reflash path | [KlipperMCU](klipper-mcu/index.md) |
 | WebSocket API reference | [Protocol](protocol.md) |
 | Hardware schematic analysis | [Hardware](hardware.md) |
 | Firmware binary analysis | [Firmware](firmware.md) |
-| How the protocol was reverse-engineered | [Research Methodology](research/methodology.md) |
+| Reverse-engineering methodology | [Research Methodology](research/methodology.md) |
 
----
+## Notes
 
-## Device notes
-
-- Firmware V0.0.0 (Aug 2025) is the only confirmed stable OEM release; V1.0.1+ have thermal regression bugs — see [Firmware](firmware.md)
-- V1.0.2 silently removed PTC thermal runaway detection — the ESPHome path restores this
-- WebSocket has no authentication — LAN use only
-- Button/UI state changes do **not** push WebSocket messages (confirmed v0.0.0)
-- No confirmed state-query command; temperature arrives periodically from the device's internal `temp_task`
-
----
+- OEM firmware `v0.0.0` is still the only community-confirmed stable stock release documented in this repo.
+- `v1.0.2` appears to remove PTC thermal protection logic present in earlier firmware analysis.
+- The stock API has no authentication and should be treated as LAN-only.
+- Downstream projects may wrap this module with device-specific packaging, macros, and UI.
 
 [![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/wildtang3nt)
 
-*All protocol knowledge is derived from reverse engineering. No official API documentation exists from BTT. See [Research Methodology](research/methodology.md) for full provenance.*
+*All protocol knowledge in this repository is derived from reverse engineering. See [Research Methodology](research/methodology.md).*

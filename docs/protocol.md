@@ -74,7 +74,7 @@ The primary control and telemetry root.
 | `language` | string | UI language: `"en"` or `"zh"` |
 
 !!! note "Target temperature write field"
-    The field for setting a general heating target temperature has not been confirmed via live testing. Candidates from firmware strings: `set_temp`, `temp`, `custom_temp`. Use `filament_temp` for drying mode. For always-on mode (`work_mode: 2`), the device heats toward its internally stored target.
+    The current upstream Klipper stock transport writes `set_temp` for normal `work_mode: 2` heater control, and uses `temp` / `filtertemp` / `hotbedtemp` for the optional native auto-mode passthrough. Drying mode uses `filament_temp` and `filament_timer`.
 
 #### Read-only fields (device → client)
 
@@ -171,7 +171,7 @@ The primary control and telemetry root.
 | `{ "printer": { "disconnect": 1 } }` | Disconnect from bound printer |
 
 !!! note "Klipper note"
-    This subsystem is irrelevant for Klipper printers. The device connects to Bambu printers via MQTT over TLS and reads `bed_temper`, `nozzle_temper`, `gcode_state` etc. to drive Auto mode. This won't work with Klipper — use `work_mode: 2` (Always On) instead.
+    The baseline Klipper heater path in this repo uses `work_mode: 2` (Always On). Recent module builds also expose raw passthrough commands for the device's native auto-mode settings, but normal Klipper chamber-heater control still centers on `work_mode: 2`.
 
 When connected to a Bambu printer, the device subscribes to `device/<sn>/report` via MQTT over TLS and pushes these fields to WebSocket clients:
 
