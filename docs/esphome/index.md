@@ -1,6 +1,9 @@
 # ESPHome Firmware
 
-An alternative to the OEM firmware: reflash the Panda Breath's ESP32-C3 with [ESPHome](https://esphome.io), then use the MQTT transport in `panda_breath.py`.
+An experimental alternative to the OEM firmware: reflash the Panda Breath's ESP32-C3 with [ESPHome](https://esphome.io), then use the MQTT transport in `panda_breath.py`.
+
+!!! warning "Experimental status"
+    This path was never fully fleshed out, is untested on real hardware in its current state, and is currently de-emphasized in this repository. Treat it as a starting point for future work, not a supported implementation.
 
 !!! warning "Continuity testing recommended before flashing"
     GPIO pin assignments for TH0, TH1, and RLY_MOSFET have been inferred by cross-referencing the schematic's module pad numbers with the ESP32-C3-MINI-1 datasheet. The assignments are high-confidence but not yet verified on real hardware. **Continuity testing is recommended before first flash** to confirm the three inferred pins. See the [setup guide](https://github.com/justinh-rahb/pandabreath-klipper/blob/main/esphome/README.md) for verification steps.
@@ -12,12 +15,12 @@ An alternative to the OEM firmware: reflash the Panda Breath's ESP32-C3 with [ES
 | Concern | OEM firmware | ESPHome |
 |---|---|---|
 | Native Klipper auto-mode support | Available in the current OEM `1.0.3+` line | Not needed; ESPHome uses direct MQTT heater control |
-| Firmware risk profile | Current OEM path is improving, but earlier repository analysis flagged regressions in `v1.0.2` | ESPHome is maintained and battle-tested |
+| Firmware risk profile | Current OEM path is improving, but earlier repository analysis flagged regressions in `v1.0.2` | Experimental in this repo; not validated end-to-end |
 | Fan speed control | Device-managed (no external control) | Configurable via `ac_dimmer` component |
 | OTA updates | BTT releases only | ESPHome OTA — update on your schedule |
 | Recovery | Historical 4MB OEM flash dump available in this repo | Reflash OEM dump at any time |
 
-The primary motivation is still control and safety: repository analysis of `v1.0.2` found regression signals around PTC thermal protection, while ESPHome lets you own that logic directly.
+The original motivation was control and safety: repository analysis of `v1.0.2` found regression signals around PTC thermal protection, while ESPHome would let you own that logic directly. In practice, this path has not been completed or validated.
 
 ---
 
@@ -99,7 +102,7 @@ opkg install mosquitto mosquitto-client
 
 ## Setup guide
 
-The detailed developer setup guide (GPIO verification steps, first-flash procedure, validation sequence, NTC calibration, and recovery instructions) is in the repository:
+The detailed developer setup guide (GPIO verification steps, first-flash procedure, validation sequence, NTC calibration, and recovery instructions) is in the repository, but it should be read as exploratory work:
 
 [`esphome/README.md` on GitHub](https://github.com/justinh-rahb/pandabreath-klipper/blob/main/esphome/README.md)
 

@@ -10,7 +10,7 @@ The default integration path is standard Klipper heater control via `SET_HEATER_
 
 ## Architecture
 
-`panda_breath.py` is a single Klipper `extras/` file with **no external Python dependencies**. A transport abstraction supports two firmware paths:
+`panda_breath.py` is a single Klipper `extras/` file with **no external Python dependencies**. The stock WebSocket transport is the practical path today; the ESPHome MQTT transport remains present but unfinished and untested.
 
 ```
 [heater_generic panda_breath]
@@ -94,12 +94,13 @@ No `pip install`, no separate Python package, and no bundled service layer. Drop
 
 ## Choosing a firmware path
 
-| Consideration | Stock (1.0.3+) | ESPHome |
+| Consideration | Stock (1.0.3+) | ESPHome (experimental) |
 |---|---|---|
 | Device risk | None — keep OEM firmware | Reflash required; recovery via flash dump |
 | Native Klipper auto-mode support | Available in current OEM firmware line | Not applicable; ESPHome uses direct MQTT heater control |
 | Fan speed control | Device manages internally | Configurable via ESPHome |
 | Klipper install complexity | Drop file + `printer.cfg` sections | Drop file + MQTT broker + `printer.cfg` sections |
+| Validation status | In active use | Unfinished and untested |
 | GPIO verification needed | No | Yes — 3 pins unconfirmed |
 
-See [ESPHome](../esphome/index.md) for the full ESPHome path documentation.
+See [ESPHome](../esphome/index.md) for the experimental ESPHome path documentation.

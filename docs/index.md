@@ -3,17 +3,17 @@
 Klipper integration and firmware research for the **BIQU Panda Breath** smart chamber heater and air filter.
 
 !!! tip "Status"
-    `panda_breath.py` is ready to deploy for stock WebSocket and ESPHome MQTT integrations. The repo also contains a separate KlipperMCU reflash path for users who want the device to appear as a native Klipper MCU over USB.
+    The stock OEM firmware plus `panda_breath.py` is the practical path today. The ESPHome and KlipperMCU directions remain experimental and are currently de-emphasized.
 
 ## Overview
 
-This repository exists because the Panda Breath has no official Klipper support. It provides three upstream paths:
+This repository exists because the Panda Breath has no official Klipper support. It documents one practical path and two experimental ones:
 
 | Path | Device firmware | Klipper side | Notes |
 |---|---|---|---|
-| Stock | OEM firmware | `panda_breath.py` | Reverse-engineered WebSocket transport |
-| ESPHome | ESPHome reflash | `panda_breath.py` | MQTT transport |
-| KlipperMCU | Custom ESP-IDF reflash | Native `[mcu]` | No `extras/` module required |
+| Stock | OEM firmware | `panda_breath.py` | Current recommended path |
+| ESPHome | ESPHome reflash | `panda_breath.py` | Incomplete and untested |
+| KlipperMCU | Custom ESP-IDF reflash | Native `[mcu]` | Exploratory and mostly theoretical right now |
 
 For the stock and ESPHome paths, the module gives Klipper a `sensor_type: panda_breath` and a virtual `heater_pin: panda_breath:pwm`. You still define the actual `[heater_generic panda_breath]` yourself.
 
@@ -36,7 +36,7 @@ For the stock and ESPHome paths, the module gives Klipper a `sensor_type: panda_
     max_temp: 80
     ```
 
-=== "ESPHome firmware"
+=== "ESPHome firmware (experimental)"
 
     ```ini
     [panda_breath]
@@ -45,16 +45,10 @@ For the stock and ESPHome paths, the module gives Klipper a `sensor_type: panda_
     mqtt_port: 1883
     mqtt_topic_prefix: panda-breath
 
-    [heater_generic panda_breath]
-    heater_pin: panda_breath:pwm
-    sensor_type: panda_breath
-    control: watermark
-    max_delta: 0.5
-    min_temp: 15
-    max_temp: 80
+    ; Experimental path — not fully validated
     ```
 
-=== "KlipperMCU firmware"
+=== "KlipperMCU firmware (exploratory)"
 
     ```ini
     [mcu panda_breath]
@@ -95,8 +89,8 @@ BTT's Panda Breath wiki now lists `V1.0.3` as adding the ability to bind Klipper
 | Klipper module architecture | [Klipper Integration](klipper/index.md) |
 | Install the module | [Install](klipper/install.md) |
 | `printer.cfg` reference | [printer.cfg Reference](klipper/printer-cfg.md) |
-| ESPHome reflash path | [ESPHome](esphome/index.md) |
-| KlipperMCU reflash path | [KlipperMCU](klipper-mcu/index.md) |
+| ESPHome reflash path | [ESPHome (experimental)](esphome/index.md) |
+| KlipperMCU reflash path | [KlipperMCU (exploratory)](klipper-mcu/index.md) |
 | WebSocket API reference | [Protocol](protocol.md) |
 | Hardware schematic analysis | [Hardware](hardware.md) |
 | Firmware binary analysis | [Firmware](firmware.md) |
@@ -106,6 +100,8 @@ BTT's Panda Breath wiki now lists `V1.0.3` as adding the ability to bind Klipper
 
 - Use OEM firmware `1.0.3+` for the current stock-firmware Klipper path.
 - Earlier repository analysis found regression signals in `v1.0.2`, including apparent removal of some thermal-protection logic.
+- The ESPHome implementation is incomplete and untested.
+- The KlipperMCU path is still exploratory and not yet a validated solution.
 - The stock API has no authentication and should be treated as LAN-only.
 - Downstream projects may wrap this module with device-specific packaging, macros, and UI.
 

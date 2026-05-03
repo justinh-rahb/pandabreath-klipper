@@ -4,13 +4,13 @@ Klipper integration and firmware research for the **BIQU Panda Breath** smart ch
 
 ## What this repo provides
 
-The [BIQU Panda Breath](https://biqu.equipment/products/biqu-panda-breath-smart-air-filtration-and-heating-system-with-precise-temperature-regulation) is a 300W chamber heater and air filter with OEM WiFi control, but no official Klipper support. This repository provides three upstream integration paths:
+The [BIQU Panda Breath](https://biqu.equipment/products/biqu-panda-breath-smart-air-filtration-and-heating-system-with-precise-temperature-regulation) is a 300W chamber heater and air filter with OEM WiFi control, but no official Klipper support. The primary supported path in this repository is the stock OEM firmware plus `panda_breath.py`. Two additional reflash directions exist, but both remain experimental:
 
 | Path | Device firmware | Klipper side | Notes |
 |---|---|---|---|
-| Stock | OEM firmware | `panda_breath.py` | Uses the reverse-engineered WebSocket API |
-| ESPHome | ESPHome reflash | `panda_breath.py` | Uses MQTT transport |
-| KlipperMCU | Custom ESP-IDF reflash | Native `[mcu]` | Klipper talks to the device directly over USB |
+| Stock | OEM firmware | `panda_breath.py` | Current practical path |
+| ESPHome | ESPHome reflash | `panda_breath.py` | Incomplete and untested |
+| KlipperMCU | Custom ESP-IDF reflash | Native `[mcu]` | Exploratory and mostly theoretical right now |
 
 For the stock and ESPHome paths, `panda_breath.py` registers:
 
@@ -22,10 +22,10 @@ You still define the actual `[heater_generic panda_breath]` in `printer.cfg`.
 ## Status
 
 - [x] Protocol reverse-engineered from firmware strings, live OEM behavior, and full flash analysis
-- [x] Klipper extras module for stock WebSocket and ESPHome MQTT transports
+- [x] Klipper extras module for the stock WebSocket transport
 - [x] Optional stock-firmware passthrough commands for native auto and drying modes
-- [x] ESPHome reflash path
-- [x] KlipperMCU reflash path
+- [ ] ESPHome reflash path is unfinished, untested, and currently de-emphasized
+- [ ] Native KlipperMCU reflash path is still exploratory and untested
 
 ## Quick start
 
@@ -55,27 +55,15 @@ hysteresis: 5
 heating_gain: 1
 ```
 
-### ESPHome firmware
+### ESPHome firmware (experimental)
 
 ```ini
+; Experimental path — not fully fleshed out or validated
 [panda_breath]
 firmware: esphome
 mqtt_broker: 192.168.1.10
 mqtt_port: 1883
 mqtt_topic_prefix: panda-breath
-
-[heater_generic panda_breath]
-heater_pin: panda_breath:pwm
-sensor_type: panda_breath
-control: watermark
-max_delta: 0.5
-min_temp: 15
-max_temp: 80
-
-[verify_heater panda_breath]
-check_gain_time: 360
-hysteresis: 5
-heating_gain: 1
 ```
 
 The baseline control path is standard Klipper heater control:
@@ -111,8 +99,8 @@ For current OEM firmware, BTT's Panda Breath wiki lists `V1.0.3` as adding the a
 - [Klipper integration overview](docs/klipper/index.md)
 - [Klipper install guide](docs/klipper/install.md)
 - [`printer.cfg` reference](docs/klipper/printer-cfg.md)
-- [ESPHome path](docs/esphome/index.md)
-- [KlipperMCU path](docs/klipper-mcu/index.md)
+- [ESPHome path (experimental)](docs/esphome/index.md)
+- [KlipperMCU path (exploratory)](docs/klipper-mcu/index.md)
 - [Protocol reference](docs/protocol.md)
 - [Firmware analysis](docs/firmware.md)
 - [Hardware notes](docs/hardware.md)
