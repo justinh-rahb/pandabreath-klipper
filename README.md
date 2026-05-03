@@ -120,6 +120,6 @@ This repository is the upstream source for downstream firmware integrations. Tho
 
 ## License
 
-This project code and documentation are MIT licensed.
+This project code and documentation are licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE).
 
 The BIQU Panda Breath hardware and OEM firmware are © 2025 BIQU and remain under their respective licenses.
