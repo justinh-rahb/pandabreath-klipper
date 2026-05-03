@@ -50,7 +50,7 @@ Use the heater name `panda_breath`. The module hooks that heater by name.
     ```
 
     !!! tip
-        `v0.0.0` is still the only stock firmware release this repo treats as community-confirmed stable. See [Firmware](../firmware.md).
+        Use OEM firmware `1.0.3+` for the current stock-firmware Klipper path. BTT's Panda Breath wiki lists `V1.0.3` as adding Klipper printer binding support.
 
 === "ESPHome firmware"
 
@@ -113,6 +113,8 @@ If you are using OEM stock firmware, the module also exposes:
 - `PANDA_BREATH_DRY_STOP`
 
 These are optional advanced controls. They are not needed for basic Klipper heater operation.
+
+For native auto-mode workflows on stock firmware, prefer `1.0.3+`.
 
 ## Troubleshooting
 

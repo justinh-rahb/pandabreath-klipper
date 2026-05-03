@@ -1,6 +1,6 @@
 # Firmware
 
-> Analysis of `panda_breath_v1.0.1.bin`, `panda_breath_v1.0.2.bin`, and the v0.0.0 full flash dump.
+> Analysis of `panda_breath_v1.0.1.bin`, `panda_breath_v1.0.2.bin`, and a historical v0.0.0 full flash dump.
 > Tools: `esptool v5.2.0`, `strings -n 4`.
 > No source code has been published by BTT.
 
@@ -20,7 +20,15 @@
 | Secure boot | No | No | No |
 | Flash encryption | No | No | No |
 
-**v0.0.0 (Aug 2025) is the only community-confirmed stable release.**
+## Current stock-firmware note
+
+BTT's Panda Breath wiki now lists **V1.0.3** with this firmware-history note:
+
+- "Added the ability to bind P2S and Klipper printers."
+
+That makes `1.0.3+` the current OEM firmware baseline to target for Klipper-native auto-mode workflows in this repository.
+
+The `v0.0.0` material below remains relevant as reverse-engineering provenance, because the historical full-flash dump is still the richest source of embedded UI and protocol detail included in this repo.
 
 ---
 
@@ -112,7 +120,7 @@ Sensor abnormal, reset PTC heating detect
 
 The self-calibration-on-first-heat described in v1.0.1 release notes was apparently removed or completely rewritten in v1.0.2. Community members report v1.0.2 is still considered buggy — the thermal protection may have regressed rather than improved.
 
-**Use v0.0.0 until a stable v1.x release is confirmed.**
+**Repository guidance:** use `1.0.3+` for the current OEM Klipper path, while treating `v1.0.2` cautiously based on the regression signals documented above.
 
 ---
 

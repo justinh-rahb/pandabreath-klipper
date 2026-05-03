@@ -21,7 +21,7 @@ You still define the actual `[heater_generic panda_breath]` in `printer.cfg`.
 
 ## Status
 
-- [x] Protocol reverse-engineered from firmware strings and the v0.0.0 full flash dump
+- [x] Protocol reverse-engineered from firmware strings, live OEM behavior, and full flash analysis
 - [x] Klipper extras module for stock WebSocket and ESPHome MQTT transports
 - [x] Optional stock-firmware passthrough commands for native auto and drying modes
 - [x] ESPHome reflash path
@@ -95,6 +95,8 @@ Recent commits added passthrough commands for OEM native modes:
 
 These are optional advanced controls for the stock transport. The broadest-compatibility Klipper path remains normal `heater_generic` control in `work_mode: 2`.
 
+For current OEM firmware, BTT's Panda Breath wiki lists `V1.0.3` as adding the ability to bind Klipper printers. Use `1.0.3+` for stock-firmware native auto-mode workflows.
+
 ## Notes on actual module behaviour
 
 - The stock transport connects to `ws://<host>:<port>/ws`.
@@ -121,8 +123,8 @@ This repository is the upstream source for downstream firmware integrations. Tho
 
 ## Device notes
 
-- OEM firmware `v0.0.0` is still the only community-confirmed stable stock release documented in this repo.
-- `v1.0.1+` introduced regressions, and `v1.0.2` appears to remove PTC thermal protection logic.
+- Use OEM firmware `1.0.3+` for the current stock-firmware Klipper path, especially if you want native auto-mode support.
+- Earlier analysis in this repo found regression signals in `v1.0.2`, including apparent removal of some PTC thermal-protection logic.
 - The stock WebSocket API has no authentication.
 - Physical button and web UI state changes do not reliably produce full state push updates to Klipper.
 

@@ -101,6 +101,8 @@ These commands are available only with `firmware: stock`:
 
 They are optional advanced controls layered on top of the normal Klipper heater path.
 
+For current OEM firmware, use `1.0.3+` if you want the stock native auto-mode workflow.
+
 ---
 
 ## Sample macros
@@ -171,7 +173,7 @@ at the start of prints that require chamber heating, and `TARGET=0` at the end. 
 ## Safety notes
 
 - The Panda Breath reaches up to 60°C chamber temperature
-- **Stock firmware (v0.0.0):** PTC thermal runaway detection is present in the device firmware. v1.0.2 removed this — use v0.0.0 only
+- **Stock firmware:** use `1.0.3+` for the current OEM Klipper path; earlier repository analysis found regression signals in `v1.0.2`
 - **ESPHome firmware:** thermal runaway protection is implemented directly in the ESPHome config (`esphome/panda_breath.yaml`) and does not depend on BTT firmware
 - The stock WebSocket has no authentication — LAN use only
 - Always disconnect mains AC before servicing the device

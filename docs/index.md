@@ -86,6 +86,8 @@ The stock transport also exposes optional passthrough commands for OEM native mo
 
 These are useful for advanced macros and downstream integrations, but they are not required for the normal `heater_generic` path.
 
+BTT's Panda Breath wiki now lists `V1.0.3` as adding the ability to bind Klipper printers, so `1.0.3+` is the right stock-firmware baseline for native auto-mode workflows.
+
 ## Quick links
 
 | Topic | Page |
@@ -102,8 +104,8 @@ These are useful for advanced macros and downstream integrations, but they are n
 
 ## Notes
 
-- OEM firmware `v0.0.0` is still the only community-confirmed stable stock release documented in this repo.
-- `v1.0.2` appears to remove PTC thermal protection logic present in earlier firmware analysis.
+- Use OEM firmware `1.0.3+` for the current stock-firmware Klipper path.
+- Earlier repository analysis found regression signals in `v1.0.2`, including apparent removal of some thermal-protection logic.
 - The stock API has no authentication and should be treated as LAN-only.
 - Downstream projects may wrap this module with device-specific packaging, macros, and UI.
 

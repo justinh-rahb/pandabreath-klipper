@@ -62,7 +62,7 @@ The Panda Breath has three operating modes:
 | `2` Always On | Heater runs while `work_on: true` | **Yes** |
 | `3` Filament Drying | Timed run at a target temp | Exposed as an optional stock-only passthrough |
 
-For broad compatibility, the module's standard heater path uses `work_mode: 2`, where Klipper is the source of truth for target temperature and on/off state. The stock transport can also pass through native OEM auto/drying settings when a user or downstream integration explicitly opts into them.
+For broad compatibility, the module's standard heater path uses `work_mode: 2`, where Klipper is the source of truth for target temperature and on/off state. The stock transport can also pass through native OEM auto/drying settings when a user or downstream integration explicitly opts into them. For OEM native auto-mode workflows, use firmware `1.0.3+`; BTT's Panda Breath wiki lists `V1.0.3` as adding Klipper printer binding support.
 
 ---
 
@@ -72,7 +72,7 @@ There is no confirmed "get state" command on the stock WebSocket API. The module
 
 - Temperature readings arrive periodically from the device's `temp_task` — no polling needed
 - When the connection drops and reconnects, the module resends its last desired state
-- Physical button presses on the device do **not** generate WebSocket messages (confirmed v0.0.0), so the module cannot detect out-of-band changes
+- Physical button presses on the device do **not** reliably generate WebSocket state updates in the historical OEM firmware behavior documented here, so the module cannot detect out-of-band changes
 
 This means Klipper remains the single source of truth for the standard heater target, while optional OEM native modes are treated as explicit advanced commands.
 
@@ -94,10 +94,10 @@ No `pip install`, no separate Python package, and no bundled service layer. Drop
 
 ## Choosing a firmware path
 
-| Consideration | Stock (v0.0.0) | ESPHome |
+| Consideration | Stock (1.0.3+) | ESPHome |
 |---|---|---|
 | Device risk | None — keep OEM firmware | Reflash required; recovery via flash dump |
-| Thermal runaway protection | Present in v0.0.0; removed in v1.0.2 | Configurable in ESPHome YAML |
+| Native Klipper auto-mode support | Available in current OEM firmware line | Not applicable; ESPHome uses direct MQTT heater control |
 | Fan speed control | Device manages internally | Configurable via ESPHome |
 | Klipper install complexity | Drop file + `printer.cfg` sections | Drop file + MQTT broker + `printer.cfg` sections |
 | GPIO verification needed | No | Yes — 3 pins unconfirmed |

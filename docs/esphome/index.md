@@ -11,13 +11,13 @@ An alternative to the OEM firmware: reflash the Panda Breath's ESP32-C3 with [ES
 
 | Concern | OEM firmware | ESPHome |
 |---|---|---|
-| Thermal runaway detection | Present in v0.0.0; **removed in v1.0.2** | Configurable; independent of BTT |
-| Firmware stability | v0.0.0 stable; v1.0.1+ buggy | ESPHome is maintained and battle-tested |
+| Native Klipper auto-mode support | Available in the current OEM `1.0.3+` line | Not needed; ESPHome uses direct MQTT heater control |
+| Firmware risk profile | Current OEM path is improving, but earlier repository analysis flagged regressions in `v1.0.2` | ESPHome is maintained and battle-tested |
 | Fan speed control | Device-managed (no external control) | Configurable via `ac_dimmer` component |
 | OTA updates | BTT releases only | ESPHome OTA — update on your schedule |
-| Recovery | Full 4MB v0.0.0 flash dump available | Reflash v0.0.0 from dump at any time |
+| Recovery | Historical 4MB OEM flash dump available in this repo | Reflash OEM dump at any time |
 
-The primary motivation is safety: v1.0.2 silently removed PTC thermal runaway detection from a 300W mains-connected heater. ESPHome lets you own that logic directly.
+The primary motivation is still control and safety: repository analysis of `v1.0.2` found regression signals around PTC thermal protection, while ESPHome lets you own that logic directly.
 
 ---
 
