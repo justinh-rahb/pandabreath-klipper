@@ -1,12 +1,15 @@
 # KlipperMCU Firmware
 
-A third alternative to the OEM and ESPHome paths: replace the Panda Breath's ESP32-C3 firmware with a custom [ESP-IDF](https://idf.espressif.com/) build that speaks the native **Klipper MCU binary protocol** over USB serial (via the onboard CH340K bridge).
+A possible future alternative to the OEM and ESPHome paths: replace the Panda Breath's ESP32-C3 firmware with a custom [ESP-IDF](https://idf.espressif.com/) build that speaks the native **Klipper MCU binary protocol** over USB serial (via the onboard CH340K bridge).
+
+!!! warning "Exploratory status"
+    This path is mostly theoretical right now. It has not been validated end-to-end on real hardware and should be treated as an exploration, not a supported solution.
 
 !!! warning "Continuity testing recommended before flashing"
     GPIO pin assignments for TH0, TH1, and RLY_MOSFET have been inferred by cross-referencing the schematic's module pad numbers with the ESP32-C3-MINI-1 datasheet. The assignments are high-confidence but not yet verified on real hardware. **Continuity testing is recommended before first flash** to confirm the three inferred pins. See [Inferred GPIO pins](#inferred-gpio-pins) below.
 
-!!! tip "No `panda_breath.py` needed"
-    With this path, Klipper connects to the Panda Breath directly as a native `[mcu panda_breath]`. No Python extras module, no MQTT broker, no WiFi required — just a USB cable.
+!!! tip "Design direction"
+    The long-term attraction of this path is that Klipper could talk to the Panda Breath directly as a native `[mcu panda_breath]`, with no Python extras module, no MQTT broker, and no WiFi dependency. That remains a design goal rather than a completed implementation today.
 
 ---
 
@@ -23,7 +26,7 @@ A third alternative to the OEM and ESPHome paths: replace the Panda Breath's ESP
 | Fan speed | Device-managed | Configurable | Internal firmware — follows heater relay |
 | OTA updates | BTT releases only | ESPHome OTA | Serial flash (USB) |
 
-The primary advantages are simplicity and reliability: a single USB cable replaces WiFi dependency and MQTT infrastructure, and Klipper's native PID and thermal safety apply directly without any glue code.
+The primary advantages would be simplicity and reliability: a single USB cable replacing WiFi dependency and MQTT infrastructure, with Klipper's native PID and thermal safety applying directly. Those advantages are still aspirational until the path is validated.
 
 ---
 

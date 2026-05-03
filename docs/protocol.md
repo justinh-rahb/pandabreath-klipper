@@ -1,9 +1,9 @@
 # WebSocket Protocol
 
-> **Status:** Reverse-engineered. Derived from firmware binary strings, full flash dump (v0.0.0) embedded JavaScript source, schematic analysis, and live testing by community members.
+> **Status:** Reverse-engineered. Derived from firmware binary strings, a historical OEM full-flash dump, schematic analysis, and live testing by community members.
 > No official API documentation exists. BTT has not published firmware source.
 >
-> Tested firmware: **v0.0.0** (confirmed working), v1.0.1 and v1.0.2 have known stability issues.
+> Historical reverse-engineering baseline: `v0.0.0` full-flash dump. BTT's Panda Breath wiki now lists `V1.0.3` as adding Klipper printer binding support.
 
 ---
 
@@ -41,7 +41,7 @@ All messages are JSON. The top-level key is a **root** that identifies the subsy
 
 The device sends fields individually or in small groups — not necessarily a full state dump in one message.
 
-The helper function extracted from the v0.0.0 embedded JavaScript:
+The helper function extracted from the historical OEM embedded JavaScript dump:
 
 ```js
 function ws_send_data(root, members) {
@@ -74,7 +74,7 @@ The primary control and telemetry root.
 | `language` | string | UI language: `"en"` or `"zh"` |
 
 !!! note "Target temperature write field"
-    The field for setting a general heating target temperature has not been confirmed via live testing. Candidates from firmware strings: `set_temp`, `temp`, `custom_temp`. Use `filament_temp` for drying mode. For always-on mode (`work_mode: 2`), the device heats toward its internally stored target.
+    The current upstream Klipper stock transport writes `set_temp` for normal `work_mode: 2` heater control, and uses `temp` / `filtertemp` / `hotbedtemp` for the optional native auto-mode passthrough. Drying mode uses `filament_temp` and `filament_timer`.
 
 #### Read-only fields (device → client)
 
@@ -171,7 +171,7 @@ The primary control and telemetry root.
 | `{ "printer": { "disconnect": 1 } }` | Disconnect from bound printer |
 
 !!! note "Klipper note"
-    This subsystem is irrelevant for Klipper printers. The device connects to Bambu printers via MQTT over TLS and reads `bed_temper`, `nozzle_temper`, `gcode_state` etc. to drive Auto mode. This won't work with Klipper — use `work_mode: 2` (Always On) instead.
+    The baseline Klipper heater path in this repo uses `work_mode: 2` (Always On). Recent module builds also expose raw passthrough commands for the device's native auto-mode settings, and BTT's `V1.0.3` firmware history says Klipper printer binding support was added in that release.
 
 When connected to a Bambu printer, the device subscribes to `device/<sn>/report` via MQTT over TLS and pushes these fields to WebSocket clients:
 
@@ -193,7 +193,7 @@ When connected to a Bambu printer, the device subscribes to `device/<sn>/report`
 
 | `work_mode` | Name | Behaviour |
 |---|---|---|
-| `1` | Auto | Heater turns on when printer bed temperature crosses `hotbedtemp` threshold. Requires Bambu MQTT binding. **Not usable with Klipper.** |
+| `1` | Auto | Heater turns on when printer bed temperature crosses `hotbedtemp` threshold. Historically tied to printer binding; current BTT `V1.0.3` firmware history says Klipper printer binding support was added. |
 | `2` | Always On | Heater runs continuously while `work_on` is true. Target temperature controlled internally. **Use this for Klipper.** |
 | `3` | Filament Drying | Runs at `filament_temp` for `filament_timer` hours. Countdown tracked via `remaining_seconds`. Hard timeout at 12 hours. |
 

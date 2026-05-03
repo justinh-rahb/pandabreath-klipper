@@ -1,49 +1,44 @@
 # pandabreath-klipper
 
-Klipper extras module for the **BIQU Panda Breath** smart chamber heater and air filter. Primary target: **Snapmaker U1**.
+Klipper integration and firmware research for the **BIQU Panda Breath** smart chamber heater and air filter.
 
----
+## What this repo provides
 
-## What is this?
+The [BIQU Panda Breath](https://biqu.equipment/products/biqu-panda-breath-smart-air-filtration-and-heating-system-with-precise-temperature-regulation) is a 300W chamber heater and air filter with OEM WiFi control, but no official Klipper support. The primary supported path in this repository is the stock OEM firmware plus `panda_breath.py`. Two additional reflash directions exist, but both remain experimental:
 
-The [BIQU Panda Breath](https://biqu.equipment/products/biqu-panda-breath-smart-air-filtration-and-heating-system-with-precise-temperature-regulation) is a 300W PTC chamber heater and HEPA/carbon air filter with WiFi control, designed for enclosed 3D printers. It has native Bambu Lab integration but no Klipper support.
+| Path | Device firmware | Klipper side | Notes |
+|---|---|---|---|
+| Stock | OEM firmware | `panda_breath.py` | Current practical path |
+| ESPHome | ESPHome reflash | `panda_breath.py` | Incomplete and untested |
+| KlipperMCU | Custom ESP-IDF reflash | Native `[mcu]` | Exploratory and mostly theoretical right now |
 
-This project reverse-engineers its WebSocket API and wraps it in a standard Klipper `extras/` module, exposing the Panda Breath as a `heater_generic`. Orca Slicer and other tools already know how to set chamber temperature via `SET_HEATER_TEMPERATURE`; this module makes that work. For stock firmware, it also exposes optional `PANDA_BREATH_AUTO` and `PANDA_BREATH_DRY_*` commands to configure the device's native modes from Klipper macros.
+For the stock and ESPHome paths, `panda_breath.py` registers:
 
----
+- a custom `sensor_type: panda_breath`
+- a virtual `heater_pin: panda_breath:pwm`
+
+You still define the actual `[heater_generic panda_breath]` in `printer.cfg`.
 
 ## Status
 
-**Research and protocol documentation phase complete. Klipper integration is functional!**
+- [x] Protocol reverse-engineered from firmware strings, live OEM behavior, and full flash analysis
+- [x] Klipper extras module for the stock WebSocket transport
+- [x] Optional stock-firmware passthrough commands for native auto and drying modes
+- [ ] ESPHome reflash path is unfinished, untested, and currently de-emphasized
+- [ ] Native KlipperMCU reflash path is still exploratory and untested
 
-- [x] Protocol reverse-engineered from firmware strings (v1.0.1, v1.0.2) and embedded JS (v0.0.0 full flash dump)
-- [x] Hardware schematic analyzed (ESP32-C3, relay heater, TRIAC fan, NTC thermistors)
-- [x] Protocol documented: [docs/protocol.md](docs/protocol.md)
-- [x] Klipper extras module (`panda_breath.py`)
-- [x] Standalone WebSocket test tool (`test_ws.py`)
-- [x] Installation guide / overlay for Snapmaker U1 (`docs/klipper_install.md`)
+## Quick start
 
----
+1. Copy [`panda_breath.py`](panda_breath.py) into your Klipper `extras/` directory.
+2. Add one `[panda_breath]` section plus one matching `[heater_generic panda_breath]` section.
+3. Restart Klipper.
 
-## Integration approach
-
-The module will:
-
-1. Maintain a persistent WebSocket connection to the device at `ws://<ip>/ws`
-2. Use `work_mode: 2` (always-on) for normal `heater_generic` chamber heating
-3. Optionally configure the device's native auto mode (`work_mode: 1`) via `PANDA_BREATH_AUTO`
-4. Optionally start and stop the device's native filament drying mode (`work_mode: 3`)
-5. Send `work_on: true` when Klipper sets a non-zero target temperature; `work_on: false` when target is 0
-6. Report `cal_warehouse_temp` (calibrated NTC ADC reading) as the current temperature
-7. Reconnect automatically on connection drop
-
-The device handles all heater duty-cycling and fan speed control internally. The module only tells it to be on or off.
-
-### `printer.cfg`
+### Stock firmware
 
 ```ini
 [panda_breath]
-host: PandaBreath.local   # or IP address
+firmware: stock
+host: PandaBreath.local   # or an IP / hostname your Klipper host can resolve
 port: 80
 
 [heater_generic panda_breath]
@@ -58,135 +53,73 @@ max_temp: 80
 check_gain_time: 360
 hysteresis: 5
 heating_gain: 1
-
-[gcode_macro M141]
-description: Set chamber temperature (heat with Klipper, hold/cool with Panda auto)
-gcode:
-    {% set s = params.S|default(0)|float %}
-    {% set current = printer["heater_generic panda_breath"].temperature|float %}
-    {% set filtertemp = params.FILTERTEMP|default(30)|int %}
-    {% set hotbedtemp = params.HOTBEDTEMP|default(80)|int %}
-    {% if s <= 0 %}
-        PANDA_BREATH_AUTO ENABLE=0
-        SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET=0
-    {% elif s > current %}
-        SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET={s}
-    {% else %}
-        PANDA_BREATH_AUTO ENABLE=1 TARGET={s} FILTERTEMP={filtertemp} HOTBEDTEMP={hotbedtemp}
-    {% endif %}
-
-[gcode_macro M191]
-description: Reach and hold chamber temperature
-gcode:
-    {% set s = params.S|default(0)|float %}
-    {% set current = printer["heater_generic panda_breath"].temperature|float %}
-    {% set filtertemp = params.FILTERTEMP|default(30)|int %}
-    {% set hotbedtemp = params.HOTBEDTEMP|default(80)|int %}
-    {% if s <= 0 %}
-        M141 S0
-    {% elif current < s %}
-        SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET={s}
-        TEMPERATURE_WAIT SENSOR="heater_generic panda_breath" MINIMUM={s}
-        PANDA_BREATH_AUTO ENABLE=1 TARGET={s} FILTERTEMP={filtertemp} HOTBEDTEMP={hotbedtemp}
-    {% else %}
-        PANDA_BREATH_AUTO ENABLE=1 TARGET={s} FILTERTEMP={filtertemp} HOTBEDTEMP={hotbedtemp}
-        TEMPERATURE_WAIT SENSOR="heater_generic panda_breath" MAXIMUM={s}
-    {% endif %}
 ```
 
-These macros are for the stock firmware path and deliberately use both control modes:
-
-- Heating up from below target uses normal `heater_generic` control (`work_mode: 2`).
-- Holding a reached target, or cooling down to a lower target while keeping the Panda active, uses native Panda auto mode (`work_mode: 1`).
-- `S=0` fully turns the Panda off.
-
-### Native auto mode (stock firmware only)
-
-For stock Panda Breath firmware, the module also exposes a `PANDA_BREATH_AUTO` command that switches the device into its own native auto mode (`work_mode: 1`) instead of the normal Klipper-controlled heating mode (`work_mode: 2`).
-
-This is mainly useful if you want macros to toggle and configure the Panda's built-in automatic behavior directly.
+### ESPHome firmware (experimental)
 
 ```ini
-[gcode_macro PANDA_AUTO_ON]
-description: Enable Panda Breath native auto mode
-gcode:
-    PANDA_BREATH_AUTO ENABLE=1 TARGET=45 FILTERTEMP=30 HOTBEDTEMP=80
-
-[gcode_macro PANDA_AUTO_OFF]
-description: Disable Panda Breath native auto mode
-gcode:
-    PANDA_BREATH_AUTO ENABLE=0
+; Experimental path — not fully fleshed out or validated
+[panda_breath]
+firmware: esphome
+mqtt_broker: 192.168.1.10
+mqtt_port: 1883
+mqtt_topic_prefix: panda-breath
 ```
 
-`TARGET`, `FILTERTEMP`, and `HOTBEDTEMP` are Panda firmware auto-mode settings, not standard Klipper heater targets.
+The baseline control path is standard Klipper heater control:
 
-### Native drying mode (stock firmware only)
-
-For stock Panda Breath firmware, the module also exposes `PANDA_BREATH_DRY_START` and `PANDA_BREATH_DRY_STOP` to control the Panda's built-in drying cycle (`work_mode: 3`) directly from macros.
-
-```ini
-[gcode_macro PANDA_DRY_START]
-description: Start Panda Breath native drying mode
-gcode:
-    PANDA_BREATH_DRY_START TEMP=55 HOURS=6
-
-[gcode_macro PANDA_DRY_STOP]
-description: Stop Panda Breath native drying mode
-gcode:
-    PANDA_BREATH_DRY_STOP
+```gcode
+SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET=45
+SET_HEATER_TEMPERATURE HEATER=panda_breath TARGET=0
 ```
 
-`TEMP` is the Panda drying target in Celsius and `HOURS` is the drying-cycle duration in whole hours.
+## Stock-only optional commands
 
----
+Recent commits added passthrough commands for OEM native modes:
 
-## Protocol summary
+- `PANDA_BREATH_AUTO ENABLE=<0|1> TARGET=<C> FILTERTEMP=<C> HOTBEDTEMP=<C>`
+- `PANDA_BREATH_DRY_START TEMP=<C> HOURS=<1-12>`
+- `PANDA_BREATH_DRY_STOP`
 
-The device speaks JSON over WebSocket. All messages use a root key identifying the subsystem:
+These are optional advanced controls for the stock transport. The broadest-compatibility Klipper path remains normal `heater_generic` control in `work_mode: 2`.
 
-```json
-{ "settings": { "work_on": true, "work_mode": 2, "set_temp": 45 } }
-{ "settings": { "warehouse_temper": 38.5 } }
-```
+For current OEM firmware, BTT's Panda Breath wiki lists `V1.0.3` as adding the ability to bind Klipper printers. Use `1.0.3+` for stock-firmware native auto-mode workflows.
 
-See [docs/protocol.md](docs/protocol.md) for the full reference.
+## Notes on actual module behaviour
 
-> No official API documentation exists from BTT. All protocol knowledge is derived from reverse engineering. See [research/](research/) for methodology and raw findings.
+- The stock transport connects to `ws://<host>:<port>/ws`.
+- The module prefers `cal_warehouse_temp` and falls back to `warehouse_temper`.
+- On forced-off events, the module explicitly turns the device off on Klipper connect, disconnect, and shutdown.
+- The module resends its last desired state after reconnect.
+- Stock firmware host resolution is generic socket resolution. IPs, DNS names, and mDNS names can work if the Klipper host can resolve them.
 
----
+## Documentation
 
-## Target platform: Snapmaker U1
+- [Docs site home](docs/index.md)
+- [Klipper integration overview](docs/klipper/index.md)
+- [Klipper install guide](docs/klipper/install.md)
+- [`printer.cfg` reference](docs/klipper/printer-cfg.md)
+- [ESPHome path (experimental)](docs/esphome/index.md)
+- [KlipperMCU path (exploratory)](docs/klipper-mcu/index.md)
+- [Protocol reference](docs/protocol.md)
+- [Firmware analysis](docs/firmware.md)
+- [Hardware notes](docs/hardware.md)
 
-The Snapmaker U1 runs a modified Klipper + Moonraker stack. The BIQU Panda Breath is officially listed as U1-compatible. The U1 has no built-in active chamber heater — the Panda Breath fills that gap, and this module makes it scriptable.
+## Downstream integrations
 
-- Klipper extras path on U1: `/home/lava/klipper/klippy/extras/`
-- Community extended firmware (SSH access, opkg): [snapmakeru1-extended-firmware.pages.dev](https://snapmakeru1-extended-firmware.pages.dev)
-
----
-
-## Research
-
-| File | Contents |
-|---|---|
-| [research/firmware-analysis.md](research/firmware-analysis.md) | Binary metadata, strings extraction, RTOS tasks, HTTP endpoints, v1.0.1→v1.0.2 diff |
-| [research/protocol-from-v0.0.0.md](research/protocol-from-v0.0.0.md) | Definitive protocol reference extracted from embedded JS in v0.0.0 full flash dump |
-| [research/hardware-schematic.md](research/hardware-schematic.md) | Schematic analysis: GPIO map, heater/fan circuits, thermistor circuits, power chain |
-
----
+This repository is the upstream source for downstream firmware integrations. Those downstream projects may add higher-level UX, mode selectors, macros, or appliance-specific packaging on top of the module here.
 
 ## Device notes
 
-- Firmware V0.0.0 (Aug 2025) is the only confirmed stable release; V1.0.1+ have thermal regression bugs
-- WebSocket has no authentication — LAN use only
-- Button/UI state changes do **not** push WebSocket messages (confirmed v0.0.0)
-- No confirmed state-query command; temperature arrives periodically from the device's internal `temp_task`
-
----
+- Use OEM firmware `1.0.3+` for the current stock-firmware Klipper path, especially if you want native auto-mode support.
+- Earlier analysis in this repo found regression signals in `v1.0.2`, including apparent removal of some PTC thermal-protection logic.
+- The stock WebSocket API has no authentication.
+- Physical button and web UI state changes do not reliably produce full state push updates to Klipper.
 
 [![Buy Me A Coffee](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/wildtang3nt)
 
 ## License
 
-This project (Klipper module and documentation) is MIT licensed.
+This project code and documentation are licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE).
 
-The BIQU Panda Breath hardware and firmware are © 2025 BIQU, licensed CC-BY-NC-ND-4.0.
+The BIQU Panda Breath hardware and OEM firmware are © 2025 BIQU and remain under their respective licenses.
