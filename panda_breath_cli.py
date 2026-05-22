@@ -3,6 +3,8 @@
 
 This tool talks directly to the Panda Breath WebSocket API using only Python
 stdlib modules. Host installation is intentionally handled by install.sh.
+
+panda_breath_cli.py created by paxx12, licensed under GPLv3.
 """
 
 import argparse
