@@ -7,11 +7,54 @@
 - For `firmware: stock`: a hostname or IP your Klipper host can resolve
 - For `firmware: esphome`: an MQTT broker reachable by both the device and the Klipper host
 
-## Step 1: Copy `panda_breath.py`
+## Step 1: Run the installer
 
 `panda_breath.py` uses only Python standard library modules. No package installation is required.
 
-Copy the file into your Klipper `extras/` directory. Common locations include:
+On a MainsailOS-style host, run from this repository:
+
+```sh
+./install.sh --host PandaBreath.local
+sudo systemctl restart klipper
+```
+
+The installer copies `panda_breath.py` to Klipper's `extras/` directory, writes
+`panda_breath.cfg`, and adds `[include panda_breath.cfg]` to `printer.cfg`.
+By default it targets:
+
+- `~/klipper/klippy/extras/`
+- `~/printer_data/config/panda_breath.cfg`
+- `~/printer_data/config/printer.cfg`
+
+The generated `panda_breath.cfg` is rendered from the source fragments in
+`config/`, which can also be copied manually or reused by downstream packages.
+Those fragments are split into stock, ESPHome, heater, and optional macro
+blocks.
+
+Useful options:
+
+```sh
+# Preview without writing anything
+./install.sh --host 192.168.1.50 --dry-run
+
+# Install on a host with non-standard paths
+./install.sh \
+  --host 192.168.1.50 \
+  --klipper-dir /home/pi/klipper \
+  --config-dir /home/pi/printer_data/config
+
+# ESPHome firmware path
+./install.sh \
+  --firmware esphome \
+  --mqtt-broker 192.168.1.10 \
+  --mqtt-topic-prefix panda-breath
+
+# Also add M141/M191 compatibility macros
+./install.sh --host PandaBreath.local --with-macros
+```
+
+The old manual path still works if you prefer to manage config yourself. Copy
+the file into your Klipper `extras/` directory. Common locations include:
 
 - `/home/pi/klipper/klippy/extras/`
 - `/home/mks/klipper/klippy/extras/`
@@ -23,9 +66,12 @@ Example:
 cp panda_breath.py /path/to/klipper/klippy/extras/
 ```
 
-## Step 2: Add `printer.cfg` sections
+## Step 2: Add or review `printer.cfg` sections
 
 Use the heater name `panda_breath`. The module hooks that heater by name.
+
+If you used the installer, these sections are in `panda_breath.cfg` and your
+`printer.cfg` should contain `[include panda_breath.cfg]`.
 
 === "Stock firmware"
 
@@ -115,6 +161,18 @@ If you are using OEM stock firmware, the module also exposes:
 These are optional advanced controls. They are not needed for basic Klipper heater operation.
 
 For native auto-mode workflows on stock firmware, prefer `1.0.3+`.
+
+The installer only installs the Klipper module and config. The separate Python
+CLI can query and update the stock firmware's printer binding:
+
+```sh
+python3 panda_breath_cli.py version --host PandaBreath.local
+python3 panda_breath_cli.py bind-klipper --host PandaBreath.local --printer-ip 192.168.1.25
+python3 panda_breath_cli.py unbind --host PandaBreath.local
+```
+
+`bind-klipper` requires stock firmware `V1.0.3` or newer by default. The module's
+basic `heater_generic` control does not require using this binding command.
 
 ## Troubleshooting
 
