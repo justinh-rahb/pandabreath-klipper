@@ -299,7 +299,17 @@ bind_stock_firmware() {
   fi
 
   say "Binding Panda Breath stock firmware to Klipper"
-  run "${cmd[@]}"
+  local attempt
+  for attempt in 1 2 3; do
+    if run "${cmd[@]}"; then
+      return 0
+    fi
+    if [[ $attempt -lt 3 ]]; then
+      say "Bind attempt ${attempt} failed; retrying in 5 seconds..."
+      sleep 5
+    fi
+  done
+  die "Binding failed after 3 attempts"
 }
 
 while [[ $# -gt 0 ]]; do
