@@ -21,6 +21,7 @@ DEFAULT_PANDA_HOST = "PandaBreath.local"
 DEFAULT_PANDA_PORT = 80
 DEFAULT_REQUIRED_VERSION = "V1.0.3"
 DEFAULT_PRINTER_PORT = 80
+DISCONNECT_WAIT = 5.
 
 
 class CliError(Exception):
@@ -173,15 +174,45 @@ def _firmware_at_least(actual, minimum):
     return actual_tuple >= minimum_tuple
 
 
+def _printer_state_label(state):
+    labels = {
+        0: "disconnected",
+        1: "invalid printer info",
+        2: "connecting",
+        3: "connected",
+        4: "printer IP error",
+        5: "printer serial number error",
+        6: "access code error",
+        7: "unknown error",
+    }
+    return labels.get(state, "unknown")
+
+
+def _send_disconnect(client, state, wait_timeout=DISCONNECT_WAIT):
+    print("Disconnecting printer (state=%s, %s)..." % (
+        state, _printer_state_label(state)))
+    client.send_json({"printer": {"disconnect": 1}})
+    try:
+        client.recv_json(
+            match=lambda r: r.get("printer", {}).get("state") == 0,
+            timeout=wait_timeout)
+    except socket.timeout:
+        print("Disconnect confirmation not received; continuing.")
+        return False
+    print("Disconnect successful.")
+    return True
+
+
 def unbind(client):
     state = client.settings.get("printer", {}).get("state", 0)
     if state == 0:
         print("Device is already disconnected.")
         return
-    print("Disconnecting printer (state=%s)..." % state)
-    client.send_json({"printer": {"disconnect": 1}})
-    client.recv_json(match=lambda r: r.get("printer", {}).get("state") == 0)
-    print("Unbind successful.")
+    disconnected = _send_disconnect(client, state)
+    if disconnected:
+        print("Unbind successful.")
+    else:
+        print("Unbind command sent.")
 
 
 def bind_klipper(client, printer_ip, printer_port, required_version):
@@ -193,13 +224,6 @@ def bind_klipper(client, printer_ip, printer_port, required_version):
     if required_version:
         print("Firmware OK: %s" % firmware)
 
-    state = client.settings.get("printer", {}).get("state", 0)
-    if state in (1, 2, 3, 4, 5, 6):
-        print("Disconnecting any existing printer ...")
-        client.send_json({"printer": {"disconnect": 1}})
-        client.recv_json(match=lambda r: r.get("printer", {}).get("state") == 0)
-        sleep(1)
-
     if client.settings.get("settings", {}).get("printer_type") != 2:
         print("Setting printer type to Klipper...")
         client.send_json({"settings": {"printer_type": 2}})
@@ -208,6 +232,14 @@ def bind_klipper(client, printer_ip, printer_port, required_version):
         if resp.get("response", {}).get("ok") != 1:
             raise CliError("printer_type change was not acknowledged")
         sleep(1)
+
+    state = client.settings.get("printer", {}).get("state", 0)
+    if state in (2, 3):
+        if _send_disconnect(client, state):
+            sleep(1)
+    elif state != 0:
+        print("No active printer connection (state=%s, %s); continuing." % (
+            state, _printer_state_label(state)))
 
     print("Binding Panda Breath to %s:%s ..." % (printer_ip, printer_port))
     client.send_json({
