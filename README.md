@@ -29,6 +29,32 @@ You still define the actual `[heater_generic panda_breath]` in `printer.cfg`.
 
 ## Quick start
 
+On a generic Klipper host such as MainsailOS, clone or copy this repository onto
+the printer host, then run:
+
+```sh
+./install.sh --host PandaBreath.local
+sudo systemctl restart klipper
+```
+
+The installer defaults to MainsailOS-style paths:
+
+- `~/klipper/klippy/extras/panda_breath.py`
+- `~/printer_data/config/panda_breath.cfg`
+- `~/printer_data/config/printer.cfg`
+
+Use `./install.sh --dry-run` first to preview changes, or pass `--klipper-dir`,
+`--extras-dir`, `--config-dir`, or `--printer-cfg` for non-standard hosts.
+The generated Klipper fragment is rendered from the templates in [`config/`](config/).
+M141/M191 compatibility macros are included by default; pass `--no-macros`
+for only the device and heater sections.
+
+For stock firmware, `install.sh` also binds the Panda Breath to the Klipper host
+by default. If the host has multiple network interfaces, pass `--printer-ip`.
+Use `--no-bind` for a config-only install.
+
+Manual install is still just:
+
 1. Copy [`panda_breath.py`](panda_breath.py) into your Klipper `extras/` directory.
 2. Add one `[panda_breath]` section plus one matching `[heater_generic panda_breath]` section.
 3. Restart Klipper.
@@ -84,6 +110,14 @@ Recent commits added passthrough commands for OEM native modes:
 These are optional advanced controls for the stock transport. The broadest-compatibility Klipper path remains normal `heater_generic` control in `work_mode: 2`.
 
 For current OEM firmware, BTT's Panda Breath wiki lists `V1.0.3` as adding the ability to bind Klipper printers. Use `1.0.3+` for stock-firmware native auto-mode workflows.
+
+The stock-firmware maintenance CLI can be used for manual rebinds or unbinds:
+
+```sh
+python3 panda_breath_cli.py version --host PandaBreath.local
+python3 panda_breath_cli.py bind-klipper --host PandaBreath.local --printer-ip 192.168.1.25
+python3 panda_breath_cli.py unbind --host PandaBreath.local
+```
 
 ## Notes on actual module behaviour
 
