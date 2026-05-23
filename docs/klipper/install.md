@@ -28,8 +28,9 @@ By default it targets:
 
 The generated `panda_breath.cfg` is rendered from the source fragments in
 `config/`, which can also be copied manually or reused by downstream packages.
-Those fragments are split into stock, ESPHome, heater, and optional macro
-blocks.
+Those fragments are split into stock, ESPHome, heater, and macro blocks. M141
+and M191 compatibility macros are included by default; use `--no-macros` for a
+minimal fragment.
 
 Useful options:
 
@@ -49,8 +50,8 @@ Useful options:
   --mqtt-broker 192.168.1.10 \
   --mqtt-topic-prefix panda-breath
 
-# Also add M141/M191 compatibility macros
-./install.sh --host PandaBreath.local --with-macros
+# Install without M141/M191 compatibility macros
+./install.sh --host PandaBreath.local --no-macros
 ```
 
 The old manual path still works if you prefer to manage config yourself. Copy

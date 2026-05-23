@@ -27,7 +27,7 @@ module_source="${repo_dir}/panda_breath.py"
 template_dir="${repo_dir}/config"
 link_module=0
 include_fragment=1
-with_macros=0
+with_macros=1
 no_backup=0
 dry_run=0
 restart_klipper=0
@@ -60,7 +60,7 @@ Options:
   --template-dir PATH         Config template directory
   --link                      Symlink module instead of copying
   --no-include                Do not edit printer.cfg
-  --with-macros               Add M141/M191 macros to the fragment
+  --no-macros                 Do not add M141/M191 macros to the fragment
   --no-backup                 Do not create timestamped backups
   --dry-run                   Print planned changes without writing files
   --restart                   Restart Klipper after installing
@@ -240,10 +240,30 @@ ensure_include() {
     return 0
   fi
   mkdir -p "$(dirname "$printer_cfg")"
-  if [[ -s "$printer_cfg" ]]; then
-    printf '\n%s\n' "$include" >> "$printer_cfg"
-  else
+  if [[ ! -s "$printer_cfg" ]]; then
     printf '%s\n' "$include" > "$printer_cfg"
+  elif grep -q '^#\*# <---------------------- SAVE_CONFIG ---------------------->' "$printer_cfg"; then
+    local tmp
+    tmp="$(mktemp "${printer_cfg}.tmp.XXXXXX")"
+    awk -v include="$include" '
+      !inserted && /^#\*# <---------------------- SAVE_CONFIG ---------------------->/ {
+        print ""
+        print include
+        print ""
+        inserted = 1
+      }
+      { print }
+      END {
+        if (!inserted) {
+          print ""
+          print include
+        }
+      }
+    ' "$printer_cfg" > "$tmp"
+    chmod 0644 "$tmp"
+    mv "$tmp" "$printer_cfg"
+  else
+    printf '\n%s\n' "$include" >> "$printer_cfg"
   fi
   say "Added $include to $printer_cfg"
 }
@@ -266,6 +286,7 @@ while [[ $# -gt 0 ]]; do
     --link) link_module=1; shift ;;
     --no-include) include_fragment=0; shift ;;
     --with-macros) with_macros=1; shift ;;
+    --no-macros) with_macros=0; shift ;;
     --no-backup) no_backup=1; shift ;;
     --dry-run) dry_run=1; shift ;;
     --restart) restart_klipper=1; shift ;;

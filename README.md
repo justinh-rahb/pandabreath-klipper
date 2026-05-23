@@ -46,6 +46,8 @@ The installer defaults to MainsailOS-style paths:
 Use `./install.sh --dry-run` first to preview changes, or pass `--klipper-dir`,
 `--extras-dir`, `--config-dir`, or `--printer-cfg` for non-standard hosts.
 The generated Klipper fragment is rendered from the templates in [`config/`](config/).
+M141/M191 compatibility macros are included by default; pass `--no-macros`
+for only the device and heater sections.
 
 Manual install is still just:
 
