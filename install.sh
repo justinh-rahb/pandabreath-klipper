@@ -28,6 +28,10 @@ template_dir="${repo_dir}/config"
 link_module=0
 include_fragment=1
 with_macros=1
+bind_device=1
+printer_ip=""
+printer_port="80"
+bind_version="V1.0.3"
 no_backup=0
 dry_run=0
 restart_klipper=0
@@ -61,14 +65,19 @@ Options:
   --link                      Symlink module instead of copying
   --no-include                Do not edit printer.cfg
   --no-macros                 Do not add M141/M191 macros to the fragment
+  --no-bind                   Do not bind stock firmware to this Klipper host
+  --printer-ip IP             Klipper host IP for stock firmware binding
+  --printer-port PORT         Klipper host port for stock firmware binding
+  --bind-version VERSION      Required stock firmware version for binding
   --no-backup                 Do not create timestamped backups
   --dry-run                   Print planned changes without writing files
   --restart                   Restart Klipper after installing
   --service NAME              Systemd service to restart
   -h, --help                  Show this help
 
-Stock firmware binding is intentionally separate:
-  python3 panda_breath_cli.py bind-klipper --host HOST --printer-ip PRINTER_IP
+For stock firmware, the installer binds Panda Breath to the Klipper host by
+default. Use --printer-ip if automatic local IP detection chooses the wrong
+network interface.
 EOF
 }
 
@@ -268,6 +277,31 @@ ensure_include() {
   say "Added $include to $printer_cfg"
 }
 
+bind_stock_firmware() {
+  if [[ "$firmware" != "stock" ]]; then
+    say "Skipping device binding for firmware=${firmware}"
+    return 0
+  fi
+  if [[ "$bind_device" -eq 0 ]]; then
+    say "Skipped stock firmware binding"
+    return 0
+  fi
+  local cli_path="${repo_dir}/panda_breath_cli.py"
+  [[ -f "$cli_path" ]] || die "Panda Breath CLI not found: $cli_path"
+
+  local cmd=(python3 "$cli_path" bind-klipper
+    --host "$panda_host"
+    --port "$panda_port"
+    --printer-port "$printer_port"
+    --version "$bind_version")
+  if [[ -n "$printer_ip" ]]; then
+    cmd+=(--printer-ip "$printer_ip")
+  fi
+
+  say "Binding Panda Breath stock firmware to Klipper"
+  run "${cmd[@]}"
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --host) panda_host="${2:?}"; shift 2 ;;
@@ -287,6 +321,10 @@ while [[ $# -gt 0 ]]; do
     --no-include) include_fragment=0; shift ;;
     --with-macros) with_macros=1; shift ;;
     --no-macros) with_macros=0; shift ;;
+    --no-bind) bind_device=0; shift ;;
+    --printer-ip) printer_ip="${2:?}"; shift 2 ;;
+    --printer-port) printer_port="${2:?}"; shift 2 ;;
+    --bind-version) bind_version="${2:?}"; shift 2 ;;
     --no-backup) no_backup=1; shift ;;
     --dry-run) dry_run=1; shift ;;
     --restart) restart_klipper=1; shift ;;
@@ -309,6 +347,8 @@ if [[ "$include_fragment" -eq 1 ]]; then
 else
   say "Skipped printer.cfg include. Add this manually: $(include_line)"
 fi
+
+bind_stock_firmware
 
 if [[ "$restart_klipper" -eq 1 ]]; then
   if [[ "$(id -u)" -eq 0 ]]; then

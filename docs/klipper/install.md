@@ -32,6 +32,10 @@ Those fragments are split into stock, ESPHome, heater, and macro blocks. M141
 and M191 compatibility macros are included by default; use `--no-macros` for a
 minimal fragment.
 
+For stock firmware, the installer also binds the Panda Breath to this Klipper
+host by default. If the host has multiple network interfaces, pass
+`--printer-ip` explicitly. Use `--no-bind` for a config-only install.
+
 Useful options:
 
 ```sh
@@ -52,6 +56,12 @@ Useful options:
 
 # Install without M141/M191 compatibility macros
 ./install.sh --host PandaBreath.local --no-macros
+
+# Bind to a specific Klipper host address
+./install.sh --host PandaBreath.local --printer-ip 192.168.1.25
+
+# Install files/config only, without device binding
+./install.sh --host PandaBreath.local --no-bind
 ```
 
 The old manual path still works if you prefer to manage config yourself. Copy
@@ -163,8 +173,8 @@ These are optional advanced controls. They are not needed for basic Klipper heat
 
 For native auto-mode workflows on stock firmware, prefer `1.0.3+`.
 
-The installer only installs the Klipper module and config. The separate Python
-CLI can query and update the stock firmware's printer binding:
+The installer runs the binding command by default for stock firmware. The
+separate Python CLI can still query, rebind, or unbind manually:
 
 ```sh
 python3 panda_breath_cli.py version --host PandaBreath.local

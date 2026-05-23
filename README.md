@@ -49,6 +49,10 @@ The generated Klipper fragment is rendered from the templates in [`config/`](con
 M141/M191 compatibility macros are included by default; pass `--no-macros`
 for only the device and heater sections.
 
+For stock firmware, `install.sh` also binds the Panda Breath to the Klipper host
+by default. If the host has multiple network interfaces, pass `--printer-ip`.
+Use `--no-bind` for a config-only install.
+
 Manual install is still just:
 
 1. Copy [`panda_breath.py`](panda_breath.py) into your Klipper `extras/` directory.
@@ -107,7 +111,7 @@ These are optional advanced controls for the stock transport. The broadest-compa
 
 For current OEM firmware, BTT's Panda Breath wiki lists `V1.0.3` as adding the ability to bind Klipper printers. Use `1.0.3+` for stock-firmware native auto-mode workflows.
 
-The installer is intentionally separate from the stock-firmware maintenance CLI:
+The stock-firmware maintenance CLI can be used for manual rebinds or unbinds:
 
 ```sh
 python3 panda_breath_cli.py version --host PandaBreath.local
