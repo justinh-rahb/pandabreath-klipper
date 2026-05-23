@@ -231,7 +231,8 @@ def bind_klipper(client, printer_ip, printer_port, required_version):
             match=lambda r: r.get("response", {}).get("type") == "printer_type")
         if resp.get("response", {}).get("ok") != 1:
             raise CliError("printer_type change was not acknowledged")
-        sleep(1)
+        print("Waiting for device to recover after printer type change...")
+        sleep(5)
 
     state = client.settings.get("printer", {}).get("state", 0)
     if state in (2, 3):
