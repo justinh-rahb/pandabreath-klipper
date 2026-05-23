@@ -14,6 +14,7 @@ import os
 import socket
 import struct
 import sys
+import time
 from time import sleep
 
 
@@ -101,17 +102,24 @@ class PandaBreathClient:
         self.sock.sendall(header + mask + masked)
 
     def recv(self, match=None, timeout=30.):
+        deadline = time.monotonic() + timeout
+
         def recv_exact(n):
             buf = bytearray()
             while len(buf) < n:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise socket.timeout("timed out")
+                self.sock.settimeout(min(remaining, 2.))
                 chunk = self.sock.recv(n - len(buf))
                 if not chunk:
                     raise ConnectionError("WS: connection closed mid-frame")
                 buf.extend(chunk)
             return bytes(buf)
 
-        self.sock.settimeout(timeout)
         while True:
+            if time.monotonic() >= deadline:
+                raise socket.timeout("timed out")
             header = recv_exact(2)
             opcode = header[0] & 0x0F
             masked = bool(header[1] & 0x80)
