@@ -2,8 +2,8 @@
 
 An experimental alternative to the OEM firmware: reflash the Panda Breath's ESP32-C3 with [ESPHome](https://esphome.io), then use the MQTT transport in `panda_breath.py`.
 
-!!! warning "Experimental status"
-    This path was never fully fleshed out, is untested on real hardware in its current state, and is currently de-emphasized in this repository. Treat it as a starting point for future work, not a supported implementation.
+!!! warning "Largely redundant — retained for reference"
+    V1.0.4 stock firmware adds native MQTT with Home Assistant auto-discovery (14 entities), making this ESPHome reflash path redundant for most use cases. The only remaining ESPHome advantages are direct fan speed control (`ac_dimmer`) and owning the thermal cutoff logic. This path was never fully fleshed out, is untested on real hardware, and is de-emphasized in this repository.
 
 !!! warning "Continuity testing recommended before flashing"
     GPIO pin assignments for TH0, TH1, and RLY_MOSFET have been inferred by cross-referencing the schematic's module pad numbers with the ESP32-C3-MINI-1 datasheet. The assignments are high-confidence but not yet verified on real hardware. **Continuity testing is recommended before first flash** to confirm the three inferred pins. See the [setup guide](https://github.com/justinh-rahb/pandabreath-klipper/blob/main/esphome/README.md) for verification steps.

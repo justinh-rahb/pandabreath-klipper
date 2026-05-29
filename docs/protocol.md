@@ -69,7 +69,7 @@ The primary control and telemetry root.
 | `filament_temp` | int | Target temperature for filament drying (°C) |
 | `filament_timer` | int | Filament drying duration in **hours** |
 | `filament_drying_mode` | int | `1` = PLA, `2` = PETG, `3` = custom (v1.0.3+) |
-| `printer_type` | int | `1` = BambuLab, `2` = Klipper (v1.0.3+) |
+| `printer_type` | int | `1` = BambuLab, `2` = Klipper (v1.0.3+) — communication mode only, does not change auto-mode behavior |
 | `isrunning` | int | `1` = start drying cycle, `0` = stop |
 | `reset` | int | `1` = reboot device |
 | `factory_reset` | int | `1` = factory reset (clears NVS, WiFi, binding) |
@@ -205,7 +205,7 @@ The MQTT command payloads use JSON matching the WS `settings` format (e.g. `{"ta
 | `{ "printer": { "disconnect": 1 } }` | Disconnect from bound printer |
 
 !!! note "Klipper note"
-    The baseline Klipper heater path in this repo uses `work_mode: 2` (Always On). Recent module builds also expose raw passthrough commands for the device's native auto-mode settings. V1.0.3 added `printer_type: 2` (Klipper) as a selectable binding type. Setting `printer_type: 2` may change auto-mode behavior — needs live testing.
+    The baseline Klipper heater path in this repo uses `work_mode: 2` (Always On). Recent module builds also expose raw passthrough commands for the device's native auto-mode settings. V1.0.3 added `printer_type: 2` (Klipper) as a selectable communication mode — this controls how the device communicates to the host, not auto-mode behavior.
 
 When connected to a Bambu printer, the device subscribes to `device/<sn>/report` via MQTT over TLS and pushes these fields to WebSocket clients:
 
@@ -227,7 +227,7 @@ When connected to a Bambu printer, the device subscribes to `device/<sn>/report`
 
 | `work_mode` | Name | Behaviour |
 |---|---|---|
-| `1` | Auto | Heater turns on when printer bed temperature crosses `hotbedtemp` threshold. V1.0.3+ supports Klipper binding via `printer_type: 2`. |
+| `1` | Auto | Heater turns on when printer bed temperature crosses `hotbedtemp` threshold. V1.0.3+ adds `printer_type: 2` (Klipper) as a communication mode. |
 | `2` | Always On | Heater runs continuously while `work_on` is true. Target temperature controlled internally. **Use this for Klipper.** |
 | `3` | Filament Drying | Runs at `filament_temp` for `filament_timer` hours. Countdown tracked via `remaining_seconds`. Hard timeout at 12 hours. |
 

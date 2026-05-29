@@ -128,7 +128,7 @@ The self-calibration-on-first-heat described in v1.0.1 release notes was apparen
 
 String count jumped from 7,320 to 11,201 (+53%). Key additions:
 
-- **`printer_type` WS field** — `PRINTER_BBL = 1`, `PRINTER_KLIPPER = 2`; web UI dropdown with `['BambuLab', 'Klipper']`
+- **`printer_type` WS field** — `PRINTER_BBL = 1`, `PRINTER_KLIPPER = 2`; web UI dropdown with `['BambuLab', 'Klipper']` — controls communication mode only, does not change auto-mode behavior
 - **`filament_drying_mode` writable** — WS commands for values 1 (PLA), 2 (PETG), 3 (custom)
 - **Bambu MQTT client** — `bambu_mqtt` + `bambu_udp` tasks; reads `bed_target_temper`, `bed_temper`, `nozzle_temper`, `gcode_state`
 - **`filter_temp` UI** — filter temperature threshold now editable

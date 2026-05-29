@@ -130,7 +130,7 @@ Community members have tested the device on v0.0.0 via direct WebSocket connecti
 |---|---|
 | Does the device push an initial state snapshot on new client connect? | Unverified — `init one:` pattern seen in firmware strings suggests it might |
 | Does `target_temp` work as a WS command key on v1.0.4? | Unverified — it's a writable HA MQTT entity (0–60°C); could supersede `set_temp` |
-| Does `printer_type: 2` (Klipper) change auto-mode behavior? | Unverified — may disable Bambu MQTT or alter auto logic |
+| ~~Does `printer_type: 2` (Klipper) change auto-mode behavior?~~ | Resolved — `printer_type` controls communication mode only, not auto-mode behavior |
 | Do `filter_temp` and `heater_temp` work as WS command keys? | Unverified — they're writable HA entities in v1.0.4 |
 | Does `drying_running` ON/OFF work as a WS alternative to `isrunning`? | Unverified |
 | Is PTC thermal cutoff logic actually restored in v1.0.3+? | UI dialogs exist but actual cutoff behavior uncertain |

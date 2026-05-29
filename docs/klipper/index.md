@@ -62,7 +62,7 @@ The Panda Breath has three operating modes:
 | `2` Always On | Heater runs while `work_on: true` | **Yes** |
 | `3` Filament Drying | Timed run at a target temp | Exposed as an optional stock-only passthrough |
 
-For broad compatibility, the module's standard heater path uses `work_mode: 2`, where Klipper is the source of truth for target temperature and on/off state. The stock transport can also pass through native OEM auto/drying settings when a user or downstream integration explicitly opts into them. For OEM native auto-mode workflows, use firmware `1.0.3+`. V1.0.3 adds `printer_type: 2` (Klipper) as a binding type; V1.0.4 adds native HA MQTT auto-discovery.
+For broad compatibility, the module's standard heater path uses `work_mode: 2`, where Klipper is the source of truth for target temperature and on/off state. The stock transport can also pass through native OEM auto/drying settings when a user or downstream integration explicitly opts into them. For OEM native auto-mode workflows, use firmware `1.0.3+`. V1.0.3 adds `printer_type: 2` (Klipper) as a communication mode (does not change auto-mode behavior); V1.0.4 adds native HA MQTT auto-discovery.
 
 ---
 
@@ -94,11 +94,14 @@ No `pip install`, no separate Python package, and no bundled service layer. Drop
 
 ## Choosing a firmware path
 
-| Consideration | Stock (1.0.3+) | ESPHome (experimental) |
+!!! note "ESPHome path is largely redundant"
+    V1.0.4 stock firmware adds native HA MQTT auto-discovery, making the ESPHome reflash path redundant for most use cases. The only remaining ESPHome advantages are direct fan speed control and owning the thermal cutoff logic.
+
+| Consideration | Stock (1.0.3+) | ESPHome (largely redundant) |
 |---|---|---|
 | Device risk | None — keep OEM firmware | Reflash required; recovery via flash dump |
 | Native Klipper auto-mode support | Available in current OEM firmware line | Not applicable; ESPHome uses direct MQTT heater control |
-| HA integration | Native HA MQTT auto-discovery in v1.0.4+ | Configurable via ESPHome MQTT |
+| HA integration | Native HA MQTT auto-discovery in v1.0.4+ (14 entities) | Configurable via ESPHome MQTT — **now redundant** |
 | Fan speed control | Device manages internally | Configurable via ESPHome |
 | Thermal runaway protection | PTC sensor fault detection in v1.0.3+; full cutoff logic uncertain | Implemented directly in ESPHome config |
 | Klipper install complexity | Drop file + `printer.cfg` sections | Drop file + MQTT broker + `printer.cfg` sections |

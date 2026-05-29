@@ -9,7 +9,7 @@ The [BIQU Panda Breath](https://biqu.equipment/products/biqu-panda-breath-smart-
 | Path | Device firmware | Klipper side | Notes |
 |---|---|---|---|
 | Stock | OEM firmware | `panda_breath.py` | Current practical path |
-| ESPHome | ESPHome reflash | `panda_breath.py` | Incomplete and untested |
+| ESPHome | ESPHome reflash | `panda_breath.py` | Largely redundant since v1.0.4 native HA MQTT |
 | KlipperMCU | Custom ESP-IDF reflash | Native `[mcu]` | Exploratory and mostly theoretical right now |
 
 For the stock and ESPHome paths, `panda_breath.py` registers:
@@ -24,7 +24,7 @@ You still define the actual `[heater_generic panda_breath]` in `printer.cfg`.
 - [x] Protocol reverse-engineered from firmware strings, live OEM behavior, and full flash analysis
 - [x] Klipper extras module for the stock WebSocket transport
 - [x] Optional stock-firmware passthrough commands for native auto and drying modes
-- [ ] ESPHome reflash path is unfinished, untested, and currently de-emphasized
+- [ ] ESPHome reflash path is largely redundant (v1.0.4 native HA MQTT), retained for reference
 - [ ] Native KlipperMCU reflash path is still exploratory and untested
 
 ## Quick start
@@ -109,7 +109,7 @@ Recent commits added passthrough commands for OEM native modes:
 
 These are optional advanced controls for the stock transport. The broadest-compatibility Klipper path remains normal `heater_generic` control in `work_mode: 2`.
 
-The current OEM firmware is **V1.0.4** (May 2026), which adds native MQTT with Home Assistant auto-discovery. V1.0.3 added Klipper `printer_type` support. Use `1.0.3+` for stock-firmware native auto-mode workflows.
+The current OEM firmware is **V1.0.4** (May 2026), which adds native MQTT with Home Assistant auto-discovery. V1.0.3 added `printer_type: 2` (Klipper communication mode). Use `1.0.3+` for stock-firmware native auto-mode workflows.
 
 The stock-firmware maintenance CLI can be used for manual rebinds or unbinds:
 
@@ -133,7 +133,7 @@ python3 panda_breath_cli.py unbind --host PandaBreath.local
 - [Klipper integration overview](docs/klipper/index.md)
 - [Klipper install guide](docs/klipper/install.md)
 - [`printer.cfg` reference](docs/klipper/printer-cfg.md)
-- [ESPHome path (experimental)](docs/esphome/index.md)
+- [ESPHome path (largely redundant)](docs/esphome/index.md)
 - [KlipperMCU path (exploratory)](docs/klipper-mcu/index.md)
 - [Protocol reference](docs/protocol.md)
 - [Firmware analysis](docs/firmware.md)
