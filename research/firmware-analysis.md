@@ -162,7 +162,7 @@ Binary size grew from 1,318,176 to 1,347,680 bytes (+2.2%). String count: ~11,20
 - New WS/MQTT fields: `target_temp`, `filter_temp`, `heater_temp`, `drying_running`, `drying_remaining_min`, `filament_button`, `chamber_temp`, `printer_bind`, `printer_ip`, `printer_name`, `printer_sn`
 - HA MQTT broker bind UI in web interface
 
-**Impact:** v1.0.4's native HA MQTT auto-discovery makes the ESPHome reflash path largely redundant for Home Assistant users. The `target_temp` HA entity (0–60°C) may also work as a WS command key, potentially superseding `set_temp` — needs live validation.
+**Impact:** v1.0.4's native HA MQTT auto-discovery makes the ESPHome reflash path largely redundant for Home Assistant users. The Klipper stock transport now keeps the confirmed legacy WebSocket keys and mirrors compatible v1.0.4 aliases (`target_temp`, `filter_temp`, `drying_running`); live validation is still needed before replacing the legacy keys.
 
 ## Reverse Engineering Notes
 

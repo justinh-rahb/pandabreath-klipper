@@ -145,7 +145,7 @@ Binary grew from 1,318,176 to 1,347,680 bytes (+29KB). Key additions:
 - **New WS/MQTT fields**: `target_temp` (0–60°C), `filter_temp` (0–120°C), `heater_temp` (40–120°C), `drying_running`, `drying_remaining_min`, `chamber_temp`, `filament_button`, `printer_bind/ip/name/sn`
 - **MQTT topic structure**: `<prefix>/<id>/state`, `<prefix>/<id>/command`, `<prefix>/<id>/availability`
 
-**Repository guidance:** use `1.0.3+` for the current OEM Klipper path. v1.0.4's `target_temp` MQTT entity may also work as a WS command key — needs live validation.
+**Repository guidance:** use `1.0.3+` for the current OEM Klipper path. The Klipper stock transport keeps the confirmed legacy WebSocket keys and mirrors compatible v1.0.4 aliases (`target_temp`, `filter_temp`, `drying_running`) so newer firmware can consume them without dropping support for older firmware. Live validation is still useful to determine whether the aliases can ever replace the legacy keys.
 
 ---
 

@@ -90,10 +90,10 @@ All messages are JSON with a top-level `settings` key. The device sends state up
 | `factory_reset` | →device | int | Factory reset (`{'factory_reset': 1}`) |
 | `language` | →device | string | UI language (`'en'`, `'zh'`) |
 | `set_ap` | →device | ? | Trigger AP/hotspot mode |
-| `target_temp` | →device? | int | Target temperature 0–60°C (v1.0.4+ HA MQTT — **needs live WS testing**) |
-| `filter_temp` | →device? | int | Filter trigger temp 0–120°C (v1.0.4+ — **needs live WS testing**) |
+| `target_temp` | ↔ | int | Target temperature 0–60°C (v1.0.4+ HA alias; module mirrors with legacy `set_temp`/`temp`) |
+| `filter_temp` | ↔ | int | Filter trigger temp 0–120°C (v1.0.4+ HA alias for `filtertemp`) |
 | `heater_temp` | →device? | int | Heater trigger temp 40–120°C (v1.0.4+ — **needs live WS testing**) |
-| `drying_running` | →device? | bool | Start/stop drying ON/OFF (v1.0.4+ — **needs live WS testing**) |
+| `drying_running` | ↔ | bool | Start/stop drying ON/OFF (v1.0.4+ HA alias; module mirrors with legacy `isrunning`) |
 | `chamber_temp` | ←device | float | Chamber temperature (v1.0.4+ HA alias for `warehouse_temper`) |
 | `filament_button` | ←device | int | Physical button state, values 1/2/3 (v1.0.4+) |
 | `drying_remaining_min` | ←device | int | Drying time remaining in minutes (v1.0.4+) |
@@ -102,7 +102,7 @@ All messages are JSON with a top-level `settings` key. The device sends state up
 | `printer_name` | ←device | string | Bound printer name (v1.0.4+) |
 | `printer_sn` | ←device | string | Bound printer serial number (v1.0.4+) |
 
-**Note:** `set_temp` is definitively the writable key for setting the target temperature via WebSocket, while `temp` is ignored by the device (confirmed via live testing). v1.0.4 introduces `target_temp` as a writable field via HA MQTT (0–60°C) — it may also work as a WS command key, superseding `set_temp`; needs live validation. The device's auto mode reads `bed_temper`/`nozzle_temper`/`gcode_state` from the Bambu MQTT connection; this won't work with Klipper, so the Klipper module uses `work_mode: 2` (always_on).
+**Note:** `set_temp` is definitively the writable key for setting the target temperature via WebSocket, while `temp` is used for the legacy native-auto target. v1.0.4 introduces `target_temp` as a writable HA/MQTT field (0–60°C). The module keeps `set_temp`/`temp` for backward compatibility and mirrors `target_temp` as an alias. The device's auto mode reads `bed_temper`/`nozzle_temper`/`gcode_state` from the Bambu MQTT connection; this won't work with Klipper, so the default Klipper heater path uses `work_mode: 2` (always_on).
 
 ### Native MQTT Protocol (v1.0.4+)
 
@@ -157,10 +157,10 @@ Both transports run a background I/O thread and push state updates into a thread
 ### What the module does
 1. Instantiates the appropriate transport based on `firmware:` config key
 2. Transport maintains a persistent connection and reconnects on drop
-3. Reports current temperature via `get_temp()` — prefers `cal_warehouse_temp` over `warehouse_temper` (stock), or `chamber_temperature` MQTT topic (ESPHome)
+3. Reports current temperature via `get_temp()` — prefers `cal_warehouse_temp`, then `chamber_temp`, then `warehouse_temper` (stock), or `chamber_temperature` MQTT topic (ESPHome)
 4. Implements standard Klipper heater interface — `set_temp()` / `get_temp()` / `check_busy()`
-5. When target > 0: stock sends `{isrunning: 0, work_mode: 2, set_temp: t, work_on: true}`; ESPHome publishes to climate mode/target topics
-6. When target = 0: stock sends `{isrunning: 0, work_on: false}`; ESPHome publishes `mode: off`
+5. When target > 0: stock sends `{isrunning: 0, drying_running: false}`, `work_mode: 2`, `{set_temp: t, target_temp: t}`, then `{work_on: true}`; ESPHome publishes to climate mode/target topics
+6. When target = 0: stock sends `{isrunning: 0, drying_running: false, target_temp: 0}` and `{work_on: false}`; ESPHome publishes `mode: off`
 7. Forces device off on Klipper connect, disconnect, and shutdown
 8. Resends last desired state after reconnect
 9. Stock firmware registers optional passthrough GCode commands (`PANDA_BREATH_AUTO`, `PANDA_BREATH_DRY_START`, `PANDA_BREATH_DRY_STOP`)
@@ -235,7 +235,7 @@ This means the U1 overlay is a single file drop — no opkg, no entware packages
 - **No confirmed state-query command** (stock firmware) — button/UI changes don't push WS messages (confirmed v0.0.0); no "get state" request exists in JS source; reconnecting may be the only way to get a full state snapshot (unverified). Module tracks its own sent state rather than querying.
 - The device WebSocket drops and needs reconnection — reliability of WS connection is a concern
 - No authentication on the WebSocket — only a concern on untrusted networks
-- **v1.0.4 fields need live validation** — `target_temp`, `filter_temp`, `heater_temp`, and `drying_running` are confirmed as writable HA MQTT entities but untested as WS command keys. `target_temp` may supersede `set_temp`.
+- **v1.0.4 field compatibility** — the module parses `chamber_temp`, `target_temp`, `filter_temp`, `heater_temp`, `drying_running`, `drying_remaining_min`, and `filament_button`. Writes keep the confirmed legacy WS keys and mirror low-risk aliases; live validation is still needed before replacing legacy keys.
 - **ESPHome path is largely redundant** — v1.0.4's native HA MQTT auto-discovery provides HA integration without reflashing, making the ESPHome reflash path unnecessary for most users
 - **Snapmaker U1 modified Klipper enforces strict duck-typing**. Generic proxies must securely spoof `get_name()`, `short_name`, and `check_busy()` or the U1's custom power-loss and extrusion macros will crash into an `Internal error`. `panda_breath.py` has been updated to proactively cover this.
 - **No pre-built opkg repo for U1 extended firmware** — Entware is present on devel builds but packages must be sourced/built manually; this is a future task when building the U1 overlay

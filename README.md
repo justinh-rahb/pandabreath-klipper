@@ -122,7 +122,9 @@ python3 panda_breath_cli.py unbind --host PandaBreath.local
 ## Notes on actual module behaviour
 
 - The stock transport connects to `ws://<host>:<port>/ws`.
-- The module prefers `cal_warehouse_temp` and falls back to `warehouse_temper`.
+- The module prefers `cal_warehouse_temp` and falls back to `chamber_temp` (v1.0.4) and then `warehouse_temper`.
+- The stock transport keeps the confirmed legacy WebSocket control keys and mirrors v1.0.4 aliases: `set_temp` + `target_temp`, `filtertemp` + `filter_temp`, and `isrunning` + `drying_running`.
+- The state parser accepts `target_temp`, `heater_temp`, `filter_temp`, `drying_running`, `drying_remaining_min`, and `filament_button` when v1.0.4 reports them.
 - On forced-off events, the module explicitly turns the device off on Klipper connect, disconnect, and shutdown.
 - The module resends its last desired state after reconnect.
 - Stock firmware host resolution is generic socket resolution. IPs, DNS names, and mDNS names can work if the Klipper host can resolve them.
@@ -147,7 +149,7 @@ This repository is the upstream source for downstream firmware integrations. Tho
 
 - Use OEM firmware `1.0.3+` for the current stock-firmware Klipper path, especially if you want native auto-mode support. Current release is **V1.0.4** (May 2026) with native HA MQTT auto-discovery.
 - V1.0.3 re-added PTC sensor fault UI dialogs (open/short circuit detection), but it's unclear if the actual thermal cutoff logic removed in v1.0.2 has been fully restored.
-- V1.0.4 adds `target_temp`, `filter_temp`, `heater_temp`, and other new WS fields — needs live validation to determine if they work as WS command keys alongside existing `set_temp`.
+- V1.0.4 adds `target_temp`, `filter_temp`, `heater_temp`, `drying_running`, `drying_remaining_min`, `chamber_temp`, and related HA/MQTT fields. The module parses these fields and mirrors the low-risk command aliases alongside the older confirmed WebSocket keys.
 - The stock WebSocket API has no authentication.
 - Physical button and web UI state changes do not reliably produce full state push updates to Klipper.
 

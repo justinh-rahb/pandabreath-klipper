@@ -139,6 +139,8 @@ Community members have tested the device on v0.0.0 via direct WebSocket connecti
 | Is there a version check or rollback prevention in the OTA flow? | Unverified |
 | Does v1.0.4 HA MQTT work end-to-end with an external broker? | Unverified — topic structure extracted from binary |
 
+The Klipper module is intentionally conservative while these questions remain open: it sends the legacy confirmed WebSocket keys and mirrors compatible v1.0.4 aliases, then accepts either spelling when parsing device state.
+
 ---
 
 ## Confidence levels used in documentation

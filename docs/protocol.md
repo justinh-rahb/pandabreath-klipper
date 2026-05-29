@@ -65,7 +65,10 @@ The primary control and telemetry root.
 |---|---|---|
 | `work_on` | bool | `true` = heating on, `false` = off |
 | `work_mode` | int | `1` = Auto, `2` = Always On, `3` = Filament Drying |
+| `set_temp` | int | Legacy WebSocket target temperature used by the module for Always On control |
+| `temp` | int | Legacy native-auto target temperature |
 | `hotbedtemp` | int | Bed temperature (°C) that triggers Auto mode |
+| `filtertemp` | int | Legacy filter trigger temperature |
 | `filament_temp` | int | Target temperature for filament drying (°C) |
 | `filament_timer` | int | Filament drying duration in **hours** |
 | `filament_drying_mode` | int | `1` = PLA, `2` = PETG, `3` = custom (v1.0.3+) |
@@ -74,13 +77,13 @@ The primary control and telemetry root.
 | `reset` | int | `1` = reboot device |
 | `factory_reset` | int | `1` = factory reset (clears NVS, WiFi, binding) |
 | `language` | string | UI language: `"en"` or `"zh"` |
-| `target_temp` | int | Target temperature, 0–60°C (v1.0.4+ — **needs live testing as WS key**) |
+| `target_temp` | int | Target temperature, 0–60°C (v1.0.4+ HA alias; module mirrors alongside legacy target keys) |
 | `filter_temp` | int | Filter trigger temperature, 0–120°C (v1.0.4+) |
 | `heater_temp` | int | Heater trigger temperature, 40–120°C (v1.0.4+) |
 | `drying_running` | bool | Start/stop drying timer, ON/OFF (v1.0.4+) |
 
 !!! note "Target temperature write field"
-    The Klipper stock transport writes `set_temp` for normal `work_mode: 2` heater control (confirmed on v0.0.0). v1.0.4 introduces `target_temp` as a writable field via HA MQTT (0–60°C) — it may also work as a WS command key, superseding `set_temp`. Needs live validation. Drying mode uses `filament_temp` and `filament_timer`.
+    The Klipper stock transport keeps writing the confirmed legacy keys and mirrors compatible v1.0.4 aliases. Normal `work_mode: 2` heater control sends `set_temp` plus `target_temp`; native auto mode sends `temp` plus `target_temp` and `filtertemp` plus `filter_temp`; drying start/stop sends `isrunning` plus `drying_running`. This is intentionally backward-compatible: older firmware should ignore unknown alias keys, while v1.0.4 can consume the newer names if they are accepted on WebSocket.
 
 #### Read-only fields (device → client)
 
@@ -90,6 +93,7 @@ The primary control and telemetry root.
 | `cal_warehouse_temp` | float | Chamber air temperature, calibrated (°C) — **prefer this** |
 | `cal_ptc_temp` | float | PTC heater element temperature, calibrated (°C) |
 | `temp` | int | Target temperature readback |
+| `target_temp` | int | Target temperature readback / HA alias (v1.0.4+) |
 | `fw_version` | string | Firmware version string |
 | `work_on` | bool | Current on/off state |
 | `work_mode` | int | Current operating mode |
@@ -98,11 +102,14 @@ The primary control and telemetry root.
 | `custom_temp` | int | Custom mode temperature setting (40–60°C) |
 | `custom_timer` | int | Custom mode timer setting (1–99h) |
 | `filtertemp` | int | Filter temperature threshold |
+| `filter_temp` | int | Filter temperature threshold alias (v1.0.4+) |
+| `heater_temp` | int | Heater trigger temperature (v1.0.4+) |
 | `ptc_sensor_status` | int | PTC thermistor health: `0` = OK, `1` = open circuit, `2` = short circuit |
 | `warehouse_sensor_status` | int | Chamber thermistor health |
 | `ptc_heater_status` | int | PTC heater element status |
 | `filament_button` | int | Physical button state (values 1/2/3; v1.0.4+) |
 | `chamber_temp` | float | Chamber temperature (v1.0.4+ HA alias for `warehouse_temper`) |
+| `drying_running` | bool/string/int | Drying active state; parser accepts `true`/`false`, `1`/`0`, and `ON`/`OFF` |
 | `drying_remaining_min` | int | Drying time remaining in minutes (v1.0.4+) |
 | `printer_bind` | string | Printer bind status (v1.0.4+) |
 | `printer_ip` | string | Bound printer IP (v1.0.4+) |
@@ -113,19 +120,24 @@ The primary control and telemetry root.
 
 ```json
 // Turn on in always-on mode
-{ "settings": { "work_on": true, "work_mode": 2 } }
+{ "settings": { "work_mode": 2 } }
+{ "settings": { "set_temp": 45, "target_temp": 45 } }
+{ "settings": { "work_on": true } }
 
 // Turn off
 { "settings": { "work_on": false } }
 
 // Set auto mode trigger at 50°C bed temp
-{ "settings": { "work_mode": 1, "hotbedtemp": 50 } }
+{ "settings": { "work_mode": 1 } }
+{ "settings": { "temp": 45, "target_temp": 45 } }
+{ "settings": { "filtertemp": 30, "filter_temp": 30 } }
+{ "settings": { "hotbedtemp": 50 } }
 
 // Start filament drying at 55°C for 6 hours
-{ "settings": { "work_mode": 3, "filament_temp": 55, "filament_timer": 6, "isrunning": 1 } }
+{ "settings": { "work_mode": 3, "filament_temp": 55, "filament_timer": 6, "isrunning": 1, "drying_running": true } }
 
 // Stop drying
-{ "settings": { "isrunning": 0 } }
+{ "settings": { "isrunning": 0, "drying_running": false } }
 
 // Reboot
 { "settings": { "reset": 1 } }
@@ -143,6 +155,8 @@ The primary control and telemetry root.
 { "settings": { "fw_version": "V1.0.4" } }
 { "settings": { "printer_type": 2 } }
 { "settings": { "filament_button": 1 } }
+{ "settings": { "chamber_temp": 38.5, "target_temp": 45 } }
+{ "settings": { "drying_running": "ON", "drying_remaining_min": 72 } }
 ```
 
 ---

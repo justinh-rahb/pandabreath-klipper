@@ -4,7 +4,7 @@
 # Supports two firmware targets via a transport abstraction:
 #
 #   firmware: stock   — OEM WebSocket JSON protocol (ws://<host>/ws)
-#                       Recommended firmware: v0.0.0 (only confirmed stable release)
+#                       Recommended firmware: v1.0.3+; v1.0.4 aliases supported
 #   firmware: esphome — ESPHome MQTT protocol (MQTT 3.1.1 over TCP)
 #
 # No external Python dependencies — stdlib only (socket, struct, hashlib, base64,
@@ -58,6 +58,24 @@ REACTOR_POLL = 1.
 TEMP_STALE_WARN = 60.
 
 
+def _parse_bool(value):
+    """Return True/False for common JSON/HA values, or None if unknown."""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        try:
+            return bool(int(value))
+        except Exception:
+            return None
+    if isinstance(value, str):
+        lowered = value.strip().lower()
+        if lowered in ("1", "true", "on", "yes"):
+            return True
+        if lowered in ("0", "false", "off", "no"):
+            return False
+    return None
+
+
 # ─── WebSocket transport (stock OEM firmware) ─────────────────────────────────
 
 class _WebSocketTransport:
@@ -106,14 +124,21 @@ class _WebSocketTransport:
         self._last_auto = None
         self._last_drying = None
         if degrees > 0:
-            self._send_settings({"isrunning": 0})
+            self._send_settings({"isrunning": 0, "drying_running": False})
             # Match the stock web UI's update order for better v1.0.3
             # compatibility while still using the same control fields.
             self._send_settings({"work_mode": 2})
-            self._send_settings({"set_temp": int(degrees)})
+            self._send_settings({
+                "set_temp": int(degrees),
+                "target_temp": int(degrees),
+            })
             self._send_settings({"work_on": True})
         else:
-            self._send_settings({"isrunning": 0})
+            self._send_settings({
+                "isrunning": 0,
+                "drying_running": False,
+                "target_temp": 0,
+            })
             self._send_settings({"work_on": False})
 
     def set_auto_mode(self, enabled, target_c, filtertemp_c, hotbedtemp_c):
@@ -125,10 +150,16 @@ class _WebSocketTransport:
             int(hotbedtemp_c),
         )
         self._last_drying = None
-        self._send_settings({"isrunning": 0})
+        self._send_settings({"isrunning": 0, "drying_running": False})
         self._send_settings({"work_mode": 1})
-        self._send_settings({"temp": int(target_c)})
-        self._send_settings({"filtertemp": int(filtertemp_c)})
+        self._send_settings({
+            "temp": int(target_c),
+            "target_temp": int(target_c),
+        })
+        self._send_settings({
+            "filtertemp": int(filtertemp_c),
+            "filter_temp": int(filtertemp_c),
+        })
         self._send_settings({"hotbedtemp": int(hotbedtemp_c)})
         self._send_settings({"work_on": bool(enabled)})
 
@@ -140,12 +171,12 @@ class _WebSocketTransport:
         self._send_settings({"custom_timer": int(hours)})
         self._send_settings({"filament_temp": int(temp_c)})
         self._send_settings({"filament_timer": int(hours)})
-        self._send_settings({"isrunning": 1})
+        self._send_settings({"isrunning": 1, "drying_running": True})
         self._send_settings({"work_on": True})
 
     def stop_drying(self):
         self._last_drying = None
-        self._send_settings({"isrunning": 0})
+        self._send_settings({"isrunning": 0, "drying_running": False})
         self._send_settings({"work_on": False})
 
     # ── internal ──────────────────────────────────────────────────────────────
@@ -154,7 +185,10 @@ class _WebSocketTransport:
         self._last_target = 0.
         self._last_auto = None
         self._last_drying = None
-        off_sequence = ({"isrunning": 0}, {"work_on": False})
+        off_sequence = (
+            {"isrunning": 0, "drying_running": False, "target_temp": 0},
+            {"work_on": False},
+        )
         for fields in off_sequence:
             self._send_settings(fields)
         for fields in off_sequence:
@@ -314,21 +348,27 @@ class _WebSocketTransport:
         if not isinstance(settings, dict):
             return
         state = {}
-        # Prefer the ADC-calibrated reading; fall back to raw
-        temp = settings.get("cal_warehouse_temp", settings.get("warehouse_temper"))
-        if temp is not None:
+        # Prefer the ADC-calibrated reading; fall back to v1.0.4 and raw aliases.
+        for temp_key in ("cal_warehouse_temp", "chamber_temp",
+                         "warehouse_temper"):
+            if temp_key not in settings:
+                continue
             try:
-                state["temperature"] = float(temp)
+                state["temperature"] = float(settings.get(temp_key))
+                break
             except (TypeError, ValueError):
-                pass
+                continue
         for key in ("work_mode", "set_temp", "remaining_seconds", "isrunning",
-                    "filament_drying_mode"):
+                    "filament_drying_mode", "target_temp", "heater_temp",
+                    "filament_button"):
             if key in settings:
                 state[key] = settings.get(key)
         if "temp" in settings:
             state["auto_target"] = settings.get("temp")
         if "filtertemp" in settings:
             state["auto_filtertemp"] = settings.get("filtertemp")
+        elif "filter_temp" in settings:
+            state["auto_filtertemp"] = settings.get("filter_temp")
         if "hotbedtemp" in settings:
             state["auto_hotbedtemp"] = settings.get("hotbedtemp")
         if "filament_temp" in settings:
@@ -339,15 +379,16 @@ class _WebSocketTransport:
             state["filament_timer"] = settings.get("filament_timer")
         elif "custom_timer" in settings:
             state["filament_timer"] = settings.get("custom_timer")
+        if "drying_remaining_min" in settings:
+            state["drying_remaining_min"] = settings.get("drying_remaining_min")
+        if "drying_running" in settings:
+            parsed = _parse_bool(settings.get("drying_running"))
+            if parsed is not None:
+                state["drying_running"] = parsed
         if "work_on" in settings:
-            raw = settings.get("work_on")
-            if isinstance(raw, bool):
-                state["work_on"] = raw
-            else:
-                try:
-                    state["work_on"] = bool(int(raw))
-                except Exception:
-                    pass
+            parsed = _parse_bool(settings.get("work_on"))
+            if parsed is not None:
+                state["work_on"] = parsed
         if state:
             self._on_message(state)
 
@@ -626,6 +667,7 @@ class PandaBreath:
         self.work_mode = 2
         self.work_on = False
         self.device_target = 0.
+        self.heater_temp = 0.
         self.auto_enabled = False
         self.auto_target = 45
         self.auto_filtertemp = 30
@@ -633,6 +675,8 @@ class PandaBreath:
         self.filament_temp = 0
         self.filament_timer = 0
         self.remaining_seconds = 0
+        self.drying_remaining_min = 0
+        self.filament_button = 0
         self.filament_drying_active = False
         self._in_shutdown = False
         self._external_off_lockout = False
@@ -717,10 +761,12 @@ class PandaBreath:
         self._clear_heater_target_state()
         self.target = 0.
         self.device_target = 0.
+        self.heater_temp = 0.
         self.auto_enabled = False
         self.work_on = False
         self.filament_drying_active = False
         self.remaining_seconds = 0
+        self.drying_remaining_min = 0
         self._external_off_lockout = True
         try:
             self._transport.force_off()
@@ -871,12 +917,28 @@ class PandaBreath:
                 except Exception:
                     pass
             if "work_on" in data:
-                self.work_on = bool(data.get("work_on"))
+                parsed = _parse_bool(data.get("work_on"))
+                if parsed is None:
+                    parsed = bool(data.get("work_on"))
+                self.work_on = parsed
                 if self.work_mode == 1:
                     self.auto_enabled = self.work_on
             if "set_temp" in data:
                 try:
                     self.device_target = float(data.get("set_temp"))
+                except Exception:
+                    pass
+            if "target_temp" in data:
+                try:
+                    target_temp = float(data.get("target_temp"))
+                    self.device_target = target_temp
+                    if self.work_mode == 1:
+                        self.auto_target = int(target_temp)
+                except Exception:
+                    pass
+            if "heater_temp" in data:
+                try:
+                    self.heater_temp = float(data.get("heater_temp"))
                 except Exception:
                     pass
             if "auto_target" in data:
@@ -907,18 +969,38 @@ class PandaBreath:
             if "remaining_seconds" in data:
                 try:
                     self.remaining_seconds = int(data.get("remaining_seconds"))
+                    self.drying_remaining_min = int(
+                        (self.remaining_seconds + 59) // 60)
+                except Exception:
+                    pass
+            if "drying_remaining_min" in data:
+                try:
+                    self.drying_remaining_min = int(data.get("drying_remaining_min"))
+                    self.remaining_seconds = self.drying_remaining_min * 60
                 except Exception:
                     pass
             if "isrunning" in data:
-                try:
-                    self.filament_drying_active = bool(int(data.get("isrunning")))
+                parsed = _parse_bool(data.get("isrunning"))
+                if parsed is not None:
+                    self.filament_drying_active = parsed
                     if not self.filament_drying_active:
                         self.remaining_seconds = 0
-                except Exception:
-                    pass
+                        self.drying_remaining_min = 0
+            if "drying_running" in data:
+                parsed = _parse_bool(data.get("drying_running"))
+                if parsed is not None:
+                    self.filament_drying_active = parsed
+                    if not self.filament_drying_active:
+                        self.remaining_seconds = 0
+                        self.drying_remaining_min = 0
             if "filament_drying_mode" in data:
                 try:
                     self.work_mode = 3
+                except Exception:
+                    pass
+            if "filament_button" in data:
+                try:
+                    self.filament_button = int(data.get("filament_button"))
                 except Exception:
                     pass
 
@@ -1016,6 +1098,7 @@ class PandaBreath:
         self.work_on = self.target > 0.
         self.filament_drying_active = False
         self.remaining_seconds = 0
+        self.drying_remaining_min = 0
         self._transport.set_target(degrees)
 
     def get_status(self, eventtime):
@@ -1027,6 +1110,7 @@ class PandaBreath:
             "work_mode": self.work_mode,
             "work_on": self.work_on,
             "device_target": self.device_target,
+            "heater_temp": self.heater_temp,
             "auto_enabled": self.auto_enabled,
             "auto_target": self.auto_target,
             "auto_filtertemp": self.auto_filtertemp,
@@ -1034,6 +1118,8 @@ class PandaBreath:
             "filament_temp": self.filament_temp,
             "filament_timer": self.filament_timer,
             "remaining_seconds": self.remaining_seconds,
+            "drying_remaining_min": self.drying_remaining_min,
+            "filament_button": self.filament_button,
             "filament_drying_active": self.filament_drying_active,
         }
 

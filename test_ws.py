@@ -50,7 +50,8 @@ def main():
                 print("  Turn OFF:  {\"work_on\": false}")
                 print("  Mode Auto: {\"work_mode\": 1}")
                 print("  Mode ALON: {\"work_mode\": 2}")
-                print("  Target 45: {\"temp\": 45}")
+                print("  Target 45: {\"set_temp\": 45, \"target_temp\": 45}")
+                print("  Stop dry:  {\"isrunning\": 0, \"drying_running\": false}")
                 continue
             
             if cmd:

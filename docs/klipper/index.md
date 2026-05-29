@@ -62,7 +62,9 @@ The Panda Breath has three operating modes:
 | `2` Always On | Heater runs while `work_on: true` | **Yes** |
 | `3` Filament Drying | Timed run at a target temp | Exposed as an optional stock-only passthrough |
 
-For broad compatibility, the module's standard heater path uses `work_mode: 2`, where Klipper is the source of truth for target temperature and on/off state. The stock transport can also pass through native OEM auto/drying settings when a user or downstream integration explicitly opts into them. For OEM native auto-mode workflows, use firmware `1.0.3+`. V1.0.3 adds `printer_type: 2` (Klipper) as a communication mode (does not change auto-mode behavior); V1.0.4 adds native HA MQTT auto-discovery.
+For broad compatibility, the module's standard heater path uses `work_mode: 2`, where Klipper is the source of truth for target temperature and on/off state. The stock transport can also pass through native OEM auto/drying settings when a user or downstream integration explicitly opts into them. For OEM native auto-mode workflows, use firmware `1.0.3+`. V1.0.3 adds `printer_type: 2` (Klipper) as a communication mode (does not change auto-mode behavior); V1.0.4 adds native HA MQTT auto-discovery and several field aliases.
+
+The stock WebSocket transport remains backward-compatible by sending the older confirmed control keys and mirroring the compatible v1.0.4 aliases: `set_temp` with `target_temp`, `filtertemp` with `filter_temp`, and `isrunning` with `drying_running`. Incoming state accepts `chamber_temp`, `target_temp`, `heater_temp`, `drying_running`, `drying_remaining_min`, and `filament_button` when newer firmware reports them.
 
 ---
 
@@ -71,6 +73,7 @@ For broad compatibility, the module's standard heater path uses `work_mode: 2`, 
 There is no confirmed "get state" command on the stock WebSocket API. The module tracks its own sent state rather than querying the device:
 
 - Temperature readings arrive periodically from the device's `temp_task` — no polling needed
+- Temperature parsing prefers `cal_warehouse_temp`, then v1.0.4 `chamber_temp`, then legacy `warehouse_temper`
 - When the connection drops and reconnects, the module resends its last desired state
 - Physical button presses on the device do **not** reliably generate WebSocket state updates in the historical OEM firmware behavior documented here, so the module cannot detect out-of-band changes
 
