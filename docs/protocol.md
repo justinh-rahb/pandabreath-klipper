@@ -1,9 +1,9 @@
 # WebSocket Protocol
 
-> **Status:** Reverse-engineered. Derived from firmware binary strings, a historical OEM full-flash dump, schematic analysis, and live testing by community members.
+> **Status:** Reverse-engineered. Derived from firmware binary strings (v1.0.1–v1.0.4), a historical OEM full-flash dump (v0.0.0), schematic analysis, and live testing by community members.
 > No official API documentation exists. BTT has not published firmware source.
 >
-> Historical reverse-engineering baseline: `v0.0.0` full-flash dump. BTT's Panda Breath wiki now lists `V1.0.3` as adding Klipper printer binding support.
+> Historical reverse-engineering baseline: `v0.0.0` full-flash dump. Current release: **V1.0.4** (May 2026) with native HA MQTT auto-discovery. V1.0.3+ adds Klipper `printer_type` support.
 
 ---
 
@@ -68,13 +68,19 @@ The primary control and telemetry root.
 | `hotbedtemp` | int | Bed temperature (°C) that triggers Auto mode |
 | `filament_temp` | int | Target temperature for filament drying (°C) |
 | `filament_timer` | int | Filament drying duration in **hours** |
+| `filament_drying_mode` | int | `1` = PLA, `2` = PETG, `3` = custom (v1.0.3+) |
+| `printer_type` | int | `1` = BambuLab, `2` = Klipper (v1.0.3+) |
 | `isrunning` | int | `1` = start drying cycle, `0` = stop |
 | `reset` | int | `1` = reboot device |
 | `factory_reset` | int | `1` = factory reset (clears NVS, WiFi, binding) |
 | `language` | string | UI language: `"en"` or `"zh"` |
+| `target_temp` | int | Target temperature, 0–60°C (v1.0.4+ — **needs live testing as WS key**) |
+| `filter_temp` | int | Filter trigger temperature, 0–120°C (v1.0.4+) |
+| `heater_temp` | int | Heater trigger temperature, 40–120°C (v1.0.4+) |
+| `drying_running` | bool | Start/stop drying timer, ON/OFF (v1.0.4+) |
 
 !!! note "Target temperature write field"
-    The current upstream Klipper stock transport writes `set_temp` for normal `work_mode: 2` heater control, and uses `temp` / `filtertemp` / `hotbedtemp` for the optional native auto-mode passthrough. Drying mode uses `filament_temp` and `filament_timer`.
+    The Klipper stock transport writes `set_temp` for normal `work_mode: 2` heater control (confirmed on v0.0.0). v1.0.4 introduces `target_temp` as a writable field via HA MQTT (0–60°C) — it may also work as a WS command key, superseding `set_temp`. Needs live validation. Drying mode uses `filament_temp` and `filament_timer`.
 
 #### Read-only fields (device → client)
 
@@ -87,14 +93,21 @@ The primary control and telemetry root.
 | `fw_version` | string | Firmware version string |
 | `work_on` | bool | Current on/off state |
 | `work_mode` | int | Current operating mode |
-| `filament_drying_mode` | bool/int | Filament drying cycle active |
+| `filament_drying_mode` | int | Filament drying mode: 1=PLA, 2=PETG, 3=custom |
 | `remaining_seconds` | int | Drying countdown (seconds) |
-| `custom_temp` | int | Custom mode temperature setting |
-| `custom_timer` | int | Custom mode timer setting |
-| `filtertemp` | int | Filter temperature (threshold or reading — TBD) |
-| `ptc_sensor_status` | int | PTC thermistor health (`0` = OK, non-zero = fault) |
+| `custom_temp` | int | Custom mode temperature setting (40–60°C) |
+| `custom_timer` | int | Custom mode timer setting (1–99h) |
+| `filtertemp` | int | Filter temperature threshold |
+| `ptc_sensor_status` | int | PTC thermistor health: `0` = OK, `1` = open circuit, `2` = short circuit |
 | `warehouse_sensor_status` | int | Chamber thermistor health |
 | `ptc_heater_status` | int | PTC heater element status |
+| `filament_button` | int | Physical button state (values 1/2/3; v1.0.4+) |
+| `chamber_temp` | float | Chamber temperature (v1.0.4+ HA alias for `warehouse_temper`) |
+| `drying_remaining_min` | int | Drying time remaining in minutes (v1.0.4+) |
+| `printer_bind` | string | Printer bind status (v1.0.4+) |
+| `printer_ip` | string | Bound printer IP (v1.0.4+) |
+| `printer_name` | string | Bound printer name (v1.0.4+) |
+| `printer_sn` | string | Bound printer serial number (v1.0.4+) |
 
 #### Example commands
 
@@ -127,8 +140,29 @@ The primary control and telemetry root.
 { "settings": { "warehouse_temper": 38.5 } }
 { "settings": { "cal_warehouse_temp": 37.9 } }
 { "settings": { "work_on": true, "work_mode": 2 } }
-{ "settings": { "fw_version": "V1.0.2" } }
+{ "settings": { "fw_version": "V1.0.4" } }
+{ "settings": { "printer_type": 2 } }
+{ "settings": { "filament_button": 1 } }
 ```
+
+---
+
+### Native MQTT (v1.0.4+)
+
+v1.0.4 adds a `btt_mqtt` client that connects to a user-configured MQTT broker and publishes Home Assistant auto-discovery configs. This is independent of the Bambu `bambu_mqtt` client.
+
+**Topic structure:**
+```
+<prefix>/<device_id>/state         # JSON state (published by device)
+<prefix>/<device_id>/command       # JSON commands (subscribed by device)
+<prefix>/<device_id>/availability  # "online" / "offline" (LWT)
+```
+
+**HA auto-discovery entities** are published to `homeassistant/...` topics covering: `chamber_temp`, `work_on`, `mode`, `filament_drying_mode`, `target_temp` (0–60°C), `filter_temp` (0–120°C), `heater_temp` (40–120°C), `custom_temp` (40–60°C), `custom_timer` (1–99h), `drying_running`, `drying_remaining_min`, `printer_sn`, `printer_bind`, `printer_ip`, `printer_name`.
+
+The MQTT command payloads use JSON matching the WS `settings` format (e.g. `{"target_temp": 45}`, `{"work_on": "ON"}`).
+
+**NVS key:** `ha_mqtt_info` — stores broker IP, port, username, password.
 
 ---
 
@@ -171,7 +205,7 @@ The primary control and telemetry root.
 | `{ "printer": { "disconnect": 1 } }` | Disconnect from bound printer |
 
 !!! note "Klipper note"
-    The baseline Klipper heater path in this repo uses `work_mode: 2` (Always On). Recent module builds also expose raw passthrough commands for the device's native auto-mode settings, and BTT's `V1.0.3` firmware history says Klipper printer binding support was added in that release.
+    The baseline Klipper heater path in this repo uses `work_mode: 2` (Always On). Recent module builds also expose raw passthrough commands for the device's native auto-mode settings. V1.0.3 added `printer_type: 2` (Klipper) as a selectable binding type. Setting `printer_type: 2` may change auto-mode behavior — needs live testing.
 
 When connected to a Bambu printer, the device subscribes to `device/<sn>/report` via MQTT over TLS and pushes these fields to WebSocket clients:
 
@@ -193,7 +227,7 @@ When connected to a Bambu printer, the device subscribes to `device/<sn>/report`
 
 | `work_mode` | Name | Behaviour |
 |---|---|---|
-| `1` | Auto | Heater turns on when printer bed temperature crosses `hotbedtemp` threshold. Historically tied to printer binding; current BTT `V1.0.3` firmware history says Klipper printer binding support was added. |
+| `1` | Auto | Heater turns on when printer bed temperature crosses `hotbedtemp` threshold. V1.0.3+ supports Klipper binding via `printer_type: 2`. |
 | `2` | Always On | Heater runs continuously while `work_on` is true. Target temperature controlled internally. **Use this for Klipper.** |
 | `3` | Filament Drying | Runs at `filament_temp` for `filament_timer` hours. Countdown tracked via `remaining_seconds`. Hard timeout at 12 hours. |
 
@@ -273,6 +307,7 @@ Settings are saved to ESP32 NVS flash under the `panda_breath` namespace. The fo
 |---|---|
 | `wifi_info` | WiFi SSID, password, hostname, AP config |
 | `bambu_mqtt_info` | Bound printer name, serial, access code, IP |
+| `ha_mqtt_info` | HA broker IP, port, username, password (v1.0.4+) |
 | `ui_info` | Language and UI settings |
 | `panda_breath` namespace | `settings_temp`, `settings_hotbed_temp`, `work_on`, `current_mode`, `custom_temp`, `custom_timer` |
 

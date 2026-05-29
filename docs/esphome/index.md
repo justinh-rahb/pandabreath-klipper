@@ -15,12 +15,13 @@ An experimental alternative to the OEM firmware: reflash the Panda Breath's ESP3
 | Concern | OEM firmware | ESPHome |
 |---|---|---|
 | Native Klipper auto-mode support | Available in the current OEM `1.0.3+` line | Not needed; ESPHome uses direct MQTT heater control |
-| Firmware risk profile | Current OEM path is improving, but earlier repository analysis flagged regressions in `v1.0.2` | Experimental in this repo; not validated end-to-end |
+| HA integration | V1.0.4 adds native HA MQTT auto-discovery (14 entities) | Full ESPHome HA integration via MQTT |
+| Thermal runaway protection | PTC sensor fault UI in v1.0.3+; actual cutoff logic uncertain | Configurable safety cutoff in ESPHome config |
 | Fan speed control | Device-managed (no external control) | Configurable via `ac_dimmer` component |
 | OTA updates | BTT releases only | ESPHome OTA — update on your schedule |
 | Recovery | Historical 4MB OEM flash dump available in this repo | Reflash OEM dump at any time |
 
-The original motivation was control and safety: repository analysis of `v1.0.2` found regression signals around PTC thermal protection, while ESPHome would let you own that logic directly. In practice, this path has not been completed or validated.
+The original motivation was control and safety: analysis of v1.0.2 found PTC thermal protection strings removed. V1.0.3 re-added PTC sensor fault dialogs (open/short circuit detection) but it's unclear whether the actual thermal cutoff logic was restored. ESPHome lets you own that logic directly. In practice, this path has not been completed or validated.
 
 ---
 

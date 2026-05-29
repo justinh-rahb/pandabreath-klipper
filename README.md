@@ -109,7 +109,7 @@ Recent commits added passthrough commands for OEM native modes:
 
 These are optional advanced controls for the stock transport. The broadest-compatibility Klipper path remains normal `heater_generic` control in `work_mode: 2`.
 
-For current OEM firmware, BTT's Panda Breath wiki lists `V1.0.3` as adding the ability to bind Klipper printers. Use `1.0.3+` for stock-firmware native auto-mode workflows.
+The current OEM firmware is **V1.0.4** (May 2026), which adds native MQTT with Home Assistant auto-discovery. V1.0.3 added Klipper `printer_type` support. Use `1.0.3+` for stock-firmware native auto-mode workflows.
 
 The stock-firmware maintenance CLI can be used for manual rebinds or unbinds:
 
@@ -145,8 +145,9 @@ This repository is the upstream source for downstream firmware integrations. Tho
 
 ## Device notes
 
-- Use OEM firmware `1.0.3+` for the current stock-firmware Klipper path, especially if you want native auto-mode support.
-- Earlier analysis in this repo found regression signals in `v1.0.2`, including apparent removal of some PTC thermal-protection logic.
+- Use OEM firmware `1.0.3+` for the current stock-firmware Klipper path, especially if you want native auto-mode support. Current release is **V1.0.4** (May 2026) with native HA MQTT auto-discovery.
+- V1.0.3 re-added PTC sensor fault UI dialogs (open/short circuit detection), but it's unclear if the actual thermal cutoff logic removed in v1.0.2 has been fully restored.
+- V1.0.4 adds `target_temp`, `filter_temp`, `heater_temp`, and other new WS fields — needs live validation to determine if they work as WS command keys alongside existing `set_temp`.
 - The stock WebSocket API has no authentication.
 - Physical button and web UI state changes do not reliably produce full state push updates to Klipper.
 

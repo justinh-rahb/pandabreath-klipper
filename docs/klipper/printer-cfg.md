@@ -173,7 +173,7 @@ at the start of prints that require chamber heating, and `TARGET=0` at the end. 
 ## Safety notes
 
 - The Panda Breath reaches up to 60°C chamber temperature
-- **Stock firmware:** use `1.0.3+` for the current OEM Klipper path; earlier repository analysis found regression signals in `v1.0.2`
+- **Stock firmware:** use `1.0.3+` for the current OEM Klipper path (current release: V1.0.4). V1.0.3 re-added PTC sensor fault detection; V1.0.4 adds native HA MQTT
 - **ESPHome firmware:** thermal runaway protection is implemented directly in the ESPHome config (`esphome/panda_breath.yaml`) and does not depend on BTT firmware
 - The stock WebSocket has no authentication — LAN use only
 - Always disconnect mains AC before servicing the device

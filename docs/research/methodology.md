@@ -20,24 +20,32 @@ For Klipper integration to be possible, the protocol must be understood. The thr
 
 ## Technique 1: Binary string extraction
 
-The released firmware binaries (`panda_breath_v1.0.1.bin`, `panda_breath_v1.0.2.bin`) are ESP32-C3 app images — unencrypted, unsigned. They can be inspected directly.
+The released firmware binaries (`panda_breath_v1.0.1.bin` through `panda_breath_v1.0.4.bin`) are ESP32-C3 app images — unencrypted, unsigned. They can be inspected directly.
 
 **Tools used:**
 ```sh
 esptool.py image_info --version 2 panda_breath_v1.0.1.bin
 strings -n 4 panda_breath_v1.0.1.bin > strings_v1.0.1.txt
 strings -n 4 panda_breath_v1.0.2.bin > strings_v1.0.2.txt
+strings -n 4 panda_breath_v1.0.3.bin > strings_v1.0.3.txt
+strings -n 4 panda_breath_v1.0.4.bin > strings_v1.0.4.txt
+diff strings_v1.0.2.txt strings_v1.0.3.txt   # cross-version analysis
+diff strings_v1.0.3.txt strings_v1.0.4.txt
 ```
 
 The `strings` output reveals:
 - JSON field names used in WebSocket messages (`work_on`, `warehouse_temper`, `filament_temp`, etc.)
-- RTOS task names (`temp_task`, `ptc_task`, `mqtt_task`, etc.)
+- RTOS task names (`temp_task`, `ptc_task`, `mqtt_task`, `btt_mqtt`, etc.)
 - Log format strings that reveal internal logic (e.g. PTC thermal runaway detection strings in v1.0.1)
 - HTTP endpoints (`/ota`, `/generate_204`)
-- MQTT topic patterns (`device/%s/report`, `device/%s/request`)
+- MQTT topic patterns (`device/%s/report`, `device/%s/request`, `homeassistant/...`)
+- HA auto-discovery JSON payloads with field names, ranges, and entity types (v1.0.4)
+- Embedded web UI JavaScript with complete control flow and field handlers (v1.0.3+)
 - mDNS service name and AP SSID format
 
-**Limitation:** String extraction reveals field *names* but not their data types, direction (read vs write), or valid values. It cannot reveal control flow or how fields are processed.
+Cross-version `diff` analysis is particularly valuable: the v1.0.2→v1.0.3 diff revealed the Klipper `printer_type` and `filament_drying_mode` additions (+53% string growth), while the v1.0.3→v1.0.4 diff exposed the full HA MQTT auto-discovery implementation with entity definitions, topic structures, and command templates.
+
+**Limitation:** String extraction reveals field *names* but not their data types, direction (read vs write), or valid values. It cannot reveal control flow or how fields are processed. However, when embedded JS is present (v1.0.3+ web UI), the extracted JavaScript source does reveal types, direction, and control flow.
 
 ---
 
@@ -107,17 +115,29 @@ Community members have tested the device on v0.0.0 via direct WebSocket connecti
 
 ## What remains unverified
 
-The following require live device testing to confirm:
+### Resolved via binary analysis or live testing
+
+| Question | Resolution |
+|---|---|
+| Which field sets the general target temperature for always-on mode? | `set_temp` confirmed via live testing on v0.0.0 |
+| What does `filtertemp` represent — a threshold or a sensor reading? | Filter temperature threshold; editable via `filter_temp` in v1.0.3+ UI |
+| `filament_drying_mode` direction and values | Writable: 1=PLA, 2=PETG, 3=custom (v1.0.3+ embedded JS) |
+| `ptc_sensor_status` values | 0=OK, 1=open circuit, 2=short circuit (v1.0.3+ UI dialogs) |
+
+### Still needs live device testing
 
 | Question | Status |
 |---|---|
 | Does the device push an initial state snapshot on new client connect? | Unverified — `init one:` pattern seen in firmware strings suggests it might |
-| Which field sets the general target temperature for always-on mode? | Unverified — candidates: `set_temp`, `temp`, `custom_temp` |
-| What does `filtertemp` represent — a threshold or a sensor reading? | Unverified |
-| Does `app_temp` have a meaningful function? | Unverified |
-| Do v1.0.1/v1.0.2 behavior changes affect which fields work? | Partially — thermal calibration strings were removed in v1.0.2 |
+| Does `target_temp` work as a WS command key on v1.0.4? | Unverified — it's a writable HA MQTT entity (0–60°C); could supersede `set_temp` |
+| Does `printer_type: 2` (Klipper) change auto-mode behavior? | Unverified — may disable Bambu MQTT or alter auto logic |
+| Do `filter_temp` and `heater_temp` work as WS command keys? | Unverified — they're writable HA entities in v1.0.4 |
+| Does `drying_running` ON/OFF work as a WS alternative to `isrunning`? | Unverified |
+| Is PTC thermal cutoff logic actually restored in v1.0.3+? | UI dialogs exist but actual cutoff behavior uncertain |
+| What does `filament_button` state field report? | Appears to be physical button state (values 1/2/3) |
 | What is the WebSocket message rate for temperature updates? | Unverified |
 | Is there a version check or rollback prevention in the OTA flow? | Unverified |
+| Does v1.0.4 HA MQTT work end-to-end with an external broker? | Unverified — topic structure extracted from binary |
 
 ---
 
