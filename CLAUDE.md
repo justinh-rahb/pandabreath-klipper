@@ -4,13 +4,13 @@ Klipper extras module to integrate the **BIQU Panda Breath** smart chamber heate
 
 ## Project Goal
 
-The Panda Breath has no native Klipper support yet. BTT has not released the firmware source. Three parallel strategies are in development:
+The Panda Breath has no native Klipper support yet. BTT has not released the firmware source. The primary supported path plus two experimental alternatives:
 
-1. **Stock firmware path** — Klipper `extras/` module that speaks the device's WebSocket JSON API. Target firmware: v0.0.0 (only confirmed stable release; v1.0.1+ has thermal/timing bugs including removal of PTC thermal runaway detection in v1.0.2).
-2. **ESPHome path** — Reflash the ESP32-C3 with ESPHome, which provides native TRIAC phase-angle fan speed control (`ac_dimmer` component), configurable PTC heater relay, NTC sensors, and restored thermal runaway protection. ESPHome integration with Klipper via MQTT.
+1. **Stock firmware path** — Klipper `extras/` module that speaks the device's WebSocket JSON API. Use firmware `1.0.3+` for best Klipper support. Current release: **V1.0.4** (May 2026) with native HA MQTT auto-discovery. V1.0.3 added `printer_type: 2` (Klipper) as a communication mode.
+2. **~~ESPHome path~~** *(largely redundant)* — Reflash with ESPHome for TRIAC fan control, configurable PTC relay, and MQTT. **v1.0.4's native HA MQTT auto-discovery provides similar HA integration without reflashing**, making this path redundant for most use cases. Retained in repo for reference only.
 3. **KlipperMCU path** — Reflash the ESP32-C3 with a custom ESP-IDF firmware that speaks the Klipper MCU binary protocol over UART0 (via the onboard CH340K USB-C bridge). The Panda Breath becomes a native `[mcu panda_breath]` — no Python extras module, no MQTT broker, Klipper's own PID and thermal safety apply directly. Fan control is internal to firmware (TRIAC phase-angle via zero-crossing ISR). See `klipper-firmware/`.
 
-The Klipper module (`panda_breath.py`) supports both via a transport abstraction: `firmware: stock` uses the WebSocket transport; `firmware: esphome` uses the MQTT transport. From Klipper's perspective the interface is identical either way.
+The Klipper module (`panda_breath.py`) supports stock and ESPHome via a transport abstraction: `firmware: stock` uses the WebSocket transport; `firmware: esphome` uses the MQTT transport. From Klipper's perspective the interface is identical either way.
 
 ## Device: BIQU Panda Breath
 
@@ -25,12 +25,15 @@ The Klipper module (`panda_breath.py`) supports both via a transport abstraction
 - Logic: 3.3V
 
 **Firmware**
-- Current release: V1.0.2 (buggy — V1.0.1+ has thermal/timing issues)
-- V0.0.0 (Aug 25 2025) is the only confirmed stable version
+- Current release: **V1.0.4** (May 2026) — adds native HA MQTT auto-discovery
+- V1.0.3 (Mar 2026) — adds Klipper `printer_type`, `filament_drying_mode` writes, PTC sensor fault UI
+- V1.0.2 (Jan 2026) — buggy; silently removed PTC thermal runaway detection
+- V1.0.1 (Dec 2025) — first update; has thermal/timing issues
+- V0.0.0 (Aug 2025) — factory firmware; only confirmed stable version; embedded web UI JS is the protocol source of truth
 - Source not yet published; BTT tracking: https://github.com/bigtreetech/Panda_Breath
 - License: CC-BY-NC-ND-4.0 (non-commercial)
 - OTA update via HTTP POST to `/ota` endpoint (not WebSocket); max app size 0x480000 bytes
-- Full 4MB flash dump of V0.0.0 obtained via `esptool flash_read` from a real device — contains embedded web UI JS which is the protocol source of truth
+- Full 4MB flash dump of V0.0.0 obtained via `esptool flash_read` from a real device
 
 **Network**
 - Default hostname: `PandaBreath.local`
@@ -66,28 +69,52 @@ All messages are JSON with a top-level `settings` key. The device sends state up
 | `work_mode` | ↔ | int | 1=Auto (follows bed temp), 2=Always On, 3=Filament Drying |
 | `hotbedtemp` | ↔ | int | Bed temp threshold that triggers auto mode |
 | `warehouse_temper` | ←device | float | Current chamber temperature reading |
+| `cal_warehouse_temp` | ←device | float | Calibrated chamber temperature (prefer this) |
+| `cal_ptc_temp` | ←device | float | Calibrated PTC temperature |
 | `set_temp` | →device | int | Writable field to set target chamber temperature (Confirmed) |
 | `temp` | ←device | int | Target temp readback (may be read-only) |
-| `filtertemp` | ? | int | Filter temperature (threshold or sensor reading — TBD) |
+| `filtertemp` | ←device | int | Filter temperature threshold |
 | `filament_temp` | ↔ | int | Filament drying target temperature |
-| `filament_timer` | ↔ | int | Filament drying duration |
-| `filament_drying_mode` | ←device | bool/int | Filament drying active flag |
-| `custom_temp` | ↔ | int | Custom mode temperature |
-| `custom_timer` | ↔ | int | Custom mode timer |
+| `filament_timer` | ↔ | int | Filament drying duration (hours) |
+| `filament_drying_mode` | ↔ | int | 1=PLA, 2=PETG, 3=custom (writable v1.0.3+) |
+| `custom_temp` | ↔ | int | Custom mode temperature (40–60°C) |
+| `custom_timer` | ↔ | int | Custom mode timer (1–99h) |
 | `remaining_seconds` | ←device | int | Countdown timer (drying mode) |
 | `fw_version` | ←device | string | Firmware version string |
-| `ptc_sensor_status` | ←device | int | PTC thermistor health |
+| `ptc_sensor_status` | ←device | int | PTC thermistor health: 0=OK, 1=open, 2=short (v1.0.3+) |
 | `warehouse_sensor_status` | ←device | int | Chamber thermistor health |
 | `ptc_heater_status` | ←device | int | PTC heater element status |
-| `cal_ptc_temp` | ←device | float | Calibrated PTC temperature |
-| `cal_warehouse_temp` | ←device | float | Calibrated chamber temperature |
+| `printer_type` | ↔ | int | 1=BambuLab, 2=Klipper (v1.0.3+) — communication mode only, does not change auto-mode behavior |
 | `isrunning` | →device | int | Start (1) / stop (0) filament drying cycle |
 | `reset` | →device | int | Reboot device (`{'reset': 1}`) |
 | `factory_reset` | →device | int | Factory reset (`{'factory_reset': 1}`) |
 | `language` | →device | string | UI language (`'en'`, `'zh'`) |
 | `set_ap` | →device | ? | Trigger AP/hotspot mode |
+| `target_temp` | →device? | int | Target temperature 0–60°C (v1.0.4+ HA MQTT — **needs live WS testing**) |
+| `filter_temp` | →device? | int | Filter trigger temp 0–120°C (v1.0.4+ — **needs live WS testing**) |
+| `heater_temp` | →device? | int | Heater trigger temp 40–120°C (v1.0.4+ — **needs live WS testing**) |
+| `drying_running` | →device? | bool | Start/stop drying ON/OFF (v1.0.4+ — **needs live WS testing**) |
+| `chamber_temp` | ←device | float | Chamber temperature (v1.0.4+ HA alias for `warehouse_temper`) |
+| `filament_button` | ←device | int | Physical button state, values 1/2/3 (v1.0.4+) |
+| `drying_remaining_min` | ←device | int | Drying time remaining in minutes (v1.0.4+) |
+| `printer_bind` | ←device | string | Printer bind status (v1.0.4+) |
+| `printer_ip` | ←device | string | Bound printer IP (v1.0.4+) |
+| `printer_name` | ←device | string | Bound printer name (v1.0.4+) |
+| `printer_sn` | ←device | string | Bound printer serial number (v1.0.4+) |
 
-**Note:** `set_temp` is definitively the writable key for setting the target temperature via WebSocket, while `temp` is ignored by the device (confirmed via live testing). The device's auto mode reads `bed_temper`/`nozzle_temper`/`gcode_state` from the Bambu MQTT connection; this won't work with Klipper, so the Klipper module should manage auto logic directly and use `work_mode: 2` (always_on).
+**Note:** `set_temp` is definitively the writable key for setting the target temperature via WebSocket, while `temp` is ignored by the device (confirmed via live testing). v1.0.4 introduces `target_temp` as a writable field via HA MQTT (0–60°C) — it may also work as a WS command key, superseding `set_temp`; needs live validation. The device's auto mode reads `bed_temper`/`nozzle_temper`/`gcode_state` from the Bambu MQTT connection; this won't work with Klipper, so the Klipper module uses `work_mode: 2` (always_on).
+
+### Native MQTT Protocol (v1.0.4+)
+
+v1.0.4 adds a `btt_mqtt` client (independent of the Bambu `bambu_mqtt` client) that connects to a user-configured MQTT broker and publishes Home Assistant auto-discovery configs.
+
+**Topic structure:** `<prefix>/<device_id>/state` (published), `<prefix>/<device_id>/command` (subscribed), `<prefix>/<device_id>/availability` (LWT).
+
+**HA auto-discovery entities** published to `homeassistant/...` topics: `chamber_temp`, `work_on`, `mode`, `filament_drying_mode`, `target_temp` (0–60°C), `filter_temp` (0–120°C), `heater_temp` (40–120°C), `custom_temp` (40–60°C), `custom_timer` (1–99h), `drying_running`, `drying_remaining_min`, `printer_sn`, `printer_bind`, `printer_ip`, `printer_name`.
+
+MQTT command payloads use JSON matching the WS `settings` format. NVS key: `ha_mqtt_info`.
+
+**This native HA MQTT makes the ESPHome reflash path largely redundant** — v1.0.4 stock firmware provides HA integration without reflashing.
 
 See [research/firmware-analysis.md](research/firmware-analysis.md) for binary analysis and [research/protocol-from-v0.0.0.md](research/protocol-from-v0.0.0.md) for the definitive protocol reference (extracted from embedded JS in the v0.0.0 full flash dump).
 
@@ -112,7 +139,7 @@ See [research/firmware-analysis.md](research/firmware-analysis.md) for binary an
 
 **Approach:** Klipper `extras/` plugin (`panda_breath.py`) — a single self-contained file, **no external Python dependencies**.
 
-**Design decision:** Expose as a standard Klipper heater only. No custom GCode commands. Orca Slicer already handles chamber temperature via `SET_HEATER_TEMPERATURE [HEATER=panda_breath]` — adding custom GCodes would duplicate that and create complexity for no gain.
+**Design decision:** Expose as a standard Klipper heater. The baseline control path uses `SET_HEATER_TEMPERATURE HEATER=panda_breath`. Stock firmware also exposes optional passthrough commands (`PANDA_BREATH_AUTO`, `PANDA_BREATH_DRY_START`, `PANDA_BREATH_DRY_STOP`) for OEM native modes.
 
 ### Transport abstraction
 
@@ -132,18 +159,19 @@ Both transports run a background I/O thread and push state updates into a thread
 2. Transport maintains a persistent connection and reconnects on drop
 3. Reports current temperature via `get_temp()` — prefers `cal_warehouse_temp` over `warehouse_temper` (stock), or `chamber_temperature` MQTT topic (ESPHome)
 4. Implements standard Klipper heater interface — `set_temp()` / `get_temp()` / `check_busy()`
-5. When target > 0: stock sends `{work_mode: 2, work_on: true, temp: t}`; ESPHome publishes to climate mode/target topics
-6. When target = 0: stock sends `{work_on: false}`; ESPHome publishes `mode: off`
-7. Uses Klipper reactor for I/O (`reactor.register_timer`) — no raw asyncio
+5. When target > 0: stock sends `{isrunning: 0, work_mode: 2, set_temp: t, work_on: true}`; ESPHome publishes to climate mode/target topics
+6. When target = 0: stock sends `{isrunning: 0, work_on: false}`; ESPHome publishes `mode: off`
+7. Forces device off on Klipper connect, disconnect, and shutdown
+8. Resends last desired state after reconnect
+9. Stock firmware registers optional passthrough GCode commands (`PANDA_BREATH_AUTO`, `PANDA_BREATH_DRY_START`, `PANDA_BREATH_DRY_STOP`)
 
 ### What the module does NOT do
-- No `PANDA_BREATH_*` GCode commands
-- No custom macros
-- No mode-switching logic (user sets target temp; the module turns the device on/off)
+- No opinionated `M141`/`M191` macros in the module itself (templates in `config/`)
+- No mode-switching logic beyond what the user explicitly requests
 
 ### `printer.cfg` config blocks
 
-**Stock firmware (default; recommended firmware: v0.0.0):**
+**Stock firmware (default; use firmware `1.0.3+`):**
 ```ini
 [panda_breath]
 firmware: stock
@@ -202,11 +230,13 @@ This means the U1 overlay is a single file drop — no opkg, no entware packages
 
 ## Known Constraints
 
-- Firmware bugs in V1.0.1+ mean some features (auto mode, temp setting) may be unreliable; **v1.0.2 silently removed PTC thermal runaway detection** — ESPHome path restores this
+- **Use firmware `1.0.3+` for stock Klipper path.** V1.0.3 adds `printer_type: 2` (Klipper communication mode) and PTC sensor fault UI. V1.0.4 adds native HA MQTT auto-discovery. V1.0.2 silently removed PTC thermal runaway detection.
 - BTT has not published WebSocket API docs — all protocol knowledge is from reverse engineering
 - **No confirmed state-query command** (stock firmware) — button/UI changes don't push WS messages (confirmed v0.0.0); no "get state" request exists in JS source; reconnecting may be the only way to get a full state snapshot (unverified). Module tracks its own sent state rather than querying.
 - The device WebSocket drops and needs reconnection — reliability of WS connection is a concern
 - No authentication on the WebSocket — only a concern on untrusted networks
+- **v1.0.4 fields need live validation** — `target_temp`, `filter_temp`, `heater_temp`, and `drying_running` are confirmed as writable HA MQTT entities but untested as WS command keys. `target_temp` may supersede `set_temp`.
+- **ESPHome path is largely redundant** — v1.0.4's native HA MQTT auto-discovery provides HA integration without reflashing, making the ESPHome reflash path unnecessary for most users
 - **Snapmaker U1 modified Klipper enforces strict duck-typing**. Generic proxies must securely spoof `get_name()`, `short_name`, and `check_busy()` or the U1's custom power-loss and extrusion macros will crash into an `Internal error`. `panda_breath.py` has been updated to proactively cover this.
 - **No pre-built opkg repo for U1 extended firmware** — Entware is present on devel builds but packages must be sourced/built manually; this is a future task when building the U1 overlay
 - **ESPHome GPIO pins resolved** — three GPIO pin assignments (TH0 chamber NTC → GPIO0, TH1 PTC NTC → GPIO1, RLY_MOSFET relay → GPIO18) inferred by cross-referencing schematic module pad numbers with ESP32-C3-MINI-1 datasheet; continuity testing on real hardware recommended to confirm
@@ -221,9 +251,10 @@ This means the U1 overlay is a single file drop — no opkg, no entware packages
 5. Test on U1 with extended firmware (SSH access)
 6. Handle reconnection, error states, and thermal-runaway-safe defaults
 
-### ESPHome firmware (`esphome/`)
-1. ~~Resolve three placeholder GPIO substitutions (TH0, TH1, RLY_MOSFET) via hardware continuity testing~~ — resolved via module datasheet cross-reference (GPIO0, GPIO1, GPIO18); continuity testing recommended to confirm
-2. ~~Verify GPIO0/GPIO7 zero-crossing conflict (oscilloscope with mains connected)~~ — resolved: GPIO0 is the TH0 NTC ADC input (does not carry ZERO); GPIO7 is shared between ZCD and K1 button — OEM firmware handles both via pulse-width discrimination; K1 not implemented in our firmware yet
+### ~~ESPHome firmware (`esphome/`)~~ — deprioritized
+*v1.0.4's native HA MQTT auto-discovery makes this path largely redundant. Retained for reference.*
+1. ~~Resolve three placeholder GPIO substitutions~~ — resolved (GPIO0, GPIO1, GPIO18)
+2. ~~Verify GPIO0/GPIO7 zero-crossing conflict~~ — resolved
 3. Flash ESPHome, validate NTC readings against OEM firmware values
 4. Tune `min_power` for fan stall threshold
 5. Validate thermal safety cutoff (PTC element overheat interval)
