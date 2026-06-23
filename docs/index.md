@@ -80,7 +80,7 @@ The stock transport also exposes optional passthrough commands for OEM native mo
 
 These are useful for advanced macros and downstream integrations, but they are not required for the normal `heater_generic` path.
 
-BTT's Panda Breath wiki now lists `V1.0.3` as adding the ability to bind Klipper printers, so `1.0.3+` is the right stock-firmware baseline for native auto-mode workflows.
+The current OEM firmware is **V1.0.4** (May 2026) with native MQTT and Home Assistant auto-discovery. V1.0.3 added Klipper `printer_type` support. Use `1.0.3+` for native auto-mode workflows.
 
 ## Quick links
 
@@ -98,8 +98,8 @@ BTT's Panda Breath wiki now lists `V1.0.3` as adding the ability to bind Klipper
 
 ## Notes
 
-- Use OEM firmware `1.0.3+` for the current stock-firmware Klipper path.
-- Earlier repository analysis found regression signals in `v1.0.2`, including apparent removal of some thermal-protection logic.
+- Use OEM firmware `1.0.3+` for the current stock-firmware Klipper path. Current release is **V1.0.4**.
+- V1.0.3 re-added PTC sensor fault UI dialogs; v1.0.4 adds native HA MQTT. Earlier analysis found thermal protection regression in v1.0.2.
 - The ESPHome implementation is incomplete and untested.
 - The KlipperMCU path is still exploratory and not yet a validated solution.
 - The stock API has no authentication and should be treated as LAN-only.

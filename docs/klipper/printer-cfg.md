@@ -70,10 +70,12 @@ The module does **not** create the heater section for you. It registers a custom
 
     | Condition | Action |
     |---|---|
-    | Klipper sets `TARGET > 0` | Sends `isrunning: 0`, `work_mode: 2`, `set_temp: TARGET`, then `work_on: true` |
-    | Klipper sets `TARGET = 0` | Sends `isrunning: 0`, then `work_on: false` |
+    | Klipper sets `TARGET > 0` | Sends `isrunning: 0` + `drying_running: false`, `work_mode: 2`, `set_temp: TARGET` + `target_temp: TARGET`, then `work_on: true` |
+    | Klipper sets `TARGET = 0` | Sends `isrunning: 0` + `drying_running: false`, `target_temp: 0`, then `work_on: false` |
     | `cal_warehouse_temp` received | Reported as current temperature (preferred) |
-    | `warehouse_temper` received | Reported as current temperature (fallback) |
+    | `chamber_temp` received | Reported as current temperature if calibrated temperature is absent |
+    | `warehouse_temper` received | Reported as current temperature fallback |
+    | v1.0.4 state aliases received | Parses `target_temp`, `filter_temp`, `heater_temp`, `drying_running`, `drying_remaining_min`, and `filament_button` into status |
     | WebSocket drops | Reconnects; resends last command |
 
 === "ESPHome firmware"
@@ -173,7 +175,7 @@ at the start of prints that require chamber heating, and `TARGET=0` at the end. 
 ## Safety notes
 
 - The Panda Breath reaches up to 60°C chamber temperature
-- **Stock firmware:** use `1.0.3+` for the current OEM Klipper path; earlier repository analysis found regression signals in `v1.0.2`
+- **Stock firmware:** use `1.0.3+` for the current OEM Klipper path (current release: V1.0.4). V1.0.3 re-added PTC sensor fault detection; V1.0.4 adds native HA MQTT
 - **ESPHome firmware:** thermal runaway protection is implemented directly in the ESPHome config (`esphome/panda_breath.yaml`) and does not depend on BTT firmware
 - The stock WebSocket has no authentication — LAN use only
 - Always disconnect mains AC before servicing the device

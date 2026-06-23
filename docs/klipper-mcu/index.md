@@ -17,7 +17,7 @@ A possible future alternative to the OEM and ESPHome paths: replace the Panda Br
 
 | Concern | OEM firmware | ESPHome | KlipperMCU |
 |---|---|---|---|
-| Thermal runaway | Present in v0.0.0; **removed in v1.0.2** | Configurable | **Klipper's own `verify_heater`** |
+| Thermal runaway | Removed in v1.0.2; PTC fault UI re-added in v1.0.3; full cutoff uncertain | Configurable | **Klipper's own `verify_heater`** |
 | PID control | Device-managed | ESPHome bang-bang | **Klipper PID — fully tunable** |
 | Klipper extras module | Required | Required | **Not needed** |
 | MQTT broker | Not needed | Required | Not needed |

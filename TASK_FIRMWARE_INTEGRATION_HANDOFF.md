@@ -141,6 +141,19 @@ Use wording along these lines:
 
 The key point is that the warning belongs on `manual`, not on the whole Panda Breath integration.
 
+## v1.0.4 firmware update (May 2026)
+
+V1.0.4 adds native MQTT with Home Assistant auto-discovery. New fields discovered via binary analysis that may affect downstream work:
+
+- `target_temp` (0–60°C) — writable HA MQTT entity; `pandabreath-klipper` now mirrors it with legacy target keys while live WS validation remains pending
+- `filter_temp` (0–120°C) — filter trigger temperature, writable
+- `heater_temp` (40–120°C) — heater trigger temperature, writable
+- `printer_type: 2` — Klipper binding type (v1.0.3+); may alter auto-mode behavior
+- `filament_button` — physical button state field
+- `drying_running` — alternative start/stop for drying timer (ON/OFF); mirrored with legacy `isrunning`
+
+These fields may enable more direct stock-firmware control without needing the passthrough commands. Live validation is pending.
+
 ## Acceptance criteria for the next repo
 
 - Users can choose `disabled`, `auto`, or `manual`.
@@ -152,4 +165,3 @@ The key point is that the warning belongs on `manual`, not on the whole Panda Br
 ## Out of scope for the next repo
 
 - Further changes to `pandabreath-klipper` itself unless a real integration gap is discovered
-

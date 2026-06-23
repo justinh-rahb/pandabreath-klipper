@@ -1,22 +1,20 @@
 # Panda Breath Firmware Binary Analysis
 
-Binaries analyzed: `panda_breath_v1.0.1.bin`, `panda_breath_v1.0.2.bin`
+Binaries analyzed: `panda_breath_v1.0.1.bin` through `panda_breath_v1.0.4.bin`
 Tool: `esptool v5.2.0`, `strings -n 4`
 
 ## Binary Metadata
 
-| Field | v1.0.1 | v1.0.2 |
-|---|---|---|
-| Size | 1,123,136 bytes | 1,122,560 bytes |
-| Chip | ESP32-C3 | ESP32-C3 |
-| ESP-IDF | v5.1.4-dirty | v5.1.4-dirty |
-| Entry point | 0x40380438 | 0x40380438 |
-| Flash | 4MB, 80MHz, DIO | 4MB, 80MHz, DIO |
-| App version string | `1` | `2f5dab0` (git hash) |
-| Compile time | Dec 10 2025 18:11:15 | Jan 22 2026 11:18:24 |
-| Project name | `panda_breath` | `panda_breath` |
+| Field | v0.0.0 | v1.0.1 | v1.0.2 | v1.0.3 | v1.0.4 |
+|---|---|---|---|---|---|
+| Size | Full flash (4MB) | 1,123,136 B | 1,122,560 B | 1,318,176 B (+17%) | 1,347,680 B (+2.2%) |
+| Chip | ESP32-C3 | ESP32-C3 | ESP32-C3 | ESP32-C3 | ESP32-C3 |
+| ESP-IDF | v5.1.4-dirty | v5.1.4-dirty | v5.1.4-dirty | v5.1.4-dirty | v5.1.4-dirty |
+| Compile time | Aug 25 2025 | Dec 10 2025 | Jan 22 2026 | Mar 2026 | May 2026 |
+| String count | N/A (embedded JS) | ~7,320 | ~7,320 | ~11,201 (+53%) | ~11,669 |
+| Project name | `panda_breath` | `panda_breath` | `panda_breath` | `panda_breath` | `panda_breath` |
 
-Both images are **unsigned, no secure boot, no flash encryption**. OTA is via plain HTTP upload (`/ota` endpoint).
+All images are **unsigned, no secure boot, no flash encryption**. OTA is via plain HTTP upload (`/ota` endpoint).
 
 **Chip correction:** The device uses an **ESP32-C3** (not ESP32-C3-Mini as previously noted in some docs). Community-confirmed.
 
@@ -81,16 +79,17 @@ Option 3 is the most reliable given that the Bambu MQTT integration won't work o
 
 ## RTOS Tasks
 
-| Task name | Purpose |
-|---|---|
-| `temp_task` | ADC polling for chamber and PTC sensors |
-| `ptc_task` | PTC heater PWM control |
-| `button_task` | Physical button handling with IRQ |
-| `mqtt_task` | Bambu MQTT client |
-| `bambu_mqtt` | Bambu printer MQTT connection |
-| `bambu_udp` | Bambu printer discovery (UDP) |
-| `_mdns_service_task` | mDNS advertisement (`PandaBreath.local`) |
-| `dns_server` | AP mode captive portal DNS server |
+| Task name | Version | Purpose |
+|---|---|---|
+| `temp_task` | all | ADC polling for chamber and PTC sensors |
+| `ptc_task` | all | PTC heater PWM control |
+| `button_task` | all | Physical button handling with IRQ |
+| `mqtt_task` | all | Bambu MQTT client task |
+| `bambu_mqtt` | v1.0.3+ | Bambu printer MQTT connection (renamed/split from `mqtt_task`) |
+| `bambu_udp` | v1.0.3+ | Bambu printer discovery (UDP broadcast) |
+| `btt_mqtt` | v1.0.4+ | Native HA MQTT client (independent of Bambu MQTT) |
+| `_mdns_service_task` | all | mDNS advertisement (`PandaBreath.local`) |
+| `dns_server` | all | AP mode captive portal DNS server |
 
 ## HTTP Server Endpoints (from strings)
 
@@ -110,11 +109,15 @@ httpd_ws_respond_server_handshake
 ## Storage
 
 Uses **NVS (Non-Volatile Storage)** via `app_nvs` for:
-- `wifi_info` — WiFi credentials (SSID, password)
-- `bambu_mqtt_info` — printer serial + access code
-- `ui_info` — UI settings
+- `wifi_info` — WiFi credentials (SSID, password, hostname, AP config)
+- `bambu_mqtt_info` — printer name, serial, access code, IP
+- `ha_mqtt_info` — HA MQTT broker IP, port, username, password (v1.0.4+)
+- `ui_info` — language and UI settings
+- `panda_breath` namespace — `settings_temp`, `settings_hotbed_temp`, `work_on`, `current_mode`, `custom_temp`, `custom_timer`
 
-## Key Difference: v1.0.1 vs v1.0.2
+## Version Diffs
+
+### v1.0.1 → v1.0.2: PTC thermal detection removed
 
 v1.0.1 contained extensive PTC self-calibration/thermal runaway detection logic with debug strings:
 ```
@@ -130,6 +133,36 @@ Sensor abnormal, reset PTC heating detect
 ```
 
 **None of these strings appear in v1.0.2.** The self-calibration on first heat (which V1.0.1 release notes mentioned) was apparently removed or completely rewritten in v1.0.2, possibly explaining why v1.0.2 is still considered buggy by community members — the thermal protection may have regressed.
+
+### v1.0.2 → v1.0.3: Klipper support, drying modes, PTC fault UI (+53% string growth)
+
+Binary size jumped from 1,122,560 to 1,318,176 bytes (+17%). String count grew from ~7,320 to ~11,201 (+53%).
+
+**New features identified via `diff strings_v1.0.2.txt strings_v1.0.3.txt`:**
+- `printer_type` field: `1` = BambuLab, `2` = Klipper — controls how the device communicates to the host (does not change auto-mode behavior)
+- `filament_drying_mode` writable: `1` = PLA, `2` = PETG, `3` = custom
+- PTC sensor fault detection UI dialogs restored: `ptc_sensor_status` values 0=OK, 1=open circuit, 2=short circuit
+- `filter_temp` editable in web UI
+- Embedded web UI JavaScript now visible in binary strings (complete control flow, field handlers, data types)
+- `bambu_mqtt` and `bambu_udp` task names appear (Bambu client split/rename)
+- Bambu printer binding UI refinements
+
+**Open question:** PTC sensor fault *detection* UI was re-added, but it's unclear if the actual thermal *cutoff* logic (removed in v1.0.2) was fully restored.
+
+### v1.0.3 → v1.0.4: Native HA MQTT auto-discovery (+2.2% growth)
+
+Binary size grew from 1,318,176 to 1,347,680 bytes (+2.2%). String count: ~11,201 to ~11,669.
+
+**New features identified via `diff strings_v1.0.3.txt strings_v1.0.4.txt`:**
+- `btt_mqtt` RTOS task: native HA MQTT client, independent of the Bambu `bambu_mqtt` client
+- Home Assistant auto-discovery payloads published to `homeassistant/...` topics
+- 14 HA entities with full definitions: `chamber_temp`, `work_on`, `mode`, `filament_drying_mode`, `target_temp` (0–60°C), `filter_temp` (0–120°C), `heater_temp` (40–120°C), `custom_temp` (40–60°C), `custom_timer` (1–99h), `drying_running`, `drying_remaining_min`, `printer_sn`, `printer_bind`, `printer_ip`, `printer_name`
+- MQTT topic structure: `<prefix>/<device_id>/state`, `<prefix>/<device_id>/command`, `<prefix>/<device_id>/availability` (LWT)
+- `ha_mqtt_info` NVS key for broker credentials
+- New WS/MQTT fields: `target_temp`, `filter_temp`, `heater_temp`, `drying_running`, `drying_remaining_min`, `filament_button`, `chamber_temp`, `printer_bind`, `printer_ip`, `printer_name`, `printer_sn`
+- HA MQTT broker bind UI in web interface
+
+**Impact:** v1.0.4's native HA MQTT auto-discovery makes the ESPHome reflash path largely redundant for Home Assistant users. The Klipper stock transport now keeps the confirmed legacy WebSocket keys and mirrors compatible v1.0.4 aliases (`target_temp`, `filter_temp`, `drying_running`); live validation is still needed before replacing the legacy keys.
 
 ## Reverse Engineering Notes
 
@@ -172,10 +205,22 @@ Key discoveries from the embedded JS:
 
 ## Next Steps for Protocol Research
 
-- [ ] Connect to a live device and probe all undocumented fields via WebSocket
-- [ ] Test whether `set_temp` vs `temp` is the correct writable field for target temperature
-- [ ] Test `filament_timer`, `custom_temp`, `custom_timer`, `remaining_seconds` behavior
-- [ ] Determine if `filtertemp` is a threshold setting or a sensor reading
-- [ ] Dump web UI assets from the device (`/` HTTP endpoint) to understand the full control API
-- [ ] Test WebSocket reconnection behavior and message rate
-- [ ] Sniff OTA update flow to understand if there's a version check mechanism
+### Resolved via binary analysis or live testing
+
+- [x] `set_temp` is the writable target temperature key; `temp` is ignored (confirmed live)
+- [x] `filtertemp` is a filter temperature threshold (editable via `filter_temp` in v1.0.3+ UI)
+- [x] `filament_drying_mode` is writable: 1=PLA, 2=PETG, 3=custom (v1.0.3+ embedded JS)
+- [x] `ptc_sensor_status` values: 0=OK, 1=open circuit, 2=short circuit (v1.0.3+ UI dialogs)
+- [x] Web UI control flow extracted from v0.0.0 embedded JS and v1.0.3+ binary strings
+
+### Pending — needs live device testing
+
+- [ ] Does `target_temp` work as a WS command key on v1.0.4? (confirmed as HA MQTT entity 0–60°C; may supersede `set_temp`)
+- [ ] Do `filter_temp` and `heater_temp` work as WS command keys? (confirmed as HA entities)
+- [ ] Does `drying_running` ON/OFF work as a WS alternative to `isrunning`?
+- [ ] Does the device push an initial state snapshot on new client connect? (`init one:` pattern in firmware strings)
+- [ ] Is PTC thermal cutoff logic actually restored in v1.0.3+? (UI dialogs exist but cutoff uncertain)
+- [ ] What does `filament_button` state field report? (appears to be physical button state, values 1/2/3)
+- [ ] What is the WebSocket message rate for temperature updates?
+- [ ] Does v1.0.4 HA MQTT work end-to-end with an external broker?
+- [ ] Is there a version check or rollback prevention in the OTA flow?

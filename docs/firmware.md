@@ -1,6 +1,6 @@
 # Firmware
 
-> Analysis of `panda_breath_v1.0.1.bin`, `panda_breath_v1.0.2.bin`, and a historical v0.0.0 full flash dump.
+> Analysis of all released firmware binaries and a historical v0.0.0 full flash dump.
 > Tools: `esptool v5.2.0`, `strings -n 4`.
 > No source code has been published by BTT.
 
@@ -8,25 +8,25 @@
 
 ## Version Summary
 
-| Field | v0.0.0 | v1.0.1 | v1.0.2 |
-|---|---|---|---|
-| Size | 4MB (full flash) | 1,123,136 bytes | 1,122,560 bytes |
-| Compile time | Aug 25 2025 14:26:17 | Dec 10 2025 18:11:15 | Jan 22 2026 11:18:24 |
-| App version string | *(not extracted)* | `1` | `2f5dab0` (git hash) |
-| Chip | ESP32-C3 | ESP32-C3 | ESP32-C3 |
-| ESP-IDF | v5.1.4-dirty | v5.1.4-dirty | v5.1.4-dirty |
-| Entry point | — | `0x40380438` | `0x40380438` |
-| Flash | — | 4MB, 80MHz, DIO | 4MB, 80MHz, DIO |
-| Secure boot | No | No | No |
-| Flash encryption | No | No | No |
+| Field | v0.0.0 | v1.0.1 | v1.0.2 | v1.0.3 | v1.0.4 |
+|---|---|---|---|---|---|
+| Size | 4MB (full flash) | 1,123,136 | 1,122,560 | 1,318,176 | 1,347,680 |
+| Compile time | Aug 25 2025 | Dec 10 2025 | Jan 22 2026 | Feb 25 2026 | May 28 2026 |
+| FW version string | — | — | — | V1.0.3 | V1.0.4 |
+| Chip | ESP32-C3 | ESP32-C3 | ESP32-C3 | ESP32-C3 | ESP32-C3 |
+| ESP-IDF | v5.1.4-dirty | v5.1.4-dirty | v5.1.4-dirty | v5.1.4-dirty | v5.1.4-dirty |
+| String count | — | — | 7,320 | 11,201 | 11,669 |
+| Secure boot | No | No | No | No | No |
+| Flash encryption | No | No | No | No | No |
 
 ## Current stock-firmware note
 
-BTT's Panda Breath wiki now lists **V1.0.3** with this firmware-history note:
+The current release is **V1.0.4** (May 28 2026), which adds native MQTT with Home Assistant auto-discovery. Key version milestones:
 
-- "Added the ability to bind P2S and Klipper printers."
+- **V1.0.3** (Feb 2026) — added `printer_type` selector (BambuLab / Klipper), `filament_drying_mode` WS command, Bambu MQTT client, PTC sensor fault UI dialogs, responsive web UI improvements
+- **V1.0.4** (May 2026) — added `btt_mqtt` client with HA auto-discovery (14 entities), HA broker bind/unbind UI, new WS fields (`target_temp`, `filter_temp`, `heater_temp`, `drying_running`, `drying_remaining_min`, `filament_button`, `chamber_temp`, `printer_bind/ip/name/sn`)
 
-That makes `1.0.3+` the current OEM firmware baseline to target for Klipper-native auto-mode workflows in this repository.
+Use `1.0.3+` for the stock-firmware Klipper path, especially for native auto-mode workflows.
 
 The `v0.0.0` material below remains relevant as reverse-engineering provenance, because the historical full-flash dump is still the richest source of embedded UI and protocol detail included in this repo.
 
@@ -49,16 +49,17 @@ On the v0.0.0 flash dump, the SPIFFS partition is fully erased (all `0xFF`). Web
 
 ## RTOS Tasks
 
-| Task name | Purpose |
-|---|---|
-| `temp_task` | ADC polling for chamber and PTC sensors; pushes temperature over WebSocket |
-| `ptc_task` | PTC heater PWM/relay duty-cycle control |
-| `button_task` | Physical button handling with IRQ |
-| `mqtt_task` | Bambu MQTT client |
-| `bambu_mqtt` | Bambu printer MQTT connection |
-| `bambu_udp` | Bambu printer discovery (UDP broadcast) |
-| `_mdns_service_task` | mDNS advertisement (`PandaBreath.local`) |
-| `dns_server` | AP mode captive portal DNS server |
+| Task name | Purpose | Since |
+|---|---|---|
+| `temp_task` | ADC polling for chamber and PTC sensors; pushes temperature over WebSocket | v1.0.1 |
+| `ptc_task` | PTC heater PWM/relay duty-cycle control | v1.0.1 |
+| `button_task` | Physical button handling with IRQ | v1.0.1 |
+| `mqtt_task` | ESP MQTT client task (shared) | v1.0.1 |
+| `bambu_mqtt` | Bambu printer MQTT connection | v1.0.1 |
+| `bambu_udp` | Bambu printer discovery (UDP broadcast) | v1.0.3 |
+| `btt_mqtt` | HA broker MQTT connection (auto-discovery) | v1.0.4 |
+| `_mdns_service_task` | mDNS advertisement (`PandaBreath.local`) | v1.0.1 |
+| `dns_server` | AP mode captive portal DNS server | v1.0.1 |
 
 ---
 
@@ -88,6 +89,7 @@ Stored in ESP32 NVS flash under the `panda_breath` namespace:
 |---|---|
 | `wifi_info` | `{hostname, sta.ssid, sta.password, ap.ssid, ap.password, ap.on}` |
 | `bambu_mqtt_info` | `{name, sn, access_code, ip}` (Bambu printer binding) |
+| `ha_mqtt_info` | `{ip, port, user, password}` (HA broker binding; v1.0.4+) |
 | `ui_info` | UI/language settings |
 | `settings_temp` | Target temperature |
 | `settings_hotbed_temp` | Hotbed threshold for auto mode |
@@ -100,7 +102,9 @@ Save triggers: `NVS_REQ_SAVE_WIFI`, `NVS_REQ_SAVE_PANDA_BREATH`, `NVS_REQ_FACTOR
 
 ---
 
-## v1.0.1 → v1.0.2 Key Difference
+## Key Differences Between Versions
+
+### v1.0.1 → v1.0.2: Thermal protection removed
 
 !!! warning "Thermal protection regression"
     v1.0.1 contained extensive PTC self-calibration and thermal runaway detection logic. **None of these strings appear in v1.0.2.**
@@ -118,9 +122,30 @@ PTC heating normal: temp rise %d
 Sensor abnormal, reset PTC heating detect
 ```
 
-The self-calibration-on-first-heat described in v1.0.1 release notes was apparently removed or completely rewritten in v1.0.2. Community members report v1.0.2 is still considered buggy — the thermal protection may have regressed rather than improved.
+The self-calibration-on-first-heat described in v1.0.1 release notes was apparently removed or completely rewritten in v1.0.2.
 
-**Repository guidance:** use `1.0.3+` for the current OEM Klipper path, while treating `v1.0.2` cautiously based on the regression signals documented above.
+### v1.0.2 → v1.0.3: Klipper support + major code growth
+
+String count jumped from 7,320 to 11,201 (+53%). Key additions:
+
+- **`printer_type` WS field** — `PRINTER_BBL = 1`, `PRINTER_KLIPPER = 2`; web UI dropdown with `['BambuLab', 'Klipper']` — controls communication mode only, does not change auto-mode behavior
+- **`filament_drying_mode` writable** — WS commands for values 1 (PLA), 2 (PETG), 3 (custom)
+- **Bambu MQTT client** — `bambu_mqtt` + `bambu_udp` tasks; reads `bed_target_temper`, `bed_temper`, `nozzle_temper`, `gcode_state`
+- **`filter_temp` UI** — filter temperature threshold now editable
+- **PTC sensor fault UI** — dialogs for `ptc_sensor_status` 1 (open circuit) and 2 (short circuit)
+
+### v1.0.3 → v1.0.4: Native HA MQTT auto-discovery
+
+Binary grew from 1,318,176 to 1,347,680 bytes (+29KB). Key additions:
+
+- **`btt_mqtt` client** — independent MQTT connection to a user-configured HA broker
+- **HA auto-discovery** — publishes `homeassistant/...` config topics for 14 entities (sensors, switches, selects, numbers)
+- **HA bind UI** — web UI card with broker IP, port, username, password fields
+- **`ha_mqtt_info` NVS key** — persists broker config across reboots
+- **New WS/MQTT fields**: `target_temp` (0–60°C), `filter_temp` (0–120°C), `heater_temp` (40–120°C), `drying_running`, `drying_remaining_min`, `chamber_temp`, `filament_button`, `printer_bind/ip/name/sn`
+- **MQTT topic structure**: `<prefix>/<id>/state`, `<prefix>/<id>/command`, `<prefix>/<id>/availability`
+
+**Repository guidance:** use `1.0.3+` for the current OEM Klipper path. The Klipper stock transport keeps the confirmed legacy WebSocket keys and mirrors compatible v1.0.4 aliases (`target_temp`, `filter_temp`, `drying_running`) so newer firmware can consume them without dropping support for older firmware. Live validation is still useful to determine whether the aliases can ever replace the legacy keys.
 
 ---
 
