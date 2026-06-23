@@ -22,3 +22,5 @@ klipper-firmware/build/
 klipper-firmware/sdkconfig
 klipper-firmware/sdkconfig.old
 klipper-firmware/components/klipper/klipper/out/
+
+.DS_Store
